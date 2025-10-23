@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - OSM Notes Viewer</title>
+    <link rel="icon" type="image/svg+xml" href="../../public/favicon.svg">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo-icon">🗺️</span>
+                    OSM Notes Viewer
+                </a>
+            </h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div id="profileLoading" class="loading">Loading user profile...</div>
+            <div id="profileError" class="error" style="display: none;"></div>
+
+            <div id="profileContent" style="display: none;">
+                <section class="profile-header">
+                    <h2 class="profile-title">
+                        <span class="profile-icon">👤</span>
+                        <span id="username">-</span>
+                    </h2>
+                    <p class="profile-subtitle">User ID: <span id="userId">-</span></p>
+                    <p class="profile-subtitle" id="contributorType" style="display: none;"></p>
+                </section>
+
+                <section class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Notes Opened</div>
+                        <div class="stat-value" id="notesOpened">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Notes Closed</div>
+                        <div class="stat-value" id="notesClosed">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Comments</div>
+                        <div class="stat-value" id="notesCommented">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Reopened</div>
+                        <div class="stat-value" id="notesReopened">-</div>
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h3>Activity This Year</h3>
+                    <div id="activityHeatmap" class="activity-heatmap">
+                        <!-- GitHub-style activity heatmap will go here -->
+                        <p class="loading">Loading activity data...</p>
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h3>Top Hashtags</h3>
+                    <div id="hashtagsContainer" class="hashtags-container">
+                        <p class="loading">Loading hashtags...</p>
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h3>Active Countries</h3>
+                    <div id="countriesContainer" class="countries-container">
+                        <p class="loading">Loading countries...</p>
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h3>Working Hours</h3>
+                    <div id="workingHoursContainer" class="working-hours-container">
+                        <p class="loading">Loading working hours...</p>
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h3>Activity History</h3>
+                    <div id="activityHistoryContainer" class="activity-history-container">
+                        <p class="loading">Loading activity history...</p>
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h3>First Actions</h3>
+                    <div id="firstActionsContainer" class="first-actions-container">
+                        <p class="loading">Loading first actions...</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>
+                Data from <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>
+                | Processed by <a href="https://github.com/angoca/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>
+            </p>
+        </div>
+    </footer>
+
+    <script type="module" src="../js/pages/userProfile.js"></script>
+</body>
+</html>
+
+

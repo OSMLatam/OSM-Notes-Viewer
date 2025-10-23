@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://angoca.github.io/OSM-Notes-Viewer/sitemap.xml
+

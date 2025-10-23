@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .error-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+            padding: 2rem;
+        }
+        .error-code {
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+        .error-message {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+        .error-btn {
+            padding: 1rem 2rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .error-btn:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo-icon">🗺️</span>
+                    OSM Notes Viewer
+                </a>
+            </h1>
+        </div>
+    </header>
+
+    <main class="error-page">
+        <div class="error-code">404</div>
+        <h2 class="error-message">Page Not Found</h2>
+        <p style="margin-bottom: 2rem; color: #666;">
+            The page you're looking for doesn't exist or has been moved.
+        </p>
+        <a href="index.html" class="error-btn">← Back to Home</a>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>
+                Data from <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
+

@@ -1,0 +1,17 @@
+{
+  "name": "OSM Notes Viewer",
+  "short_name": "OSM Notes",
+  "description": "Interactive viewer for OpenStreetMap Notes analytics",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7ebc6f",
+  "icons": [
+    {
+      "src": "/public/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
+

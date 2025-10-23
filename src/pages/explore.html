@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore - OSM Notes Viewer</title>
+    <link rel="icon" type="image/svg+xml" href="../../public/favicon.svg">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo-icon">🗺️</span>
+                    OSM Notes Viewer
+                </a>
+            </h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="explore.html" class="nav-link active">Explore</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container" style="padding: 3rem 20px;">
+            <h2>Explore Data</h2>
+            <p style="margin-bottom: 2rem; color: var(--text-light);">
+                Browse through all users and countries in the OSM Notes dataset
+            </p>
+
+            <section style="margin: 2rem 0;">
+                <h3>All Users</h3>
+                <div id="allUsers" class="loading">Loading users...</div>
+            </section>
+
+            <section style="margin: 2rem 0;">
+                <h3>All Countries</h3>
+                <div id="allCountries" class="loading">Loading countries...</div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>
+                Data from <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>
+                | Processed by <a href="https://github.com/angoca/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>
+            </p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { apiClient } from '../js/api/apiClient.js';
+        import { formatNumber } from '../js/utils/formatter.js';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadAllData();
+        });
+
+        async function loadAllData() {
+            await Promise.all([
+                loadAllUsers(),
+                loadAllCountries()
+            ]);
+        }
+
+        async function loadAllUsers() {
+            const container = document.getElementById('allUsers');
+
+            try {
+                const users = await apiClient.getUserIndex();
+                console.log('Loaded users:', users.length);
+
+                // Limit to first 50 users for performance
+                const limitedUsers = users.slice(0, 50);
+
+                const html = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+                        ${limitedUsers.map(user => `
+                            <div class="leaderboard-item" onclick="window.location.href='user.html?id=${user.user_id}'">
+                                <span class="leaderboard-name">${user.username}</span>
+                                <span class="leaderboard-value">${formatNumber(user.history_whole_open || 0)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading users:', error);
+                container.innerHTML = '<p class="error">Failed to load users: ' + error.message + '</p>';
+            }
+        }
+
+        async function loadAllCountries() {
+            const container = document.getElementById('allCountries');
+
+            try {
+                const countries = await apiClient.getCountryIndex();
+                console.log('Loaded countries:', countries.length);
+
+                const html = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+                        ${countries.map(country => `
+                            <div class="leaderboard-item" onclick="window.location.href='country.html?id=${country.country_id}'">
+                                <span class="leaderboard-name">${country.country_name_en || country.country_name}</span>
+                                <span class="leaderboard-value">${formatNumber(country.history_whole_open || 0)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading countries:', error);
+                container.innerHTML = '<p class="error">Failed to load countries: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>
+
+

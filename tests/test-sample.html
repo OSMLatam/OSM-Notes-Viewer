@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Sample Data</title>
+    <link rel="stylesheet" href="../src/css/main.css">
+</head>
+<body>
+    <div class="container" style="padding: 2rem;">
+        <h1>Testing with Sample Data</h1>
+
+        <section style="margin: 2rem 0;">
+            <h2>Create Sample Data Files</h2>
+            <p>Run these commands to create minimal sample data for testing:</p>
+
+            <pre style="background: #f5f5f5; padding: 1rem; border-radius: 8px; overflow-x: auto;">
+# Create sample metadata
+cat > data/metadata.json << 'EOF'
+{
+  "export_date": "2025-10-21T12:00:00Z",
+  "total_users": 2,
+  "total_countries": 1,
+  "version": "1.0.0"
+}
+EOF
+
+# Create sample user index
+cat > data/indexes/users.json << 'EOF'
+[
+  {
+    "user_id": 1,
+    "username": "test_user_1",
+    "history_whole_open": 100,
+    "history_whole_closed": 50,
+    "history_year_open": 10,
+    "history_year_closed": 5
+  },
+  {
+    "user_id": 2,
+    "username": "test_user_2",
+    "history_whole_open": 200,
+    "history_whole_closed": 100,
+    "history_year_open": 20,
+    "history_year_closed": 10
+  }
+]
+EOF
+
+# Create sample country index
+cat > data/indexes/countries.json << 'EOF'
+[
+  {
+    "country_id": 1,
+    "country_name": "Test Country",
+    "country_name_en": "Test Country",
+    "country_name_es": "País de Prueba",
+    "history_whole_open": 1000,
+    "history_whole_closed": 500,
+    "history_year_open": 100,
+    "history_year_closed": 50
+  }
+]
+EOF
+
+# Create sample user profile
+cat > data/users/1.json << 'EOF'
+{
+  "user_id": 1,
+  "username": "test_user_1",
+  "history_whole_open": 100,
+  "history_whole_closed": 50,
+  "history_whole_commented": 25,
+  "history_whole_reopened": 5,
+  "history_year_open": 10,
+  "history_year_closed": 5,
+  "hashtags": [
+    {"rank": 1, "hashtag": "#test", "quantity": 10},
+    {"rank": 2, "hashtag": "#sample", "quantity": 5}
+  ],
+  "countries_open_notes": [
+    {"rank": 1, "country": "Test Country", "quantity": 100}
+  ]
+}
+EOF
+
+# Create sample country profile
+cat > data/countries/1.json << 'EOF'
+{
+  "country_id": 1,
+  "country_name": "Test Country",
+  "country_name_en": "Test Country",
+  "country_name_es": "País de Prueba",
+  "history_whole_open": 1000,
+  "history_whole_closed": 500,
+  "history_whole_commented": 250,
+  "history_whole_reopened": 50,
+  "history_year_open": 100,
+  "history_year_closed": 50,
+  "hashtags": [
+    {"rank": 1, "hashtag": "#test", "quantity": 100},
+    {"rank": 2, "hashtag": "#sample", "quantity": 50}
+  ],
+  "users_open_notes": [
+    {"rank": 1, "username": "test_user_1", "quantity": 100},
+    {"rank": 2, "username": "test_user_2", "quantity": 200}
+  ]
+}
+EOF
+            </pre>
+        </section>
+
+        <section style="margin: 2rem 0;">
+            <h2>Test Links</h2>
+            <ul>
+                <li><a href="../src/index.html">Home Page</a></li>
+                <li><a href="../src/pages/user.html?id=1">User Profile (ID: 1)</a></li>
+                <li><a href="../src/pages/country.html?id=1">Country Profile (ID: 1)</a></li>
+                <li><a href="../src/pages/explore.html">Explore Page</a></li>
+                <li><a href="../src/pages/about.html">About Page</a></li>
+            </ul>
+        </section>
+    </div>
+</body>
+</html>
+
+

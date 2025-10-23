@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - OSM Notes Viewer</title>
+    <link rel="icon" type="image/svg+xml" href="../../public/favicon.svg">
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <span class="logo-icon">🗺️</span>
+                    OSM Notes Viewer
+                </a>
+            </h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="about.html" class="nav-link active">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container" style="max-width: 800px; padding: 3rem 20px;">
+            <h2>About OSM Notes Viewer</h2>
+
+            <section style="margin: 2rem 0;">
+                <h3>What is this?</h3>
+                <p>
+                    OSM Notes Viewer is an interactive web application that visualizes analytics and statistics
+                    about OpenStreetMap notes activity around the world.
+                </p>
+                <p>
+                    It provides insights into user contributions, country-level statistics, hashtag trends,
+                    and temporal patterns of note creation and resolution.
+                </p>
+            </section>
+
+            <section style="margin: 2rem 0;">
+                <h3>Data Source</h3>
+                <p>
+                    This viewer is part of a larger ecosystem of projects for processing OSM Notes:
+                </p>
+                <ul>
+                    <li>
+                        <strong><a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank">OSM-Notes-Ingestion</a>:</strong>
+                        Downloads and maintains OSM notes data from Planet dumps and API
+                    </li>
+                    <li>
+                        <strong><a href="https://github.com/OSMLatam/OSM-Notes-Common" target="_blank">OSM-Notes-Common</a>:</strong>
+                        Shared libraries and utilities used across all projects
+                    </li>
+                    <li>
+                        <strong><a href="https://github.com/angoca/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>:</strong>
+                        Data warehouse and ETL system that processes the ingested data and generates statistics
+                    </li>
+                    <li>
+                        <strong><a href="https://github.com/angoca/OSM-Notes-Viewer" target="_blank">OSM-Notes-Viewer</a>:</strong>
+                        This web application that visualizes the analytics data
+                    </li>
+                </ul>
+                <p>
+                    The analytics backend extracts notes data, transforms and aggregates statistics,
+                    and generates pre-calculated JSON files every 15 minutes.
+                </p>
+            </section>
+
+            <section style="margin: 2rem 0;">
+                <h3>Features</h3>
+                <ul>
+                    <li>🔍 Search users and countries</li>
+                    <li>📊 Interactive statistics and charts</li>
+                    <li>📈 Activity heatmaps (GitHub-style)</li>
+                    <li>🌍 Geographic distribution analysis</li>
+                    <li>#️⃣ Hashtag usage tracking</li>
+                    <li>⏰ Working hours visualization</li>
+                    <li>📱 Responsive design for all devices</li>
+                </ul>
+            </section>
+
+            <section style="margin: 2rem 0;">
+                <h3>Technology</h3>
+                <p>
+                    This is a fully static web application built with vanilla HTML, CSS, and JavaScript.
+                    It requires no backend server and fetches all data from pre-generated JSON files.
+                </p>
+                <p><strong>Stack:</strong></p>
+                <ul>
+                    <li>HTML5 & CSS3</li>
+                    <li>Vanilla JavaScript (ES6 modules)</li>
+                    <li>Chart.js for visualizations</li>
+                    <li>Deployed on CDN for global access</li>
+                </ul>
+            </section>
+
+            <section style="margin: 2rem 0;">
+                <h3>Open Source</h3>
+                <p>
+                    All projects in the OSM Notes ecosystem are open source:
+                </p>
+                <ul>
+                    <li>
+                        <strong>Ingestion:</strong>
+                        <a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank">
+                            github.com/OSMLatam/OSM-Notes-Ingestion
+                        </a>
+                    </li>
+                    <li>
+                        <strong>Common Libraries:</strong>
+                        <a href="https://github.com/OSMLatam/OSM-Notes-Common" target="_blank">
+                            github.com/OSMLatam/OSM-Notes-Common
+                        </a>
+                    </li>
+                    <li>
+                        <strong>Viewer:</strong>
+                        <a href="https://github.com/angoca/OSM-Notes-Viewer" target="_blank">
+                            github.com/angoca/OSM-Notes-Viewer
+                        </a>
+                    </li>
+                    <li>
+                        <strong>Analytics:</strong>
+                        <a href="https://github.com/angoca/OSM-Notes-Analytics" target="_blank">
+                            github.com/angoca/OSM-Notes-Analytics
+                        </a>
+                    </li>
+                </ul>
+            </section>
+
+            <section style="margin: 2rem 0;">
+                <h3>Contributing</h3>
+                <p>
+                    Contributions are welcome! Feel free to:
+                </p>
+                <ul>
+                    <li>Report bugs or request features via GitHub Issues</li>
+                    <li>Submit pull requests with improvements</li>
+                    <li>Share feedback and suggestions</li>
+                </ul>
+            </section>
+
+            <section style="margin: 2rem 0;">
+                <h3>Acknowledgments</h3>
+                <p>
+                    Special thanks to the OpenStreetMap community and all contributors who make notes data available.
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>
+                Data from <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>
+                | Processed by <a href="https://github.com/angoca/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>
+            </p>
+            <p>
+                <a href="https://github.com/angoca/OSM-Notes-Viewer" target="_blank">View on GitHub</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
+
+

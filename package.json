@@ -1,0 +1,31 @@
+{
+  "name": "osm-notes-viewer",
+  "version": "1.0.0",
+  "description": "Web viewer for OpenStreetMap Notes analytics",
+  "main": "src/index.html",
+  "scripts": {
+    "dev": "npx http-server src -p 8000 -o",
+    "serve": "python3 -m http.server 8000 --directory src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angoca/OSM-Notes-Viewer.git"
+  },
+  "keywords": [
+    "openstreetmap",
+    "osm",
+    "notes",
+    "analytics",
+    "visualization",
+    "statistics"
+  ],
+  "author": "Andres Gomez (AngocA)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angoca/OSM-Notes-Viewer/issues"
+  },
+  "homepage": "https://github.com/angoca/OSM-Notes-Viewer#readme",
+  "devDependencies": {}
+}
+
+
