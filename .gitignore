@@ -28,6 +28,10 @@ build/
 .cache/
 .vite/
 
+# Test coverage
+coverage/
+*.lcov
+
 # Test data (local development)
 data/
 src/data/
