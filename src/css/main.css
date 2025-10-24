@@ -399,6 +399,36 @@ body {
     font-size: 0.9rem;
 }
 
+/* === Search Autocomplete === */
+#searchResults {
+    position: relative;
+    display: none;
+}
+
+#searchResults:has(.search-result-item) {
+    display: block;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 0.5rem;
+}
+
+.search-result-item mark {
+    background: var(--primary-color);
+    color: white;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.text-light {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    margin-left: 0.5rem;
+}
+
 /* === Footer === */
 .footer {
     background: #333;

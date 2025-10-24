@@ -1,6 +1,8 @@
 // User Profile Page
 import { apiClient } from '../api/apiClient.js';
 import { formatNumber, formatDate } from '../utils/formatter.js';
+import { renderActivityHeatmap } from '../components/activityHeatmap.js';
+import { createBarChart } from '../components/chart.js';
 
 // Get user ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -52,7 +54,7 @@ async function loadUserProfile(userId) {
         document.getElementById('notesReopened').textContent = formatNumber(user.history_whole_reopened || 0);
 
         // Activity heatmap
-        renderActivityHeatmap(user.last_year_activity);
+        renderUserActivityHeatmap(user.last_year_activity);
 
         // Hashtags
         renderHashtags(user.hashtags);
@@ -75,7 +77,7 @@ async function loadUserProfile(userId) {
     }
 }
 
-function renderActivityHeatmap(activityString) {
+function renderUserActivityHeatmap(activityString) {
     const container = document.getElementById('activityHeatmap');
 
     if (!activityString || activityString.length === 0) {
@@ -83,14 +85,8 @@ function renderActivityHeatmap(activityString) {
         return;
     }
 
-    // Simple text representation for now
-    // TODO: Implement proper GitHub-style heatmap with SVG
-    container.innerHTML = `
-        <div class="activity-preview">
-            <p>Activity heatmap visualization coming soon...</p>
-            <p class="text-light">Last year activity: ${activityString.length} days tracked</p>
-        </div>
-    `;
+    // Use the actual heatmap component
+    renderActivityHeatmap(activityString, container);
 }
 
 function renderHashtags(hashtags) {
@@ -101,14 +97,13 @@ function renderHashtags(hashtags) {
         return;
     }
 
-    const html = hashtags.map(item => `
-        <div class="hashtag-item">
-            <span class="hashtag-name">${item.hashtag}</span>
-            <span class="hashtag-count">${formatNumber(item.quantity)}</span>
-        </div>
-    `).join('');
+    // Use bar chart component for better visualization
+    const chartData = hashtags.map(item => ({
+        label: item.hashtag,
+        value: item.quantity
+    }));
 
-    container.innerHTML = html;
+    createBarChart(chartData, container);
 }
 
 async function renderCountries(countries) {
@@ -131,18 +126,13 @@ async function renderCountries(countries) {
             if (c.country_name_es) countryMap.set(c.country_name_es, c.country_id);
         });
 
-        const html = countries.map(item => {
-            const countryId = countryMap.get(item.country) || '';
-            return `
-                <div class="country-item" onclick="window.location.href='country.html?id=${countryId}'">
-                    <span class="country-rank">#${item.rank}</span>
-                    <span class="country-name">${item.country}</span>
-                    <span class="country-count">${formatNumber(item.quantity)}</span>
-                </div>
-            `;
-        }).join('');
+        // Use bar chart for better visualization
+        const chartData = countries.map(item => ({
+            label: item.country,
+            value: item.quantity
+        }));
 
-        container.innerHTML = html;
+        createBarChart(chartData, container);
     } catch (error) {
         console.error('Error loading country index:', error);
         container.innerHTML = '<p>Error loading country data</p>';

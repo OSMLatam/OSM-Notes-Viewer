@@ -2,10 +2,51 @@
 import { apiClient } from './api/apiClient.js';
 import { formatNumber, formatDate } from './utils/formatter.js';
 import { showError, showLoading, showEmpty, handleApiError } from './components/errorHandler.js';
+import { SearchComponent } from './components/search.js';
+
+// User Search Component
+class UserSearchComponent extends SearchComponent {
+    matchesQuery(item, query) {
+        return item.username?.toLowerCase().includes(query) ||
+               item.user_id?.toString() === query ||
+               item.country_name?.toLowerCase().includes(query) ||
+               item.country_name_en?.toLowerCase().includes(query) ||
+               item.country_name_es?.toLowerCase().includes(query) ||
+               item.country_id?.toString() === query;
+    }
+
+    renderItem(item, index) {
+        if (currentSearchType === 'users') {
+            return `
+                <div class="search-result-item">
+                    <strong>${this.highlightMatch(item.username, this.input.value)}</strong>
+                    <span class="text-light">ID: ${item.user_id}</span>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="search-result-item">
+                    <strong>${this.highlightMatch(item.country_name_en || item.country_name, this.input.value)}</strong>
+                    <span class="text-light">ID: ${item.country_id}</span>
+                </div>
+            `;
+        }
+    }
+
+    highlightMatch(text, query) {
+        if (!text || !query) return text;
+        const index = text.toLowerCase().indexOf(query.toLowerCase());
+        if (index === -1) return text;
+        return text.substring(0, index) +
+               `<mark>${text.substring(index, index + query.length)}</mark>` +
+               text.substring(index + query.length);
+    }
+}
 
 // DOM Elements
 let searchInput, searchBtn, searchResults;
 let currentSearchType = 'users';
+let searchComponent = null;
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
@@ -28,11 +69,13 @@ function setupEventListeners() {
         });
     });
 
-    // Search
+    // Setup autocomplete search
+    if (searchInput && searchResults) {
+        searchComponent = new UserSearchComponent(searchInput, searchResults, handleSearchSelect);
+    }
+
+    // Search button
     searchBtn?.addEventListener('click', performSearch);
-    searchInput?.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') performSearch();
-    });
 }
 
 function switchTab(tab) {
@@ -50,9 +93,36 @@ function switchTab(tab) {
             : 'Search by country name or ID...';
     }
 
+    // Update search component data
+    updateSearchData();
+
     // Clear results
     if (searchResults) {
         searchResults.innerHTML = '';
+    }
+}
+
+async function updateSearchData() {
+    if (!searchComponent) return;
+
+    try {
+        if (currentSearchType === 'users') {
+            const users = await apiClient.getUserIndex();
+            searchComponent.setData(users);
+        } else {
+            const countries = await apiClient.getCountryIndex();
+            searchComponent.setData(countries);
+        }
+    } catch (error) {
+        console.error('Error loading search data:', error);
+    }
+}
+
+function handleSearchSelect(item) {
+    if (currentSearchType === 'users') {
+        window.location.href = `pages/user.html?id=${item.user_id}`;
+    } else {
+        window.location.href = `pages/country.html?id=${item.country_id}`;
     }
 }
 
