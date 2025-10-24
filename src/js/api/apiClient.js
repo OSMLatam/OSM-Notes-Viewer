@@ -1,5 +1,5 @@
 // API Client for fetching JSON data
-import { API_CONFIG, getApiUrl } from '../../../config/api-config.js';
+import { API_CONFIG, getApiUrl } from '../../config/api-config.js';
 
 class APIClient {
     constructor() {

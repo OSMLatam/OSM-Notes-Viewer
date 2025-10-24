@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://angoca.github.io/OSM-Notes-Viewer/sitemap.xml
+Sitemap: https://osmlatam.github.io/OSM-Notes-Viewer/sitemap.xml
 

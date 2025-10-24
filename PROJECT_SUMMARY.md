@@ -221,13 +221,13 @@ This viewer is part of a larger ecosystem for processing OSM Notes:
 
 - **[OSM-Notes-Ingestion](https://github.com/OSMLatam/OSM-Notes-Ingestion)** - Data ingestion from OSM Planet dumps and API
 - **[OSM-Notes-Common](https://github.com/OSMLatam/OSM-Notes-Common)** - Shared libraries and utilities
-- **[OSM-Notes-Analytics](https://github.com/angoca/OSM-Notes-Analytics)** - Data warehouse and ETL processes
-- **[OSM-Notes-Viewer](https://github.com/angoca/OSM-Notes-Viewer)** - This project (web viewer)
+- **[OSM-Notes-Analytics](https://github.com/OSMLatam/OSM-Notes-Analytics)** - Data warehouse and ETL processes
+- **[OSM-Notes-Viewer](https://github.com/OSMLatam/OSM-Notes-Viewer)** - This project (web viewer)
 
 ## Links
 
-- **Issues:** https://github.com/angoca/OSM-Notes-Viewer/issues
-- **Discussions:** https://github.com/angoca/OSM-Notes-Viewer/discussions
+- **Issues:** https://github.com/OSMLatam/OSM-Notes-Viewer/issues
+- **Discussions:** https://github.com/OSMLatam/OSM-Notes-Viewer/discussions
 
 ---
 

@@ -5,7 +5,7 @@ Get the OSM Notes Viewer running in 5 minutes!
 ## Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/angoca/OSM-Notes-Viewer.git
+git clone https://github.com/OSMLatam/OSM-Notes-Viewer.git
 cd OSM-Notes-Viewer
 ```
 
@@ -121,6 +121,6 @@ This viewer is part of a larger ecosystem for processing OSM Notes:
 
 - **[OSM-Notes-Ingestion](https://github.com/OSMLatam/OSM-Notes-Ingestion)** - Downloads and maintains OSM notes data from Planet dumps and API
 - **[OSM-Notes-Common](https://github.com/OSMLatam/OSM-Notes-Common)** - Shared libraries and utilities used across all projects
-- **[OSM-Notes-Analytics](https://github.com/angoca/OSM-Notes-Analytics)** - Data warehouse and ETL processes that generate the JSON files
+- **[OSM-Notes-Analytics](https://github.com/OSMLatam/OSM-Notes-Analytics)** - Data warehouse and ETL processes that generate the JSON files
 
 Enjoy exploring OSM Notes data! 🗺️

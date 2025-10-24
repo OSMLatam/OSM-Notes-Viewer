@@ -49,10 +49,16 @@ let currentSearchType = 'users';
 let searchComponent = null;
 
 // Initialize application
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 App initializing...');
     initializeElements();
     setupEventListeners();
-    loadInitialData();
+    console.log('📊 Loading initial data...');
+    await loadInitialData();
+    console.log('🔍 Loading search data...');
+    // Load search data after initial setup
+    await updateSearchData();
+    console.log('✅ App initialized successfully');
 });
 
 function initializeElements() {
@@ -218,7 +224,9 @@ async function loadGlobalStats() {
     const totalNotesEl = document.getElementById('totalNotes');
 
     try {
+        console.log('📥 Fetching metadata...');
         const metadata = await apiClient.getMetadata();
+        console.log('✅ Metadata received:', metadata);
 
         totalUsersEl.textContent = formatNumber(metadata.total_users);
         totalCountriesEl.textContent = formatNumber(metadata.total_countries);
@@ -240,7 +248,9 @@ async function loadTopUsers() {
     const container = document.getElementById('topUsers');
 
     try {
+        console.log('📥 Fetching user index...');
         const users = await apiClient.getUserIndex();
+        console.log(`✅ Received ${users.length} users`);
 
         // Sort by notes opened
         const topUsers = users

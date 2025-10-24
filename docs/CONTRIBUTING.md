@@ -6,7 +6,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 ### Reporting Bugs
 
-1. Check if the issue already exists in [GitHub Issues](https://github.com/angoca/OSM-Notes-Viewer/issues)
+1. Check if the issue already exists in [GitHub Issues](https://github.com/OSMLatam/OSM-Notes-Viewer/issues)
 2. If not, create a new issue with:
    - Clear, descriptive title
    - Steps to reproduce

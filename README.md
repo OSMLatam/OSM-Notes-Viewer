@@ -54,7 +54,7 @@ This viewer is part of a larger ecosystem of projects for processing and visuali
 
 - **[OSM-Notes-Ingestion](https://github.com/OSMLatam/OSM-Notes-Ingestion)** - Downloads and maintains a local copy of OSM notes data from the Planet dump and API
 - **[OSM-Notes-Common](https://github.com/OSMLatam/OSM-Notes-Common)** - Shared libraries and utilities used across all OSM Notes projects
-- **[OSM-Notes-Analytics](https://github.com/angoca/OSM-Notes-Analytics)** - Data warehouse and ETL processes that generate analytics from the ingested notes
+- **[OSM-Notes-Analytics](https://github.com/OSMLatam/OSM-Notes-Analytics)** - Data warehouse and ETL processes that generate analytics from the ingested notes
 - **OSM-Notes-Viewer** (this project) - Web interface for visualizing the analytics data
 
 ### Data Flow
@@ -109,7 +109,7 @@ For more details, see [docs/DATA_CONTRACT.md](docs/DATA_CONTRACT.md) and [lib/OS
 
 ```bash
 # Clone the repository
-git clone https://github.com/angoca/OSM-Notes-Viewer.git
+git clone https://github.com/OSMLatam/OSM-Notes-Viewer.git
 cd OSM-Notes-Viewer
 
 # Open with a local server (required for CORS)
@@ -187,7 +187,7 @@ Contributions are welcome! Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) f
 
 - [OSM-Notes-Ingestion](https://github.com/OSMLatam/OSM-Notes-Ingestion) - Data ingestion from OSM Planet
 - [OSM-Notes-Common](https://github.com/OSMLatam/OSM-Notes-Common) - Shared libraries and utilities
-- [OSM-Notes-Analytics](https://github.com/angoca/OSM-Notes-Analytics) - Data processing backend
+- [OSM-Notes-Analytics](https://github.com/OSMLatam/OSM-Notes-Analytics) - Data processing backend
 
 ## License
 
@@ -201,4 +201,4 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ## Contact
 
-For issues and questions, please use [GitHub Issues](https://github.com/angoca/OSM-Notes-Viewer/issues).
+For issues and questions, please use [GitHub Issues](https://github.com/OSMLatam/OSM-Notes-Viewer/issues).

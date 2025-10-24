@@ -32,6 +32,9 @@ data/
 src/data/
 *.json.bak
 
+# Temporary documentation
+test-data.html
+
 # Environment files
 .env
 .env.local

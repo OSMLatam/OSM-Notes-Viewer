@@ -12,21 +12,24 @@
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <header class="header">
+    <!-- Skip link for screen readers -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="header" role="banner">
         <div class="container">
             <h1 class="logo">
-                <span class="logo-icon">🗺️</span>
+                <span class="logo-icon" aria-hidden="true">🗺️</span>
                 OSM Notes Viewer
             </h1>
-            <nav class="nav">
-                <a href="index.html" class="nav-link active">Home</a>
+            <nav class="nav" role="navigation" aria-label="Main navigation">
+                <a href="index.html" class="nav-link active" aria-current="page">Home</a>
                 <a href="pages/explore.html" class="nav-link">Explore</a>
                 <a href="pages/about.html" class="nav-link">About</a>
             </nav>
         </div>
     </header>
 
-    <main class="main">
+    <main class="main" id="main-content" role="main">
         <section class="hero">
             <div class="container">
                 <h2 class="hero-title">Explore OpenStreetMap Notes Analytics</h2>
@@ -36,74 +39,81 @@
             </div>
         </section>
 
-        <section class="search-section">
+        <section class="search-section" aria-label="Search section">
             <div class="container">
                 <div class="search-box">
                     <h3>Search</h3>
-                    <div class="search-tabs">
-                        <button class="tab-btn active" data-tab="users">
-                            👤 Users
+                    <div class="search-tabs" role="tablist" aria-label="Search type selection">
+                        <button class="tab-btn active" data-tab="users" role="tab" aria-selected="true" aria-controls="searchResults">
+                            <span aria-hidden="true">👤</span> Users
                         </button>
-                        <button class="tab-btn" data-tab="countries">
-                            🌍 Countries
+                        <button class="tab-btn" data-tab="countries" role="tab" aria-selected="false" aria-controls="searchResults">
+                            <span aria-hidden="true">🌍</span> Countries
                         </button>
                     </div>
                     <div class="search-input-wrapper">
+                        <label for="searchInput" class="sr-only">Search input</label>
                         <input
                             type="text"
                             id="searchInput"
                             class="search-input"
                             placeholder="Search by username or user ID..."
                             autocomplete="off"
+                            role="searchbox"
+                            aria-label="Search for users or countries"
+                            aria-expanded="false"
+                            aria-controls="searchResults"
                         >
-                        <button id="searchBtn" class="search-btn">Search</button>
+                        <button id="searchBtn" class="search-btn" aria-label="Perform search">
+                            Search
+                        </button>
                     </div>
-                    <div id="searchResults" class="search-results"></div>
+                    <div id="searchResults" class="search-results" role="listbox" aria-label="Search results"></div>
                 </div>
             </div>
         </section>
 
-        <section class="stats-section">
+        <section class="stats-section" aria-label="Global statistics">
             <div class="container">
                 <h3>Global Statistics</h3>
-                <div id="globalStats" class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">📝</div>
-                        <div class="stat-value" id="totalNotes">-</div>
+                <div id="globalStats" class="stats-grid" role="region" aria-label="Statistics">
+                    <div class="stat-card" role="article">
+                        <div class="stat-icon" aria-hidden="true">📝</div>
+                        <div class="stat-value" id="totalNotes" aria-live="polite">-</div>
                         <div class="stat-label">Total Notes</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-value" id="totalUsers">-</div>
+                    <div class="stat-card" role="article">
+                        <div class="stat-icon" aria-hidden="true">👥</div>
+                        <div class="stat-value" id="totalUsers" aria-live="polite">-</div>
                         <div class="stat-label">Active Users</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🌍</div>
-                        <div class="stat-value" id="totalCountries">-</div>
+                    <div class="stat-card" role="article">
+                        <div class="stat-icon" aria-hidden="true">🌍</div>
+                        <div class="stat-value" id="totalCountries" aria-live="polite">-</div>
                         <div class="stat-label">Countries</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🕐</div>
-                        <div class="stat-value" id="lastUpdate">-</div>
+                    <div class="stat-card" role="article">
+                        <div class="stat-icon" aria-hidden="true">🕐</div>
+                        <div class="stat-value" id="lastUpdate" aria-live="polite">-</div>
                         <div class="stat-label">Last Updated</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="leaderboard-section">
+        <section class="leaderboard-section" aria-label="Leaderboards">
             <div class="container">
                 <div class="leaderboards">
-                    <div class="leaderboard">
-                        <h3>🏆 Top Contributors</h3>
-                        <div id="topUsers" class="leaderboard-list">
-                            <p class="loading">Loading...</p>
+                    <div class="leaderboard" role="region" aria-label="Top contributors">
+                        <h3><span aria-hidden="true">🏆</span> Top Contributors</h3>
+                        <div id="topUsers" class="leaderboard-list" role="list">
+                            <p class="loading" role="status" aria-live="polite">Loading...</p>
                         </div>
                     </div>
-                    <div class="leaderboard">
-                        <h3>🌍 Most Active Countries</h3>
-                        <div id="topCountries" class="leaderboard-list">
-                            <p class="loading">Loading...</p>
+                    <div class="leaderboard" role="region" aria-label="Most active countries">
+                        <h3><span aria-hidden="true">🌍</span> Most Active Countries</h3>
+                        <div id="topCountries" class="leaderboard-list" role="list">
+                            <p class="loading" role="status" aria-live="polite">Loading...</p>
                         </div>
                     </div>
                 </div>
@@ -111,14 +121,14 @@
         </section>
     </main>
 
-    <footer class="footer">
+    <footer class="footer" role="contentinfo">
         <div class="container">
             <p>
-                Data from <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>
-                | Processed by <a href="https://github.com/angoca/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>
+                Data from <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+                | Processed by <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
             </p>
             <p>
-                <a href="https://github.com/angoca/OSM-Notes-Viewer" target="_blank">View on GitHub</a>
+                <a href="https://github.com/OSMLatam/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
             </p>
         </div>
     </footer>
