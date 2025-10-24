@@ -6,6 +6,7 @@ import { SearchComponent } from './components/search.js';
 import { createStatSkeletons, createLeaderboardSkeletons } from './components/skeleton.js';
 import { renderPagination, getPaginationInfo } from './components/pagination.js';
 import { initDarkMode, toggleTheme } from './components/darkMode.js';
+import { analytics } from './utils/analytics.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
@@ -178,9 +179,12 @@ async function updateSearchData() {
 }
 
 function handleSearchSelect(item) {
+    // Track profile navigation
     if (currentSearchType === 'users') {
+        analytics.trackProfileView('user', item.user_id);
         window.location.href = `pages/user.html?id=${item.user_id}`;
     } else {
+        analytics.trackProfileView('country', item.country_id);
         window.location.href = `pages/country.html?id=${item.country_id}`;
     }
 }
@@ -227,6 +231,9 @@ async function searchCountries(query) {
 }
 
 function displaySearchResults(results, type) {
+    // Track search results
+    analytics.trackSearch(type, searchInput?.value.trim() || '', results.length);
+    
     if (results.length === 0) {
         showEmpty(searchResults, 'No results found');
         return;
@@ -337,7 +344,7 @@ async function loadTopUsers(page = 1) {
         // Add pagination if needed
         const paginationContainer = document.getElementById('topUsersPagination');
         if (paginationContainer) {
-            renderPagination(paginationContainer, page, pagination.totalPages, loadTopUsers);
+            renderPagination(paginationContainer, page, pagination.totalPages, loadTopUsers, 'users');
         }
     } catch (error) {
         handleApiError(error, container, () => {
@@ -379,7 +386,7 @@ async function loadTopCountries(page = 1) {
         // Add pagination if needed
         const paginationContainer = document.getElementById('topCountriesPagination');
         if (paginationContainer) {
-            renderPagination(paginationContainer, page, pagination.totalPages, loadTopCountries);
+            renderPagination(paginationContainer, page, pagination.totalPages, loadTopCountries, 'countries');
         }
     } catch (error) {
         handleApiError(error, container, () => {

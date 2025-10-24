@@ -1,4 +1,5 @@
 // Pagination component for handling large lists
+import { analytics } from '../utils/analytics.js';
 
 /**
  * Render pagination controls
@@ -6,8 +7,9 @@
  * @param {number} currentPage - Current page number (1-indexed)
  * @param {number} totalPages - Total number of pages
  * @param {Function} onPageChange - Callback when page changes
+ * @param {string} type - Type of pagination (e.g., 'users', 'countries')
  */
-export function renderPagination(container, currentPage, totalPages, onPageChange) {
+export function renderPagination(container, currentPage, totalPages, onPageChange, type = 'general') {
     if (totalPages <= 1) {
         container.innerHTML = '';
         return;
@@ -21,6 +23,8 @@ export function renderPagination(container, currentPage, totalPages, onPageChang
         btn.addEventListener('click', (e) => {
             const page = parseInt(e.target.dataset.page);
             if (page && page !== currentPage) {
+                // Track pagination
+                analytics.trackPagination(type, page);
                 onPageChange(page);
             }
         });
