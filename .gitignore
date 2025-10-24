@@ -29,6 +29,7 @@ build/
 
 # Test data (local development)
 data/
+src/data/
 *.json.bak
 
 # Environment files

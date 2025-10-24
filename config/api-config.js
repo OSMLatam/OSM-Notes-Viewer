@@ -4,9 +4,10 @@
 export const API_CONFIG = {
     // Base URL for JSON files
     // Examples:
-    // - Local development: '/data'
+    // - Local development: '/data' (points to ./data/)
     // - Production CDN: 'https://cdn.example.com/api'
     // - S3 bucket: 'https://your-bucket.s3.amazonaws.com/api'
+    // - Shared directory: '/var/www/osm-notes-data' (production)
     BASE_URL: '/data',
 
     // Cache settings
