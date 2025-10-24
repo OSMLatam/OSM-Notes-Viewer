@@ -66,6 +66,41 @@ function initializeElements() {
     searchInput = document.getElementById('searchInput');
     searchBtn = document.getElementById('searchBtn');
     searchResults = document.getElementById('searchResults');
+
+    // Initialize mobile menu
+    initMobileMenu();
+}
+
+function initMobileMenu() {
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    const nav = document.querySelector('.nav');
+
+    if (toggle && nav) {
+        toggle.addEventListener('click', () => {
+            const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+            toggle.setAttribute('aria-expanded', !isExpanded);
+            nav.classList.toggle('mobile-open');
+            toggle.classList.toggle('active');
+        });
+
+        // Close menu when clicking nav links
+        nav.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                toggle.setAttribute('aria-expanded', 'false');
+                nav.classList.remove('mobile-open');
+                toggle.classList.remove('active');
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!nav.contains(e.target) && !toggle.contains(e.target)) {
+                toggle.setAttribute('aria-expanded', 'false');
+                nav.classList.remove('mobile-open');
+                toggle.classList.remove('active');
+            }
+        });
+    }
 }
 
 function setupEventListeners() {
