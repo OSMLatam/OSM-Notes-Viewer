@@ -417,6 +417,16 @@ body {
     margin-bottom: 1rem;
 }
 
+.loading-spinner-small {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--bg-light);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
@@ -444,6 +454,171 @@ body {
 .empty-message {
     color: var(--text-light);
     font-size: 0.9rem;
+}
+
+/* === Skeleton Loaders === */
+@keyframes skeleton-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.skeleton-stat,
+.skeleton-leaderboard,
+.skeleton-search,
+.skeleton-chart,
+.skeleton-profile,
+.skeleton-icon,
+.skeleton-value,
+.skeleton-label,
+.skeleton-rank,
+.skeleton-name,
+.skeleton-text-full,
+.skeleton-text-small,
+.skeleton-bar,
+.skeleton-avatar,
+.skeleton-title,
+.skeleton-subtitle,
+.skeleton-text-group {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    border-radius: 4px;
+}
+
+/* Stat Card Skeletons */
+.skeleton-stat {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.skeleton-icon {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+}
+
+.skeleton-value {
+    width: 4rem;
+    height: 2rem;
+    margin: 0 auto 0.5rem;
+}
+
+.skeleton-label {
+    width: 6rem;
+    height: 1rem;
+    margin: 0 auto;
+}
+
+/* Leaderboard Skeletons */
+.skeleton-leaderboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+}
+
+.skeleton-rank {
+    width: 2rem;
+    height: 1.5rem;
+}
+
+.skeleton-name {
+    flex: 1;
+    height: 1.2rem;
+    margin: 0 1rem;
+}
+
+.skeleton-value {
+    width: 3rem;
+    height: 1.2rem;
+}
+
+/* Search Skeletons */
+.skeleton-search {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.skeleton-text-full {
+    width: 70%;
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-text-small {
+    width: 40%;
+    height: 0.8rem;
+}
+
+/* Chart Skeletons */
+.skeleton-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.skeleton-label {
+    width: 30%;
+    height: 1rem;
+}
+
+.skeleton-bar {
+    width: 100%;
+    height: 30px;
+    border-radius: 4px;
+}
+
+/* Profile Skeletons */
+.skeleton-profile {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.skeleton-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.skeleton-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+.skeleton-text-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.skeleton-title {
+    width: 60%;
+    height: 2rem;
+}
+
+.skeleton-subtitle {
+    width: 40%;
+    height: 1.2rem;
+}
+
+.skeleton-profile-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
 }
 
 /* === Search Autocomplete === */

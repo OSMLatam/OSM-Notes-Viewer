@@ -3,6 +3,7 @@ import { apiClient } from './api/apiClient.js';
 import { formatNumber, formatDate } from './utils/formatter.js';
 import { showError, showLoading, showEmpty, handleApiError } from './components/errorHandler.js';
 import { SearchComponent } from './components/search.js';
+import { createStatSkeletons, createLeaderboardSkeletons } from './components/skeleton.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
@@ -223,6 +224,11 @@ async function loadGlobalStats() {
     const lastUpdateEl = document.getElementById('lastUpdate');
     const totalNotesEl = document.getElementById('totalNotes');
 
+    // Show loading spinner
+    [totalUsersEl, totalCountriesEl, lastUpdateEl, totalNotesEl].forEach(el => {
+        el.innerHTML = '<div class="loading-spinner-small"></div>';
+    });
+
     try {
         console.log('📥 Fetching metadata...');
         const metadata = await apiClient.getMetadata();
@@ -246,6 +252,9 @@ async function loadGlobalStats() {
 
 async function loadTopUsers() {
     const container = document.getElementById('topUsers');
+
+    // Show skeleton loader
+    container.innerHTML = createLeaderboardSkeletons(10);
 
     try {
         console.log('📥 Fetching user index...');
@@ -275,6 +284,9 @@ async function loadTopUsers() {
 
 async function loadTopCountries() {
     const container = document.getElementById('topCountries');
+
+    // Show skeleton loader
+    container.innerHTML = createLeaderboardSkeletons(10);
 
     try {
         const countries = await apiClient.getCountryIndex();
