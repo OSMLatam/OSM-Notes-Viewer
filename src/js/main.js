@@ -4,6 +4,7 @@ import { formatNumber, formatDate } from './utils/formatter.js';
 import { showError, showLoading, showEmpty, handleApiError } from './components/errorHandler.js';
 import { SearchComponent } from './components/search.js';
 import { createStatSkeletons, createLeaderboardSkeletons } from './components/skeleton.js';
+import { renderPagination, getPaginationInfo } from './components/pagination.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
@@ -48,6 +49,11 @@ class UserSearchComponent extends SearchComponent {
 let searchInput, searchBtn, searchResults;
 let currentSearchType = 'users';
 let searchComponent = null;
+
+// Pagination state
+let currentUserPage = 1;
+let currentCountryPage = 1;
+const ITEMS_PER_PAGE = 10;
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', async () => {
@@ -285,11 +291,12 @@ async function loadGlobalStats() {
     }
 }
 
-async function loadTopUsers() {
+async function loadTopUsers(page = 1) {
     const container = document.getElementById('topUsers');
+    currentUserPage = page;
 
     // Show skeleton loader
-    container.innerHTML = createLeaderboardSkeletons(10);
+    container.innerHTML = createLeaderboardSkeletons(ITEMS_PER_PAGE);
 
     try {
         console.log('📥 Fetching user index...');
@@ -297,52 +304,75 @@ async function loadTopUsers() {
         console.log(`✅ Received ${users.length} users`);
 
         // Sort by notes opened
-        const topUsers = users
-            .sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0))
-            .slice(0, 10);
+        const sortedUsers = users.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
 
-        const html = topUsers.map((user, index) => `
-            <div class="leaderboard-item" onclick="window.location.href='pages/user.html?id=${user.user_id}'">
-                <span class="leaderboard-rank">#${index + 1}</span>
-                <span class="leaderboard-name">${user.username}</span>
-                <span class="leaderboard-value">${formatNumber(user.history_whole_open || 0)}</span>
-            </div>
-        `).join('');
+        // Calculate pagination
+        const pagination = getPaginationInfo(sortedUsers.length, ITEMS_PER_PAGE, page);
+        const topUsers = sortedUsers.slice(pagination.startIndex, pagination.endIndex);
+
+        const html = topUsers.map((user, index) => {
+            const globalRank = pagination.startIndex + index + 1;
+            return `
+                <div class="leaderboard-item" onclick="window.location.href='pages/user.html?id=${user.user_id}'">
+                    <span class="leaderboard-rank">#${globalRank}</span>
+                    <span class="leaderboard-name">${user.username}</span>
+                    <span class="leaderboard-value">${formatNumber(user.history_whole_open || 0)}</span>
+                </div>
+            `;
+        }).join('');
 
         container.innerHTML = html;
+
+        // Add pagination if needed
+        const paginationContainer = document.getElementById('topUsersPagination');
+        if (paginationContainer) {
+            renderPagination(paginationContainer, page, pagination.totalPages, loadTopUsers);
+        }
     } catch (error) {
         handleApiError(error, container, () => {
-            loadTopUsers();
+            loadTopUsers(page);
         });
     }
 }
 
-async function loadTopCountries() {
+async function loadTopCountries(page = 1) {
     const container = document.getElementById('topCountries');
+    currentCountryPage = page;
 
     // Show skeleton loader
-    container.innerHTML = createLeaderboardSkeletons(10);
+    container.innerHTML = createLeaderboardSkeletons(ITEMS_PER_PAGE);
 
     try {
         const countries = await apiClient.getCountryIndex();
 
         // Sort by notes opened
-        const topCountries = countries
-            .sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0))
-            .slice(0, 10);
+        const sortedCountries = countries.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
 
-        const html = topCountries.map((country, index) => `
-            <div class="leaderboard-item" onclick="window.location.href='pages/country.html?id=${country.country_id}'">
-                <span class="leaderboard-rank">#${index + 1}</span>
-                <span class="leaderboard-name">${country.country_name_en || country.country_name}</span>
-                <span class="leaderboard-value">${formatNumber(country.history_whole_open || 0)}</span>
-            </div>
-        `).join('');
+        // Calculate pagination
+        const pagination = getPaginationInfo(sortedCountries.length, ITEMS_PER_PAGE, page);
+        const topCountries = sortedCountries.slice(pagination.startIndex, pagination.endIndex);
+
+        const html = topCountries.map((country, index) => {
+            const globalRank = pagination.startIndex + index + 1;
+            return `
+                <div class="leaderboard-item" onclick="window.location.href='pages/country.html?id=${country.country_id}'">
+                    <span class="leaderboard-rank">#${globalRank}</span>
+                    <span class="leaderboard-name">${country.country_name_en || country.country_name}</span>
+                    <span class="leaderboard-value">${formatNumber(country.history_whole_open || 0)}</span>
+                </div>
+            `;
+        }).join('');
 
         container.innerHTML = html;
+
+        // Add pagination if needed
+        const paginationContainer = document.getElementById('topCountriesPagination');
+        if (paginationContainer) {
+            renderPagination(paginationContainer, page, pagination.totalPages, loadTopCountries);
+        }
     } catch (error) {
         handleApiError(error, container, () => {
-            loadTopCountries();
+            loadTopCountries(page);
         });
     }
 }
