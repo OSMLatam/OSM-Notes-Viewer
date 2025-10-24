@@ -26,6 +26,7 @@ yarn.lock
 dist/
 build/
 .cache/
+.vite/
 
 # Test data (local development)
 data/
