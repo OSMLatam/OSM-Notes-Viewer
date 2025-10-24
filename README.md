@@ -78,6 +78,31 @@ The backend generates the following JSON files:
 - `/api/indexes/countries.json` - List of all countries
 - `/api/metadata.json` - Export metadata (timestamp, counts)
 
+### JSON Schema Validation
+
+To ensure data compatibility between the Analytics (producer) and Viewer (consumer) repositories, JSON Schema definitions are provided in the `lib/OSM-Notes-Common/schemas/` directory via a git submodule.
+
+These schemas define the contract for data exchange:
+- **Type safety** - Enforce correct data types
+- **Required fields** - Ensure critical data is present
+- **Validation** - Catch errors before deployment
+- **Documentation** - Self-documenting data structure
+
+To validate data files:
+
+```bash
+# Install AJV CLI
+npm install -g ajv-cli
+
+# Validate schemas
+./scripts/validate-schemas.sh
+
+# Or validate individual files
+ajv -s lib/OSM-Notes-Common/schemas/user-profile.schema.json -d src/data/users/*.json
+```
+
+For more details, see [docs/DATA_CONTRACT.md](docs/DATA_CONTRACT.md) and [lib/OSM-Notes-Common/schemas/README.md](lib/OSM-Notes-Common/schemas/README.md).
+
 ## Quick Start
 
 ### For Development

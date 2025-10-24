@@ -1,0 +1,3 @@
+[submodule "lib/OSM-Notes-Common"]
+	path = lib/OSM-Notes-Common
+	url = git@github.com:OSMLatam/OSM-Notes-Common.git
