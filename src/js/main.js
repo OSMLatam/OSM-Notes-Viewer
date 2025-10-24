@@ -1,6 +1,7 @@
 // Main application script
 import { apiClient } from './api/apiClient.js';
 import { formatNumber, formatDate } from './utils/formatter.js';
+import { showError, showLoading, showEmpty, handleApiError } from './components/errorHandler.js';
 
 // DOM Elements
 let searchInput, searchBtn, searchResults;
@@ -59,7 +60,7 @@ async function performSearch() {
     const query = searchInput?.value.trim();
     if (!query) return;
 
-    searchResults.innerHTML = '<p class="loading">Searching...</p>';
+    showLoading(searchResults, 'Searching...');
 
     try {
         if (currentSearchType === 'users') {
@@ -68,7 +69,7 @@ async function performSearch() {
             await searchCountries(query);
         }
     } catch (error) {
-        searchResults.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+        handleApiError(error, searchResults);
     }
 }
 
@@ -98,7 +99,7 @@ async function searchCountries(query) {
 
 function displaySearchResults(results, type) {
     if (results.length === 0) {
-        searchResults.innerHTML = '<p>No results found</p>';
+        showEmpty(searchResults, 'No results found');
         return;
     }
 
@@ -132,21 +133,36 @@ async function loadInitialData() {
         ]);
     } catch (error) {
         console.error('Error loading initial data:', error);
+        // Show a general error message
+        const container = document.querySelector('.stats-section');
+        if (container) {
+            handleApiError(error, container);
+        }
     }
 }
 
 async function loadGlobalStats() {
+    const totalUsersEl = document.getElementById('totalUsers');
+    const totalCountriesEl = document.getElementById('totalCountries');
+    const lastUpdateEl = document.getElementById('lastUpdate');
+    const totalNotesEl = document.getElementById('totalNotes');
+
     try {
         const metadata = await apiClient.getMetadata();
 
-        document.getElementById('totalUsers').textContent = formatNumber(metadata.total_users);
-        document.getElementById('totalCountries').textContent = formatNumber(metadata.total_countries);
-        document.getElementById('lastUpdate').textContent = formatDate(metadata.export_date);
+        totalUsersEl.textContent = formatNumber(metadata.total_users);
+        totalCountriesEl.textContent = formatNumber(metadata.total_countries);
+        lastUpdateEl.textContent = formatDate(metadata.export_date);
 
         // Total notes would come from summing user data if available
-        document.getElementById('totalNotes').textContent = '~';
+        totalNotesEl.textContent = '~';
     } catch (error) {
         console.error('Error loading global stats:', error);
+        // Show error on individual stat cards
+        totalUsersEl.textContent = '?';
+        totalCountriesEl.textContent = '?';
+        lastUpdateEl.textContent = '?';
+        totalNotesEl.textContent = '?';
     }
 }
 
@@ -171,7 +187,9 @@ async function loadTopUsers() {
 
         container.innerHTML = html;
     } catch (error) {
-        container.innerHTML = '<p class="error">Failed to load top users</p>';
+        handleApiError(error, container, () => {
+            loadTopUsers();
+        });
     }
 }
 
@@ -196,6 +214,8 @@ async function loadTopCountries() {
 
         container.innerHTML = html;
     } catch (error) {
-        container.innerHTML = '<p class="error">Failed to load top countries</p>';
+        handleApiError(error, container, () => {
+            loadTopCountries();
+        });
     }
 }
