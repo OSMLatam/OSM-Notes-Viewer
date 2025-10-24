@@ -16,6 +16,20 @@
     --transition: all 0.3s ease;
 }
 
+/* Dark Mode Variables */
+[data-theme="dark"] {
+    --primary-color: #7ebc6f;
+    --primary-dark: #68a055;
+    --secondary-color: #4a90e2;
+    --text-color: #e0e0e0;
+    --text-light: #b0b0b0;
+    --bg-color: #1a1a1a;
+    --bg-light: #2a2a2a;
+    --border-color: #444;
+    --shadow: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-hover: 0 4px 16px rgba(0,0,0,0.4);
+}
+
 /* === Reset & Base === */
 * {
     margin: 0;
@@ -56,6 +70,7 @@ body {
     line-height: 1.6;
     color: var(--text-color);
     background-color: var(--bg-light);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -160,6 +175,62 @@ body {
     outline: 2px solid var(--primary-color);
     outline-offset: 2px;
     border-radius: 4px;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition);
+    min-height: 44px;
+    white-space: nowrap;
+}
+
+.theme-toggle:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.theme-toggle:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .leaderboard,
+[data-theme="dark"] .search-box {
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .leaderboard-item:hover {
+    background: #333;
+}
+
+[data-theme="dark"] .pagination-btn {
+    background: var(--bg-light);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .pagination-btn:hover:not(.active) {
+    background: #333;
+}
+
+[data-theme="dark"] .footer {
+    background: #0a0a0a;
 }
 
 /* === Hero Section === */

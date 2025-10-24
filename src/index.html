@@ -21,11 +21,16 @@
                 <span class="logo-icon" aria-hidden="true">🗺️</span>
                 OSM Notes Viewer
             </h1>
-            <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
+                    🌙 Dark
+                </button>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
             <nav class="nav" role="navigation" aria-label="Main navigation">
                 <a href="index.html" class="nav-link active" aria-current="page">Home</a>
                 <a href="pages/explore.html" class="nav-link">Explore</a>

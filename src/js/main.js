@@ -5,6 +5,7 @@ import { showError, showLoading, showEmpty, handleApiError } from './components/
 import { SearchComponent } from './components/search.js';
 import { createStatSkeletons, createLeaderboardSkeletons } from './components/skeleton.js';
 import { renderPagination, getPaginationInfo } from './components/pagination.js';
+import { initDarkMode, toggleTheme } from './components/darkMode.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
@@ -58,6 +59,10 @@ const ITEMS_PER_PAGE = 10;
 // Initialize application
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 App initializing...');
+
+    // Initialize dark mode first
+    initDarkMode();
+
     initializeElements();
     setupEventListeners();
     console.log('📊 Loading initial data...');
@@ -124,6 +129,12 @@ function setupEventListeners() {
 
     // Search button
     searchBtn?.addEventListener('click', performSearch);
+
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
 }
 
 function switchTab(tab) {
