@@ -1,0 +1,310 @@
+# OSM Notes Viewer - Improvement Plan
+
+**Created:** January 2, 2025  
+**Status:** In Progress
+
+---
+
+## Overview
+
+This document outlines the prioritized plan to address findings from the repository structure validation and improve the overall quality of the OSM Notes Viewer project.
+
+---
+
+## Priority Levels
+
+- 🔴 **P0 - Critical**: Blocks production readiness or causes major issues
+- 🟠 **P1 - High**: Important for code quality and maintainability
+- 🟡 **P2 - Medium**: Improves user experience and developer experience
+- 🟢 **P3 - Low**: Nice to have, can be deferred
+
+---
+
+## P0 - Critical Issues
+
+### Task 1: Consolidate Configuration Files ✅ COMPLETED
+**Issue:** Duplicate configuration in `config/` and `src/config/`  
+**Impact:** Confusion about which file is used  
+**Effort:** Small (1-2 hours)
+
+**Steps:**
+1. ✅ Determined which file is actually imported (`src/config/api-config.js`)
+2. ✅ Updated import path in `src/js/api/apiClient.js` to use `config/api-config.js`
+3. ✅ Removed unused duplicate (`src/config/api-config.js`)
+4. ✅ Removed empty `src/config/` directory
+5. Document matches codebase (all references point to `config/api-config.js`)
+
+**Acceptance Criteria:**
+- ✅ Only one `api-config.js` file exists (`config/api-config.js`)
+- ✅ All imports reference the correct file
+- ✅ No broken references
+- ✅ No linting errors
+
+---
+
+### Task 2: Fix Data Directory Structure
+**Issue:** `src/data/` contains 200+ JSON files tracked in git  
+**Impact:** Large repository size, hard to update data  
+**Effort:** Medium (2-4 hours)
+
+**Steps:**
+1. Add `src/data/` to `.gitignore`
+2. Move sample data to `src/data/examples/` if needed
+3. Update documentation about data flow
+4. Set up symbolic link or deployment script for production
+5. Verify shared directory setup works correctly
+
+**Acceptance Criteria:**
+- `src/data/` not tracked in git
+- Sample/example data still available for development
+- Production deployment uses shared directory
+- Documentation updated
+
+---
+
+### Task 3: Implement User-Visible Error Handling
+**Issue:** Errors only logged to console, no user feedback  
+**Impact:** Poor user experience when things fail  
+**Effort:** Medium (3-5 hours)
+
+**Steps:**
+1. Create error display component
+2. Add error states to all API calls
+3. Implement retry mechanism for failed requests
+4. Add fallback UI states (empty, error, loading)
+5. Style error messages consistently
+
+**Acceptance Criteria:**
+- All errors display user-friendly messages
+- Retry button available for failed requests
+- Graceful degradation when data unavailable
+- No silent failures
+
+---
+
+## P1 - High Priority
+
+### Task 4: Add Automated Testing
+**Issue:** No unit or integration tests  
+**Impact:** High risk of regressions  
+**Effort:** Large (5-8 hours)
+
+**Steps:**
+1. Set up testing framework (Vitest recommended for Vite compatibility)
+2. Write unit tests for utility functions (`formatter.js`, `cache.js`, `validation.js`)
+3. Write unit tests for API client
+4. Add integration tests for search functionality
+5. Set up GitHub Actions for automated testing
+6. Add test coverage reporting
+
+**Acceptance Criteria:**
+- Test suite runs successfully
+- Coverage > 70% for utility functions
+- Tests run in CI/CD pipeline
+- All tests pass
+
+---
+
+### Task 5: Implement Missing Core Features
+**Issue:** High-priority features from TODO.md not implemented  
+**Impact:** Incomplete user experience  
+**Effort:** Large (8-12 hours)
+
+**Core Features:**
+1. **GitHub-style activity heatmap**
+   - Use `activityHeatmap.js` component
+   - Display daily contribution pattern
+   - Add tooltips with exact counts
+
+2. **Chart.js integration**
+   - Install Chart.js library
+   - Create statistics charts
+   - Show trends over time
+
+3. **Search autocomplete**
+   - Type-ahead suggestions
+   - Keyboard navigation
+   - Highlight matching text
+
+**Acceptance Criteria:**
+- Heatmap displays correctly
+- Charts render statistics accurately
+- Autocomplete works smoothly
+- All features documented
+
+---
+
+### Task 6: Improve Accessibility (WCAG AA)
+**Issue:** Missing ARIA labels, poor keyboard navigation  
+**Impact:** Unusable for users with disabilities  
+**Effort:** Medium (4-6 hours)
+
+**Steps:**
+1. Add ARIA labels to all interactive elements
+2. Implement keyboard navigation for search
+3. Add skip links
+4. Ensure proper tab order
+5. Test with screen reader
+6. Add role attributes where needed
+
+**Acceptance Criteria:**
+- WCAG AA compliance
+- All features accessible via keyboard
+- Screen reader tested and working
+- Accessibility audit passes
+
+---
+
+## P2 - Medium Priority
+
+### Task 7: Add Build Process
+**Issue:** No minification or optimization  
+**Impact:** Larger bundle sizes, slower load times  
+**Effort:** Medium (3-5 hours)
+
+**Steps:**
+1. Add Vite or similar build tool
+2. Configure CSS minification
+3. Configure JavaScript minification
+4. Add source maps for production
+5. Optimize images (add to build process)
+6. Update deployment configs
+
+**Acceptance Criteria:**
+- Production build smaller than current
+- Source maps available for debugging
+- Images optimized
+- Build documented
+
+---
+
+### Task 8: Implement Pagination
+**Issue:** Large index files loaded entirely  
+**Impact:** Slow performance with 100k+ users  
+**Effort:** Medium (4-6 hours)
+
+**Steps:**
+1. Add pagination to search results
+2. Implement pagination for leaderboards
+3. Add virtual scrolling for large lists
+4. Optimize data fetching strategy
+5. Add "Load more" button
+
+**Acceptance Criteria:**
+- Pagination works smoothly
+- No performance degradation with large datasets
+- Smooth scrolling experience
+- Loading states clear
+
+---
+
+### Task 9: Enhance Mobile Experience
+**Issue:** Mobile responsiveness not fully tested  
+**Impact:** Poor experience on mobile devices  
+**Effort:** Medium (3-4 hours)
+
+**Steps:**
+1. Test on actual mobile devices
+2. Add mobile menu (hamburger)
+3. Optimize touch targets
+4. Fix mobile layout issues
+5. Test on iOS Safari, Chrome Mobile
+6. Add mobile-specific optimizations
+
+**Acceptance Criteria:**
+- Works perfectly on mobile
+- Mobile menu functional
+- Touch targets appropriately sized
+- Mobile-first approach verified
+
+---
+
+### Task 10: Add Loading Skeletons
+**Issue:** Plain "Loading..." text  
+**Impact:** Perceived performance could be better  
+**Effort:** Small (2-3 hours)
+
+**Steps:**
+1. Create skeleton component styles
+2. Replace loading text with skeletons
+3. Animate skeleton loading
+4. Match skeleton to final content layout
+
+**Acceptance Criteria:**
+- Skeleton screens implemented
+- Smooth loading animations
+- Better perceived performance
+- Consistent across all pages
+
+---
+
+## P3 - Low Priority (Nice to Have)
+
+### Task 11: Add Dark Mode
+**Effort:** Medium (3-4 hours)
+
+### Task 12: Implement Offline Mode
+**Effort:** Large (6-8 hours)
+
+### Task 13: Progressive Web App (PWA)
+**Effort:** Medium (4-5 hours)
+
+### Task 14: Internationalization (i18n)
+**Effort:** Large (8-10 hours)
+
+### Task 15: Add Monitoring/Analytics
+**Effort:** Small (2-3 hours)
+
+---
+
+## Implementation Strategy
+
+### Phase 1: Foundation (Week 1)
+- Complete all P0 tasks
+- This ensures a solid foundation before adding features
+
+### Phase 2: Quality (Week 2)
+- Complete P1 tasks 4 and 6 (Testing and Accessibility)
+- Ensures code quality and compliance
+
+### Phase 3: Features (Week 3-4)
+- Complete P1 task 5 (Core Features)
+- Complete P2 tasks 7-10 (Build, Pagination, Mobile, Skeletons)
+
+### Phase 4: Polish (Week 5+)
+- Complete P3 tasks as time permits
+- Add final touches and optimizations
+
+---
+
+## Tracking Progress
+
+Use GitHub Projects or Issues to track:
+- [ ] Task status (Not Started, In Progress, Done)
+- [ ] Time spent
+- [ ] Blockers
+- [ ] Dependencies
+
+---
+
+## Notes
+
+- Prioritize P0 tasks first - they block production readiness
+- Testing (Task 4) should be done incrementally alongside development
+- Core features (Task 5) can be split into separate PRs per feature
+- Some tasks may be done in parallel if no dependencies
+
+---
+
+## Success Metrics
+
+- **Code Quality:** Test coverage > 70%
+- **Performance:** Load time < 2s on 3G
+- **Accessibility:** WCAG AA compliant
+- **User Experience:** All high-priority features working
+- **Maintainability:** Clear structure, documented
+
+---
+
+Last Updated: January 2, 2025
+
