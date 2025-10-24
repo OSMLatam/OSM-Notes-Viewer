@@ -52,74 +52,110 @@
         </div>
     </footer>
 
-    <script type="module">
-        import { apiClient } from '../js/api/apiClient.js';
-        import { formatNumber } from '../js/utils/formatter.js';
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadAllData();
-        });
-
-        async function loadAllData() {
-            await Promise.all([
-                loadAllUsers(),
-                loadAllCountries()
-            ]);
+    <style>
+        .filters-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
 
-        async function loadAllUsers() {
-            const container = document.getElementById('allUsers');
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-            try {
-                const users = await apiClient.getUserIndex();
-                console.log('Loaded users:', users.length);
+        .filter-group label {
+            font-weight: 500;
+            color: var(--text-color);
+        }
 
-                // Limit to first 50 users for performance
-                const limitedUsers = users.slice(0, 50);
+        .filter-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-                const html = `
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
-                        ${limitedUsers.map(user => `
-                            <div class="leaderboard-item" onclick="window.location.href='user.html?id=${user.user_id}'">
-                                <span class="leaderboard-name">${user.username}</span>
-                                <span class="leaderboard-value">${formatNumber(user.history_whole_open || 0)}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
+        .filter-select:hover {
+            border-color: var(--primary-color);
+        }
 
-                container.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading users:', error);
-                container.innerHTML = '<p class="error">Failed to load users: ' + error.message + '</p>';
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(126, 188, 111, 0.1);
+        }
+
+        .filter-info {
+            margin-left: auto;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .explore-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .explore-item:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .explore-name {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .explore-value {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-info {
+                margin-left: 0;
+                text-align: center;
+            }
+
+            .explore-grid {
+                grid-template-columns: 1fr;
             }
         }
+    </style>
 
-        async function loadAllCountries() {
-            const container = document.getElementById('allCountries');
-
-            try {
-                const countries = await apiClient.getCountryIndex();
-                console.log('Loaded countries:', countries.length);
-
-                const html = `
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
-                        ${countries.map(country => `
-                            <div class="leaderboard-item" onclick="window.location.href='country.html?id=${country.country_id}'">
-                                <span class="leaderboard-name">${country.country_name_en || country.country_name}</span>
-                                <span class="leaderboard-value">${formatNumber(country.history_whole_open || 0)}</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-
-                container.innerHTML = html;
-            } catch (error) {
-                console.error('Error loading countries:', error);
-                container.innerHTML = '<p class="error">Failed to load countries: ' + error.message + '</p>';
-            }
-        }
-    </script>
+    <script type="module" src="../js/pages/explore.js"></script>
     <script type="module" src="../js/analytics-init.js"></script>
 </body>
 </html>
