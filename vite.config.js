@@ -8,6 +8,9 @@ export default defineConfig({
   // Input directory
   root: 'src',
 
+  // Public directory for static assets
+  publicDir: '../public',
+
   // Build configuration
   build: {
     // Output directory

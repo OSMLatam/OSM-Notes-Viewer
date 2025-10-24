@@ -293,8 +293,37 @@ This document outlines the prioritized plan to address findings from the reposit
 ### Task 12: Implement Offline Mode
 **Effort:** Large (6-8 hours)
 
-### Task 13: Progressive Web App (PWA)
+### Task 13: Progressive Web App (PWA) ✅ COMPLETED
 **Effort:** Medium (4-5 hours)
+
+**Steps:**
+1. ✅ Created `manifest.json` with app metadata and icons configuration
+2. ✅ Implemented Service Worker (`sw.js`) for offline caching
+3. ✅ Created Service Worker registration script
+4. ✅ Added PWA meta tags (theme-color, apple-touch-icon)
+5. ✅ Configured Vite to copy public directory
+6. ✅ Documented PWA setup in `docs/PWA.md`
+7. ✅ Enhanced offline mode to cache index files (users & countries lists)
+
+**Features:**
+- ✅ Installable as standalone app
+- ✅ Offline support with caching
+- ✅ Fast loading with service worker
+- ✅ App-like experience (standalone display)
+- ✅ Offline data access (index files cached for search)
+
+**Offline Capabilities:**
+- ✅ **Interface**: Fully functional offline
+- ✅ **Search**: Users & countries indexes available offline (~184 KB)
+- ✅ **Profiles**: Cached after first visit
+- ✅ **Limitation**: ~6.9 MB of profile data NOT cached (network required)
+
+**Acceptance Criteria:**
+- ✅ App can be installed on mobile and desktop
+- ✅ Works offline with cached assets and indexes
+- ✅ Service Worker properly registered
+- ✅ Manifest configured with app details
+- ✅ Documentation complete
 
 ### Task 14: Internationalization (i18n)
 **Effort:** Large (8-10 hours)
