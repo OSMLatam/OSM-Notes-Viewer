@@ -1,6 +1,7 @@
 // Country Profile Page
 import { apiClient } from '../api/apiClient.js';
 import { formatNumber, formatDate } from '../utils/formatter.js';
+import { shareComponent } from '../components/share.js';
 
 // Get country ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -60,10 +61,43 @@ async function loadCountryProfile(countryId) {
         // First actions
         renderFirstActions(country);
 
+        // Setup share button
+        setupShareButton(country);
+
     } catch (error) {
         loading.style.display = 'none';
         throw error;
     }
+}
+
+function setupShareButton(country) {
+    const shareBtn = document.getElementById('shareBtn');
+    const shareMenu = document.getElementById('shareMenu');
+    
+    if (!shareBtn || !shareMenu) return;
+
+    shareBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isVisible = shareMenu.style.display !== 'none';
+        
+        if (isVisible) {
+            shareMenu.style.display = 'none';
+        } else {
+            shareMenu.style.display = 'block';
+            shareComponent.renderShareMenu(shareMenu, {
+                title: `${country.country_name_en || country.country_name} - OSM Notes Profile`,
+                text: `Check out OpenStreetMap notes activity in ${country.country_name_en || country.country_name}`,
+                url: window.location.href
+            });
+        }
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!shareBtn.contains(e.target) && !shareMenu.contains(e.target)) {
+            shareMenu.style.display = 'none';
+        }
+    });
 }
 
 function renderActivityHeatmap(activityString) {

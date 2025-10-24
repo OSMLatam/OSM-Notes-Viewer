@@ -927,6 +927,117 @@ body {
     }
 }
 
+/* === Share Component === */
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+.share-btn:hover {
+    background: var(--bg-light);
+    border-color: var(--primary-color);
+}
+
+.share-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(126, 188, 111, 0.2);
+}
+
+.share-icon {
+    font-size: 1.1rem;
+}
+
+.share-menu {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-hover);
+    min-width: 200px;
+    max-width: 300px;
+    position: relative;
+    z-index: 1000;
+}
+
+.share-menu-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.share-menu-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+.share-menu-options {
+    padding: 0.5rem;
+}
+
+.share-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+.share-option:hover {
+    background: var(--bg-light);
+}
+
+.share-option-icon {
+    font-size: 1.2rem;
+    width: 1.5rem;
+    text-align: center;
+}
+
+.share-option-text {
+    flex: 1;
+}
+
+.share-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 0.5rem 0;
+}
+
+.share-toast {
+    animation: slideInUp 0.3s ease;
+}
+
+.share-toast-error {
+    background-color: #f44336 !important;
+}
+
+@media (max-width: 768px) {
+    .share-btn {
+        padding: 0.75rem 1rem;
+        min-height: 44px;
+    }
+    
+    .share-menu {
+        min-width: 100%;
+        max-width: 100%;
+    }
+}
+
 
 
 

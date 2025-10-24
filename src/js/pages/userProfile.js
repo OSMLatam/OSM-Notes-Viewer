@@ -3,6 +3,7 @@ import { apiClient } from '../api/apiClient.js';
 import { formatNumber, formatDate } from '../utils/formatter.js';
 import { renderActivityHeatmap } from '../components/activityHeatmap.js';
 import { createBarChart } from '../components/chart.js';
+import { shareComponent } from '../components/share.js';
 
 // Get user ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -71,10 +72,43 @@ async function loadUserProfile(userId) {
         // First actions
         renderFirstActions(user);
 
+        // Setup share button
+        setupShareButton(user);
+
     } catch (error) {
         loading.style.display = 'none';
         throw error;
     }
+}
+
+function setupShareButton(user) {
+    const shareBtn = document.getElementById('shareBtn');
+    const shareMenu = document.getElementById('shareMenu');
+    
+    if (!shareBtn || !shareMenu) return;
+
+    shareBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isVisible = shareMenu.style.display !== 'none';
+        
+        if (isVisible) {
+            shareMenu.style.display = 'none';
+        } else {
+            shareMenu.style.display = 'block';
+            shareComponent.renderShareMenu(shareMenu, {
+                title: `${user.username} - OSM Notes Profile`,
+                text: `Check out ${user.username}'s contributions to OpenStreetMap notes`,
+                url: window.location.href
+            });
+        }
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!shareBtn.contains(e.target) && !shareMenu.contains(e.target)) {
+            shareMenu.style.display = 'none';
+        }
+    });
 }
 
 function renderUserActivityHeatmap(activityString) {

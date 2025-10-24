@@ -32,11 +32,22 @@
 
             <div id="profileContent" style="display: none;">
                 <section class="profile-header">
-                    <h2 class="profile-title">
-                        <span class="profile-icon">🌍</span>
-                        <span id="countryName">-</span>
-                    </h2>
-                    <p class="profile-subtitle">Country ID: <span id="countryId">-</span></p>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                        <div>
+                            <h2 class="profile-title">
+                                <span class="profile-icon">🌍</span>
+                                <span id="countryName">-</span>
+                            </h2>
+                            <p class="profile-subtitle">Country ID: <span id="countryId">-</span></p>
+                        </div>
+                        <div style="position: relative;">
+                            <button class="share-btn" id="shareBtn" aria-label="Share profile">
+                                <span class="share-icon">🔗</span>
+                                <span class="share-text">Share</span>
+                            </button>
+                            <div id="shareMenu" style="position: absolute; top: 100%; right: 0; margin-top: 0.5rem; display: none;"></div>
+                        </div>
+                    </div>
                 </section>
 
                 <section class="stats-grid">
