@@ -22,7 +22,7 @@
 ## Low Priority
 
 - [x] Add animations and transitions ✅
-- [ ] Implement advanced search (multiple filters)
+- [ ] Implement advanced search (multiple filters) - Skipped (not needed)
 - [ ] Add export functionality (CSV, PDF)
 - [ ] Create embeddable widgets
 - [x] Add internationalization (i18n) ✅

@@ -152,6 +152,14 @@ export default {
     'a11y.searchInput': 'Search for users or countries',
     'a11y.searchType': 'Search type selection',
 
+    // Footer
+    'footer.dataSource': 'Data from',
+    'footer.processedBy': 'Processed by',
+    'footer.viewOnGitHub': 'View on GitHub',
+    'footer.version': 'Version',
+    'footer.madeWith': 'Made with',
+    'footer.forOSM': 'for OSM',
+
     // Keyboard Shortcuts
     'shortcuts.title': 'Keyboard Shortcuts',
     'shortcuts.navigation': 'Navigation',
