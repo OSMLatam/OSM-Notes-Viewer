@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Interactive viewer for OpenStreetMap Notes analytics - Explore user statistics, country data, and hashtag trends">
+    <meta name="description" content="Interactive viewer for OpenStreetMap Notes analytics - Explore user statistics, country data, and hashtag trends" data-i18n="meta.description">
     <meta name="keywords" content="OpenStreetMap, OSM, notes, analytics, statistics, visualization">
     <meta name="author" content="Andres Gomez (AngocA)">
-    <title>OSM Notes Viewer - Analytics & Statistics</title>
+    <title data-i18n="title.home">OSM Notes Viewer - Analytics & Statistics</title>
     <link rel="icon" type="image/svg+xml" href="../public/favicon.svg">
     <link rel="apple-touch-icon" href="../public/favicon.svg">
     <link rel="stylesheet" href="css/main.css">
@@ -15,7 +15,7 @@
 </head>
 <body>
     <!-- Skip link for screen readers -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#main-content" class="skip-link" data-i18n="a11y.skipToContent">Skip to main content</a>
 
     <header class="header" role="banner">
         <div class="container">
@@ -24,19 +24,20 @@
                 OSM Notes Viewer
             </h1>
             <div style="display: flex; gap: 1rem; align-items: center;">
-                <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle">
-                    🌙 Dark
+                <div id="languageSelector"></div>
+                <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle" data-i18n-aria-label="theme.toggle">
+                    🌙 <span data-i18n="theme.dark">Dark</span>
                 </button>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" data-i18n-aria-label="a11y.toggleMenu">
                     <span class="hamburger-line"></span>
                     <span class="hamburger-line"></span>
                     <span class="hamburger-line"></span>
                 </button>
             </div>
-            <nav class="nav" role="navigation" aria-label="Main navigation">
-                <a href="index.html" class="nav-link active" aria-current="page">Home</a>
-                <a href="pages/explore.html" class="nav-link">Explore</a>
-                <a href="pages/about.html" class="nav-link">About</a>
+            <nav class="nav" role="navigation" aria-label="Main navigation" data-i18n-aria-label="a11y.mainNavigation">
+                <a href="index.html" class="nav-link active" aria-current="page" data-i18n="nav.home">Home</a>
+                <a href="pages/explore.html" class="nav-link" data-i18n="nav.explore">Explore</a>
+                <a href="pages/about.html" class="nav-link" data-i18n="nav.about">About</a>
             </nav>
         </div>
     </header>
@@ -44,8 +45,8 @@
     <main class="main" id="main-content" role="main">
         <section class="hero">
             <div class="container">
-                <h2 class="hero-title">Explore OpenStreetMap Notes Analytics</h2>
-                <p class="hero-subtitle">
+                <h2 class="hero-title" data-i18n="home.hero.title">Explore OpenStreetMap Notes Analytics</h2>
+                <p class="hero-subtitle" data-i18n="home.hero.subtitle">
                     Discover insights about OSM notes activity across users and countries
                 </p>
             </div>
@@ -54,13 +55,13 @@
         <section class="search-section" aria-label="Search section">
             <div class="container">
                 <div class="search-box">
-                    <h3>Search</h3>
-                    <div class="search-tabs" role="tablist" aria-label="Search type selection">
+                    <h3 data-i18n="home.search.title">Search</h3>
+                    <div class="search-tabs" role="tablist" aria-label="Search type selection" data-i18n-aria-label="a11y.searchType">
                         <button class="tab-btn active" data-tab="users" role="tab" aria-selected="true" aria-controls="searchResults">
-                            <span aria-hidden="true">👤</span> Users
+                            <span aria-hidden="true">👤</span> <span data-i18n="home.search.users">Users</span>
                         </button>
                         <button class="tab-btn" data-tab="countries" role="tab" aria-selected="false" aria-controls="searchResults">
-                            <span aria-hidden="true">🌍</span> Countries
+                            <span aria-hidden="true">🌍</span> <span data-i18n="home.search.countries">Countries</span>
                         </button>
                     </div>
                     <div class="search-input-wrapper">
@@ -75,39 +76,40 @@
                             aria-label="Search for users or countries"
                             aria-expanded="false"
                             aria-controls="searchResults"
+                            data-i18n-aria-label="a11y.searchInput"
                         >
-                        <button id="searchBtn" class="search-btn" aria-label="Perform search">
+                        <button id="searchBtn" class="search-btn" aria-label="Perform search" data-i18n="home.search.button">
                             Search
                         </button>
                     </div>
-                    <div id="searchResults" class="search-results" role="listbox" aria-label="Search results"></div>
+                    <div id="searchResults" class="search-results" role="listbox" aria-label="Search results" data-i18n-aria-label="a11y.searchResults"></div>
                 </div>
             </div>
         </section>
 
         <section class="stats-section" aria-label="Global statistics">
             <div class="container">
-                <h3>Global Statistics</h3>
-                <div id="globalStats" class="stats-grid" role="region" aria-label="Statistics">
+                <h3 data-i18n="home.stats.title">Global Statistics</h3>
+                <div id="globalStats" class="stats-grid" role="region" aria-label="Statistics" data-i18n-aria-label="a11y.statistics">
                     <div class="stat-card" role="article">
                         <div class="stat-icon" aria-hidden="true">📝</div>
                         <div class="stat-value" id="totalNotes" aria-live="polite">-</div>
-                        <div class="stat-label">Total Notes</div>
+                        <div class="stat-label" data-i18n="home.stats.totalNotes">Total Notes</div>
                     </div>
                     <div class="stat-card" role="article">
                         <div class="stat-icon" aria-hidden="true">👥</div>
                         <div class="stat-value" id="totalUsers" aria-live="polite">-</div>
-                        <div class="stat-label">Active Users</div>
+                        <div class="stat-label" data-i18n="home.stats.activeUsers">Active Users</div>
                     </div>
                     <div class="stat-card" role="article">
                         <div class="stat-icon" aria-hidden="true">🌍</div>
                         <div class="stat-value" id="totalCountries" aria-live="polite">-</div>
-                        <div class="stat-label">Countries</div>
+                        <div class="stat-label" data-i18n="home.stats.countries">Countries</div>
                     </div>
                     <div class="stat-card" role="article">
                         <div class="stat-icon" aria-hidden="true">🕐</div>
                         <div class="stat-value" id="lastUpdate" aria-live="polite">-</div>
-                        <div class="stat-label">Last Updated</div>
+                        <div class="stat-label" data-i18n="home.stats.lastUpdate">Last Updated</div>
                     </div>
                 </div>
             </div>
@@ -116,19 +118,19 @@
         <section class="leaderboard-section" aria-label="Leaderboards">
             <div class="container">
                 <div class="leaderboards">
-                    <div class="leaderboard" role="region" aria-label="Top contributors">
-                        <h3><span aria-hidden="true">🏆</span> Top Contributors</h3>
+                    <div class="leaderboard" role="region" aria-label="Top contributors" data-i18n-aria-label="a11y.topContributors">
+                        <h3><span aria-hidden="true">🏆</span> <span data-i18n="home.leaderboard.topContributors">Top Contributors</span></h3>
                         <div id="topUsers" class="leaderboard-list" role="list" aria-live="polite">
                             <!-- Skeleton loaders will be inserted here -->
                         </div>
-                        <div id="topUsersPagination" role="navigation" aria-label="Users pagination"></div>
+                        <div id="topUsersPagination" role="navigation" aria-label="Users pagination" data-i18n-aria-label="a11y.pagination"></div>
                     </div>
-                    <div class="leaderboard" role="region" aria-label="Most active countries">
-                        <h3><span aria-hidden="true">🌍</span> Most Active Countries</h3>
+                    <div class="leaderboard" role="region" aria-label="Most active countries" data-i18n-aria-label="a11y.mostActiveCountries">
+                        <h3><span aria-hidden="true">🌍</span> <span data-i18n="home.leaderboard.mostActiveCountries">Most Active Countries</span></h3>
                         <div id="topCountries" class="leaderboard-list" role="list" aria-live="polite">
                             <!-- Skeleton loaders will be inserted here -->
                         </div>
-                        <div id="topCountriesPagination" role="navigation" aria-label="Countries pagination"></div>
+                        <div id="topCountriesPagination" role="navigation" aria-label="Countries pagination" data-i18n-aria-label="a11y.pagination"></div>
                     </div>
                 </div>
             </div>
@@ -138,11 +140,11 @@
     <footer class="footer" role="contentinfo">
         <div class="container">
             <p>
-                Data from <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
-                | Processed by <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
+                <span data-i18n="footer.dataSource">Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+                | <span data-i18n="footer.processedBy">Processed by</span> <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
             </p>
             <p>
-                <a href="https://github.com/OSMLatam/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                <a href="https://github.com/OSMLatam/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer" data-i18n="footer.viewOnGitHub">View on GitHub</a>
             </p>
         </div>
     </footer>

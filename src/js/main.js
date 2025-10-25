@@ -7,6 +7,7 @@ import { createStatSkeletons, createLeaderboardSkeletons } from './components/sk
 import { renderPagination, getPaginationInfo } from './components/pagination.js';
 import { initDarkMode, toggleTheme } from './components/darkMode.js';
 import { analytics } from './utils/analytics.js';
+import { i18n } from './utils/i18n.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
@@ -61,7 +62,10 @@ const ITEMS_PER_PAGE = 10;
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 App initializing...');
 
-    // Initialize dark mode first
+    // Initialize i18n first
+    await i18n.init();
+
+    // Initialize dark mode
     initDarkMode();
 
     initializeElements();
@@ -149,8 +153,8 @@ function switchTab(tab) {
     // Update placeholder
     if (searchInput) {
         searchInput.placeholder = tab === 'users'
-            ? 'Search by username or user ID...'
-            : 'Search by country name or ID...';
+            ? i18n.t('home.search.placeholder')
+            : i18n.t('home.search.placeholder');
     }
 
     // Update search component data
@@ -193,7 +197,7 @@ async function performSearch() {
     const query = searchInput?.value.trim();
     if (!query) return;
 
-    showLoading(searchResults, 'Searching...');
+    showLoading(searchResults, i18n.t('search.loading'));
 
     try {
         if (currentSearchType === 'users') {
@@ -233,9 +237,9 @@ async function searchCountries(query) {
 function displaySearchResults(results, type) {
     // Track search results
     analytics.trackSearch(type, searchInput?.value.trim() || '', results.length);
-    
+
     if (results.length === 0) {
-        showEmpty(searchResults, 'No results found');
+        showEmpty(searchResults, i18n.t('search.noResults'));
         return;
     }
 
@@ -244,14 +248,14 @@ function displaySearchResults(results, type) {
             return `
                 <div class="leaderboard-item" onclick="window.location.href='pages/user.html?id=${item.user_id}'">
                     <span class="leaderboard-name">${item.username}</span>
-                    <span class="leaderboard-value">${formatNumber(item.history_whole_open || 0)} notes</span>
+                    <span class="leaderboard-value">${formatNumber(item.history_whole_open || 0)} ${i18n.t('common.notes')}</span>
                 </div>
             `;
         } else {
             return `
                 <div class="leaderboard-item" onclick="window.location.href='pages/country.html?id=${item.country_id}'">
                     <span class="leaderboard-name">${item.country_name_en || item.country_name}</span>
-                    <span class="leaderboard-value">${formatNumber(item.history_whole_open || 0)} notes</span>
+                    <span class="leaderboard-value">${formatNumber(item.history_whole_open || 0)} ${i18n.t('common.notes')}</span>
                 </div>
             `;
         }
@@ -297,7 +301,7 @@ async function loadGlobalStats() {
         totalCountriesEl.textContent = formatNumber(metadata.total_countries);
         lastUpdateEl.textContent = formatDate(metadata.export_date);
 
-        // Total notes would come from summing user data if available
+        // Total ${i18n.t('common.notes')} would come from summing user data if available
         totalNotesEl.textContent = '~';
     } catch (error) {
         console.error('Error loading global stats:', error);
@@ -321,7 +325,7 @@ async function loadTopUsers(page = 1) {
         const users = await apiClient.getUserIndex();
         console.log(`✅ Received ${users.length} users`);
 
-        // Sort by notes opened
+        // Sort by ${i18n.t('common.notes')} opened
         const sortedUsers = users.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
 
         // Calculate pagination
@@ -363,7 +367,7 @@ async function loadTopCountries(page = 1) {
     try {
         const countries = await apiClient.getCountryIndex();
 
-        // Sort by notes opened
+        // Sort by ${i18n.t('common.notes')} opened
         const sortedCountries = countries.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
 
         // Calculate pagination
