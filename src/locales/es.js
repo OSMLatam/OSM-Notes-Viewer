@@ -150,7 +150,28 @@ export default {
     'a11y.shareProfile': 'Compartir perfil',
     'a11y.toggleMenu': 'Alternar menú de navegación',
     'a11y.searchInput': 'Buscar usuarios o países',
-    'a11y.searchType': 'Selección de tipo de búsqueda'
+    'a11y.searchType': 'Selección de tipo de búsqueda',
+
+    // Keyboard Shortcuts
+    'shortcuts.title': 'Atajos de Teclado',
+    'shortcuts.navigation': 'Navegación',
+    'shortcuts.search': 'Búsqueda',
+    'shortcuts.actions': 'Acciones',
+    'shortcuts.settings': 'Configuración',
+    'shortcuts.close': 'Cerrar ayuda',
+    'shortcuts.closeHint': 'Presiona Ctrl + / o Esc para cerrar',
+    'shortcuts.nav.explore': 'Ir a la página Explorar',
+    'shortcuts.nav.home': 'Ir a la página Inicio',
+    'shortcuts.nav.about': 'Ir a la página Acerca de',
+    'shortcuts.nav.back': 'Ir atrás',
+    'shortcuts.nav.forward': 'Ir adelante',
+    'shortcuts.search.users': 'Buscar usuarios',
+    'shortcuts.search.countries': 'Buscar países',
+    'shortcuts.search.focus': 'Enfocar búsqueda',
+    'shortcuts.search.submit': 'Enviar búsqueda cuando está enfocado',
+    'shortcuts.actions.close': 'Cerrar diálogos/menús',
+    'shortcuts.settings.theme': 'Alternar modo oscuro',
+    'shortcuts.settings.language': 'Abrir selector de idioma'
 };
 
 

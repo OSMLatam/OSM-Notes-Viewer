@@ -150,7 +150,28 @@ export default {
     'a11y.shareProfile': 'Share profile',
     'a11y.toggleMenu': 'Toggle navigation menu',
     'a11y.searchInput': 'Search for users or countries',
-    'a11y.searchType': 'Search type selection'
+    'a11y.searchType': 'Search type selection',
+
+    // Keyboard Shortcuts
+    'shortcuts.title': 'Keyboard Shortcuts',
+    'shortcuts.navigation': 'Navigation',
+    'shortcuts.search': 'Search',
+    'shortcuts.actions': 'Actions',
+    'shortcuts.settings': 'Settings',
+    'shortcuts.close': 'Close help',
+    'shortcuts.closeHint': 'Press Ctrl + / or Esc to close',
+    'shortcuts.nav.explore': 'Navigate to Explore page',
+    'shortcuts.nav.home': 'Go to Home page',
+    'shortcuts.nav.about': 'Go to About page',
+    'shortcuts.nav.back': 'Go back',
+    'shortcuts.nav.forward': 'Go forward',
+    'shortcuts.search.users': 'Search for users',
+    'shortcuts.search.countries': 'Search for countries',
+    'shortcuts.search.focus': 'Focus search input',
+    'shortcuts.search.submit': 'Submit search when focused',
+    'shortcuts.actions.close': 'Close dialogs/menus',
+    'shortcuts.settings.theme': 'Toggle dark mode',
+    'shortcuts.settings.language': 'Open language selector'
 };
 
 

@@ -150,7 +150,28 @@ export default {
     'a11y.shareProfile': 'Profil teilen',
     'a11y.toggleMenu': 'Navigationsmenü umschalten',
     'a11y.searchInput': 'Nach Benutzern oder Ländern suchen',
-    'a11y.searchType': 'Suchtyp-Auswahl'
+    'a11y.searchType': 'Suchtyp-Auswahl',
+
+    // Keyboard Shortcuts
+    'shortcuts.title': 'Tastenkürzel',
+    'shortcuts.navigation': 'Navigation',
+    'shortcuts.search': 'Suche',
+    'shortcuts.actions': 'Aktionen',
+    'shortcuts.settings': 'Einstellungen',
+    'shortcuts.close': 'Hilfe schließen',
+    'shortcuts.closeHint': 'Drücken Sie Strg + / oder Esc zum Schließen',
+    'shortcuts.nav.explore': 'Zur Erkunden-Seite navigieren',
+    'shortcuts.nav.home': 'Zur Startseite gehen',
+    'shortcuts.nav.about': 'Zur Über-Seite gehen',
+    'shortcuts.nav.back': 'Zurück gehen',
+    'shortcuts.nav.forward': 'Vorwärts gehen',
+    'shortcuts.search.users': 'Nach Benutzern suchen',
+    'shortcuts.search.countries': 'Nach Ländern suchen',
+    'shortcuts.search.focus': 'Suchfeld fokussieren',
+    'shortcuts.search.submit': 'Suche absenden wenn fokussiert',
+    'shortcuts.actions.close': 'Dialoge/Menüs schließen',
+    'shortcuts.settings.theme': 'Dunkelmodus umschalten',
+    'shortcuts.settings.language': 'Sprachauswahl öffnen'
 };
 
 

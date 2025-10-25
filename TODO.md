@@ -27,7 +27,7 @@
 - [ ] Create embeddable widgets
 - [x] Add internationalization (i18n) ✅
 - [x] Progressive Web App (PWA) features ✅
-- [ ] Add keyboard shortcuts
+- [x] Add keyboard shortcuts ✅
 - [x] Implement accessibility improvements (WCAG AA) ✅
 
 ## Documentation

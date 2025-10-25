@@ -9,6 +9,7 @@ import { initDarkMode, toggleTheme } from './components/darkMode.js';
 import { analytics } from './utils/analytics.js';
 import { i18n } from './utils/i18n.js';
 import { animationManager } from './components/animationManager.js';
+import { keyboardShortcuts } from './components/keyboardShortcuts.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
