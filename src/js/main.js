@@ -153,7 +153,13 @@ function setupEventListeners() {
     if (tabButtons.length > 0 && !tabButtons[0].hasAttribute('data-listeners-added')) {
         tabButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                switchTab(e.target.dataset.tab);
+                e.preventDefault();
+                e.stopPropagation();
+                // Get the tab from the button itself, not the target (which might be the span)
+                const tab = btn.dataset.tab;
+                if (tab) {
+                    switchTab(tab);
+                }
             });
             btn.setAttribute('data-listeners-added', 'true');
         });
@@ -191,21 +197,27 @@ function setupEventListeners() {
 }
 
 function switchTab(tab) {
+    console.log('Switching to tab:', tab, 'Current:', currentSearchType);
     currentSearchType = tab;
 
     // Update active tab
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tab);
+        const isActive = btn.dataset.tab === tab;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive.toString());
     });
 
-    // Update placeholder
+    // Update placeholder and clear input
     if (searchInput) {
-        searchInput.placeholder = tab === 'users'
+        const placeholder = tab === 'users'
             ? i18n.t('home.search.placeholderUsers')
             : i18n.t('home.search.placeholderCountries');
-
-        // Clear input and hide results when switching tabs
+        console.log('Setting placeholder to:', placeholder);
+        searchInput.placeholder = placeholder;
         searchInput.value = '';
+
+        // Trigger input event to reset any autocomplete state
+        searchInput.dispatchEvent(new Event('input'));
     }
 
     // Clear results
