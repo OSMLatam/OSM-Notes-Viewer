@@ -4,8 +4,9 @@ Interactive web viewer for OpenStreetMap Notes analytics data.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenStreetMap](https://img.shields.io/badge/OpenStreetMap-%23E7352B?logo=openstreetmap&logoColor=white)](https://www.openstreetmap.org/)
+[![Build Status](https://github.com/OSMLatam/OSM-Notes-Viewer/workflows/CI/badge.svg)](https://github.com/OSMLatam/OSM-Notes-Viewer/actions)
 
-🌐 **Live Demo**: Coming soon...
+🌐 **Live Demo**: [View on GitHub Pages](https://osmlatam.github.io/OSM-Notes-Viewer/)
 
 ## 🎯 Overview
 
@@ -234,10 +235,11 @@ OSM-Notes-Viewer/
 
 ## Technology Stack
 
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Charts**: Chart.js
-- **Icons**: Font Awesome (optional)
-- **Build**: None required (pure static files)
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6+)
+- **Charts**: Canvas API
+- **Build Tool**: Vite
+- **Testing**: Vitest
+- **CI/CD**: GitHub Actions
 
 ## Browser Support
 
