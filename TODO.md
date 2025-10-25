@@ -49,7 +49,7 @@
 
 ## Infrastructure
 
-- [ ] Set up CI/CD pipeline
+- [x] Set up CI/CD pipeline ✅
 - [ ] Configure CDN for data files
 - [x] Set up monitoring/analytics ✅
 - [ ] Create staging environment
