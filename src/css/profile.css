@@ -20,6 +20,25 @@
     font-size: 2.5rem;
 }
 
+/* User Avatar */
+#userAvatar {
+    flex-shrink: 0;
+    border: 3px solid var(--border-color);
+    transition: border-color 0.2s;
+}
+
+#userAvatar:hover {
+    border-color: var(--primary-color);
+}
+
+#userAvatarImg {
+    transition: transform 0.2s;
+}
+
+#userAvatar:hover #userAvatarImg {
+    transform: scale(1.05);
+}
+
 .profile-subtitle {
     color: var(--text-light);
     font-size: 1rem;

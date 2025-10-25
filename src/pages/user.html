@@ -33,13 +33,18 @@
             <div id="profileContent" style="display: none;">
                 <section class="profile-header">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                        <div>
-                            <h2 class="profile-title">
-                                <span class="profile-icon">👤</span>
-                                <span id="username">-</span>
-                            </h2>
-                            <p class="profile-subtitle">User ID: <span id="userId">-</span></p>
-                            <p class="profile-subtitle" id="contributorType" style="display: none;"></p>
+                        <div style="display: flex; align-items: center; gap: 1.5rem;">
+                            <div id="userAvatar" style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: var(--border-color); display: none;">
+                                <img id="userAvatarImg" src="" alt="User avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                            </div>
+                            <div>
+                                <h2 class="profile-title">
+                                    <span class="profile-icon">👤</span>
+                                    <span id="username">-</span>
+                                </h2>
+                                <p class="profile-subtitle">User ID: <span id="userId">-</span></p>
+                                <p class="profile-subtitle" id="contributorType" style="display: none;"></p>
+                            </div>
                         </div>
                         <div style="position: relative;">
                             <button class="share-btn" id="shareBtn" aria-label="Share profile">

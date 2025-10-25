@@ -4,6 +4,7 @@ import { formatNumber, formatDate } from '../utils/formatter.js';
 import { shareComponent } from '../components/share.js';
 import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js';
 import { getCountryFlagFromObject } from '../utils/countryFlags.js';
+import { getUserAvatarSync } from '../utils/userAvatar.js';
 
 // Get country ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -154,10 +155,15 @@ async function renderUsers(users) {
 
         const html = users.map(item => {
             const userId = userMap.get(item.username) || '';
+            const userObj = { username: item.username, user_id: userId };
+            const avatarUrl = getUserAvatarSync(userObj, 40);
             return `
                 <div class="country-item" onclick="window.location.href='user.html?id=${userId}'">
                     <span class="country-rank">#${item.rank}</span>
-                    <span class="country-name">${item.username}</span>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
+                        <span class="country-name">${item.username}</span>
+                    </div>
                     <span class="country-count">${formatNumber(item.quantity)}</span>
                 </div>
             `;

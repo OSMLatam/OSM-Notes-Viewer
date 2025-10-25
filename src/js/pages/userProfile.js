@@ -5,6 +5,7 @@ import { renderActivityHeatmap } from '../components/activityHeatmap.js';
 import { createBarChart } from '../components/chart.js';
 import { shareComponent } from '../components/share.js';
 import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js';
+import { getUserAvatarSync } from '../utils/userAvatar.js';
 
 // Get user ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -39,6 +40,9 @@ async function loadUserProfile(userId) {
         // Populate profile
         document.getElementById('username').textContent = user.username || 'Unknown User';
         document.getElementById('userId').textContent = user.user_id;
+
+        // Load user avatar
+        loadUserAvatar(user);
 
         // Contributor type
         const contributorTypeEl = document.getElementById('contributorType');
@@ -246,6 +250,28 @@ function renderFirstActions(user) {
     html += '</div>';
 
     container.innerHTML = html;
+}
+
+function loadUserAvatar(user) {
+    const avatarContainer = document.getElementById('userAvatar');
+    const avatarImg = document.getElementById('userAvatarImg');
+
+    if (!avatarContainer || !avatarImg) return;
+
+    // Get avatar URL (synchronous for now - uses generated avatar)
+    const avatarUrl = getUserAvatarSync(user, 160);
+
+    if (avatarUrl) {
+        avatarImg.src = avatarUrl;
+        avatarImg.style.display = 'block';
+        avatarContainer.style.display = 'block';
+
+        // Handle image load error
+        avatarImg.onerror = () => {
+            avatarImg.style.display = 'none';
+            avatarContainer.style.display = 'none';
+        };
+    }
 }
 
 function showError(message) {

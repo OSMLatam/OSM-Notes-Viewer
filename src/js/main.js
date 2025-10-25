@@ -25,9 +25,13 @@ class UserSearchComponent extends SearchComponent {
 
     renderItem(item, index) {
         if (currentSearchType === 'users') {
+            const avatarUrl = getUserAvatarSync(item, 40);
             return `
                 <div class="search-result-item">
-                    <strong>${this.highlightMatch(item.username, this.input.value)}</strong>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
+                        <strong>${this.highlightMatch(item.username, this.input.value)}</strong>
+                    </div>
                     <span class="text-light">ID: ${item.user_id}</span>
                 </div>
             `;
@@ -337,10 +341,14 @@ async function loadTopUsers(page = 1) {
 
         const html = topUsers.map((user, index) => {
             const globalRank = pagination.startIndex + index + 1;
+            const avatarUrl = getUserAvatarSync(user, 40);
             return `
                 <div class="leaderboard-item" onclick="window.location.href='pages/user.html?id=${user.user_id}'">
                     <span class="leaderboard-rank">#${globalRank}</span>
-                    <span class="leaderboard-name">${user.username}</span>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
+                        <span class="leaderboard-name">${user.username}</span>
+                    </div>
                     <span class="leaderboard-value">${formatNumber(user.history_whole_open || 0)}</span>
                 </div>
             `;

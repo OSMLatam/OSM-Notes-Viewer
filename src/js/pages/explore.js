@@ -4,6 +4,7 @@ import { formatNumber } from '../utils/formatter.js';
 import { showError, showLoading, showEmpty } from '../components/errorHandler.js';
 import { analytics } from '../utils/analytics.js';
 import { getCountryFlagFromObject } from '../utils/countryFlags.js';
+import { getUserAvatarSync } from '../utils/userAvatar.js';
 
 // State management
 let allUsers = [];
@@ -189,12 +190,18 @@ function displayUsers(users) {
             </div>
         </div>
         <div class="explore-grid">
-            ${users.map(user => `
+            ${users.map(user => {
+                const avatarUrl = getUserAvatarSync(user, 40);
+                return `
                 <div class="explore-item" onclick="window.location.href='user.html?id=${user.user_id}'">
-                    <span class="explore-name">${user.username}</span>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
+                        <span class="explore-name">${user.username}</span>
+                    </div>
                     <span class="explore-value">${formatNumber(user.history_whole_open || 0)} notes</span>
                 </div>
-            `).join('')}
+            `;
+            }).join('')}
         </div>
     `;
 
