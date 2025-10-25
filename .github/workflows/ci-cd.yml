@@ -57,11 +57,13 @@ jobs:
         run: npm test -- --run
 
       - name: Upload coverage
+        if: always()
         uses: codecov/codecov-action@v3
         with:
           file: ./coverage/coverage-final.json
           flags: unittests
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   # Build check
   build:
