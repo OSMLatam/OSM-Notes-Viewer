@@ -56,7 +56,7 @@ async function loadCountryProfile(countryId) {
         renderHashtags(country.hashtags);
 
         // Users
-        await renderUsers(country.users_open_notes);
+        await setupUsersSection(country);
 
         // Working hours
         renderWorkingHoursSection(country.working_hours_of_week_opening, country.working_hours_of_week_commenting, country.working_hours_of_week_closing, document.getElementById('workingHoursContainer'), 'country');
@@ -140,10 +140,36 @@ function renderHashtags(hashtags) {
     container.innerHTML = html;
 }
 
-async function renderUsers(users) {
+async function setupUsersSection(country) {
+    // Store country data for re-rendering
+    window.countryUserData = {
+        open: country.users_open_notes || [],
+        solving: country.users_solving_notes || []
+    };
+
+    // Setup event listener for sort criteria
+    const sortSelect = document.getElementById('userSortCriteria');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+            renderUsers(window.countryUserData, sortSelect.value);
+        });
+    }
+
+    // Initial render with solving notes (sorted by closed notes)
+    await renderUsers(window.countryUserData, 'solving');
+}
+
+async function renderUsers(userData, sortBy = 'solving') {
     const container = document.getElementById('usersContainer');
 
-    if (!users || users.length === 0) {
+    let users = [];
+    if (sortBy === 'open') {
+        users = userData.open || [];
+    } else {
+        users = userData.solving || [];
+    }
+
+    if (users.length === 0) {
         container.innerHTML = '<p>No user data available</p>';
         return;
     }
@@ -153,15 +179,23 @@ async function renderUsers(users) {
         const userIndex = await apiClient.getUserIndex();
         const userMap = new Map(userIndex.map(u => [u.username, u.user_id]));
 
-        const html = users.map(item => {
+        // Create maps for each metric
+        const openMap = new Map((userData.open || []).map(u => [u.username, u.quantity]));
+        const solvingMap = new Map((userData.solving || []).map(u => [u.username, u.quantity]));
+
+        const html = users.map((item, index) => {
             const userId = userMap.get(item.username) || '';
             const userObj = { username: item.username, user_id: userId };
             const avatarUrl = getUserAvatarSync(userObj, 40);
             const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(item.username)}`;
             const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(item.username)}`;
+
+            const openedCount = formatNumber(openMap.get(item.username) || 0);
+            const solvedCount = formatNumber(solvingMap.get(item.username) || 0);
+
             return `
                 <div class="country-item" onclick="window.location.href='user.html?username=${encodeURIComponent(item.username)}'">
-                    <span class="country-rank">#${item.rank}</span>
+                    <span class="country-rank">#${index + 1}</span>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
                         <span class="country-name">${item.username}</span>
@@ -172,7 +206,10 @@ async function renderUsers(users) {
                             <span style="font-size: 0.9rem;">⚡</span>
                         </a>
                     </div>
-                    <span class="country-count">${formatNumber(item.quantity)}</span>
+                    <div style="display: flex; gap: 0.5rem; font-size: 0.85rem; color: var(--text-light);">
+                        <span title="Notes opened">${openedCount}📝</span>
+                        <span title="Notes closed">${solvedCount}✅</span>
+                    </div>
                 </div>
             `;
         }).join('');

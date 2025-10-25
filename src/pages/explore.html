@@ -47,7 +47,8 @@
         <div class="container">
             <p>
                 Data from <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>
-                | Processed by <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>
+                | Processed by <a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank">OSM-Notes-Ingestion</a> 
+                & <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>
             </p>
         </div>
     </footer>
@@ -102,14 +103,14 @@
         .explore-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
+            gap: 0.5rem;
         }
 
         .explore-item {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 1rem;
+            padding: 0.5rem 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;

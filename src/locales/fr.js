@@ -133,8 +133,8 @@ export default {
     'language.current': 'Langue actuelle : {{lang}}',
 
     // Footer
-    'footer.dataSource': 'Données d\'OpenStreetMap',
-    'footer.processedBy': 'Traité par OSM-Notes-Analytics',
+    'footer.dataSource': 'Données d\'',
+    'footer.processedBy': 'Traité par',
     'footer.viewOnGitHub': 'Voir sur GitHub',
 
     // Accessibility

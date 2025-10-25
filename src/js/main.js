@@ -11,6 +11,7 @@ import { i18n } from './utils/i18n.js';
 import { animationManager } from './components/animationManager.js';
 import { keyboardShortcuts } from './components/keyboardShortcuts.js';
 import { getCountryFlagFromObject } from './utils/countryFlags.js';
+import { getUserAvatarSync } from './utils/userAvatar.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
@@ -30,8 +31,8 @@ class UserSearchComponent extends SearchComponent {
             const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(item.username)}`;
             return `
                 <div class="search-result-item">
-                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">` : ''}
                         <strong>${this.highlightMatch(item.username, this.input.value)}</strong>
                         <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
                             <span style="font-size: 0.9rem;">↗</span>
@@ -73,7 +74,7 @@ let searchComponent = null;
 // Pagination state
 let currentUserPage = 1;
 let currentCountryPage = 1;
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 50;
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', async () => {
@@ -355,8 +356,8 @@ async function loadTopUsers(page = 1) {
             return `
                 <div class="leaderboard-item" onclick="window.location.href='pages/user.html?username=${encodeURIComponent(user.username)}'">
                     <span class="leaderboard-rank">#${globalRank}</span>
-                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">` : ''}
                         <span class="leaderboard-name">${user.username}</span>
                         <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
                             <span style="font-size: 0.9rem;">↗</span>

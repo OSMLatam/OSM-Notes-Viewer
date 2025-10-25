@@ -31,6 +31,12 @@ export default defineConfig({
         explore: resolve(__dirname, 'src/pages/explore.html'),
         about: resolve(__dirname, 'src/pages/about.html'),
       },
+      output: {
+        // Add content hash to filenames for cache busting
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+      },
     },
 
     // Minification
@@ -47,6 +53,13 @@ export default defineConfig({
   server: {
     port: 8080,
     open: true,
+    // Disable caching in development to ensure fresh content
+    headers: {
+      'Cache-Control': 'no-store',
+    },
+    hmr: {
+      overlay: true, // Show error overlay in browser
+    },
   },
 
   // CSS configuration

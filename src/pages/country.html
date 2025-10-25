@@ -84,7 +84,13 @@
                 </section>
 
                 <section class="profile-section">
-                    <h3>Top Contributors</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h3 style="margin: 0; flex: 1;">Top Contributors</h3>
+                        <select id="userSortCriteria" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); border-radius: 6px; background: white; color: var(--text-color); cursor: pointer; font-size: 0.9rem; font-weight: 500; min-width: 180px;">
+                            <option value="solving">📊 Notes Closed</option>
+                            <option value="open">📝 Notes Opened</option>
+                        </select>
+                    </div>
                     <div id="usersContainer" class="countries-container">
                         <p class="loading">Loading users...</p>
                     </div>
@@ -118,7 +124,8 @@
         <div class="container">
             <p>
                 Data from <a href="https://www.openstreetmap.org/" target="_blank">OpenStreetMap</a>
-                | Processed by <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>
+                | Processed by <a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank">OSM-Notes-Ingestion</a>
+                & <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>
             </p>
         </div>
     </footer>

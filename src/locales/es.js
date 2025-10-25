@@ -133,8 +133,8 @@ export default {
     'language.current': 'Idioma actual: {{lang}}',
 
     // Footer
-    'footer.dataSource': 'Datos de OpenStreetMap',
-    'footer.processedBy': 'Procesado por OSM-Notes-Analytics',
+    'footer.dataSource': 'Datos de',
+    'footer.processedBy': 'Procesado por',
     'footer.viewOnGitHub': 'Ver en GitHub',
 
     // Accessibility
@@ -159,6 +159,7 @@ export default {
     'footer.version': 'Versión',
     'footer.madeWith': 'Hecho con',
     'footer.forOSM': 'para OSM',
+    'footer.madeBy': 'Hecho por',
 
     // Keyboard Shortcuts
     'shortcuts.title': 'Atajos de Teclado',
