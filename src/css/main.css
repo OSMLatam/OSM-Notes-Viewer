@@ -1184,3 +1184,27 @@ body {
     font-size: 0.875rem;
     color: var(--text-light);
 }
+
+/* === No Data Message === */
+.no-data-message {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-light);
+}
+
+.no-data-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.no-data-message p {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.no-data-message small {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}

@@ -7,7 +7,13 @@
  */
 export function renderActivityHeatmap(activityString, container) {
     if (!activityString || activityString.length === 0) {
-        container.innerHTML = '<p>No activity data available</p>';
+        container.innerHTML = `
+            <div class="no-data-message">
+                <div class="no-data-icon">📊</div>
+                <p>No activity data available</p>
+                <small>This user hasn't contributed any notes recently</small>
+            </div>
+        `;
         return;
     }
 
@@ -41,9 +47,11 @@ function createHeatmapSVG(data) {
             const y = day * (cellSize + cellGap);
             const color = getActivityColor(value);
 
+            const date = getDateFromIndex(index);
             cells += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}"
                       fill="${color}" rx="2" class="activity-cell"
-                      data-value="${value}" data-day="${day}" data-week="${week}"/>`;
+                      data-value="${value}" data-day="${day}" data-week="${week}"
+                      data-date="${date}" title="${date}: ${value} contributions"/>`;
 
             index++;
         }
@@ -78,6 +86,14 @@ function getActivityColor(value) {
     ];
 
     return colors[Math.min(value, 9)] || colors[0];
+}
+
+function getDateFromIndex(index) {
+    const today = new Date();
+    const daysAgo = 365 - index;
+    const date = new Date(today);
+    date.setDate(date.getDate() - daysAgo);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 // Add CSS styles
