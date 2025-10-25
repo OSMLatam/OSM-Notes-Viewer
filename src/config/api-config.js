@@ -3,12 +3,10 @@
 
 export const API_CONFIG = {
     // Base URL for JSON files
-    // Examples:
-    // - Local development: '/data' (points to ./data/)
-    // - Production CDN: 'https://cdn.example.com/api'
-    // - S3 bucket: 'https://your-bucket.s3.amazonaws.com/api'
-    // - Shared directory: '/var/www/osm-notes-data' (production)
-    BASE_URL: '/data',
+    // Uses remote data repository in production, local data in development
+    BASE_URL: import.meta.env.PROD 
+        ? 'http://www.osmlatam.org/OSM-Notes-Data/data'
+        : '/data',
 
     // Cache settings
     CACHE_DURATION: 15 * 60 * 1000, // 15 minutes in milliseconds
