@@ -339,7 +339,15 @@ section {
 }
 
 /* Dark mode adjustments */
-[data-theme="dark"] .stat-card,
+[data-theme="dark"] .stat-card {
+    background: linear-gradient(to bottom, #2d3539, var(--bg-light));
+    border: 2px solid var(--border-color);
+}
+
+[data-theme="dark"] .stat-card:hover {
+    background: linear-gradient(to bottom, #2d4d3d, var(--bg-light));
+}
+
 [data-theme="dark"] .leaderboard,
 [data-theme="dark"] .search-box {
     background: var(--bg-light);
@@ -508,17 +516,33 @@ section {
 }
 
 .stat-card {
-    background: white;
+    background: linear-gradient(to bottom, #f8f9fa, white);
     padding: 0.5rem;
     border-radius: var(--radius);
-    box-shadow: var(--shadow);
+    border: 2px solid var(--border-color);
     text-align: center;
-    transition: var(--transition);
+    transition: none;
+    cursor: default;
+    position: relative;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: var(--radius) var(--radius) 0 0;
+    opacity: 0.3;
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
+    transform: none;
+    box-shadow: none;
+    border-color: var(--primary-color);
+    background: linear-gradient(to bottom, #f0f9f4, white);
 }
 
 .stat-icon {
