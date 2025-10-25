@@ -105,7 +105,7 @@ export const API_CONFIG = {
 ## Next Steps
 
 - Read [docs/API.md](docs/API.md) to understand data structure
-- Read [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for production deployment
+- See [docs/BUILD.md](docs/BUILD.md) for building the project
 - Check [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) to contribute
 
 ## Development Tips

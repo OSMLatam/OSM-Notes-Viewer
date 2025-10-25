@@ -74,30 +74,53 @@ This web application provides an interactive interface to explore OpenStreetMap 
 - **Minimal Bundle** - ~50KB total size
 - **CDN Ready** - Easy deployment to any static host
 
-## Data Storage
+## Data Architecture
 
-The viewer reads JSON data from a **shared directory** on the server that is accessible by both the analytics backend and the web viewer.
+The viewer uses a **separate data repository** served via GitHub Pages for maximum flexibility and performance.
 
-### How It Works
+### Architecture
 
-**Production (with shared directory):**
-1. Analytics exports directly to `/var/www/osm-notes-data/`
-2. Viewer reads directly from the same directory
-3. **No sync script needed** - data flows directly!
-
-**Development (local testing):**
-- Analytics exports to `./output/json`
-- Use `sync-data.sh` if you need to copy data for testing
+```
+┌────────────────────────────────────────┐
+│  OSM-Notes-Analytics                  │
+│  Generates JSON data                   │
+└──────────────┬─────────────────────────┘
+               │ exportAndPushToGitHub.sh
+               ▼
+┌────────────────────────────────────────┐
+│  OSM-Notes-Data (GitHub Pages)         │
+│  http://www.osmlatam.org/OSM-Notes-Data/ │
+│  Serves JSON files                      │
+└──────────────┬─────────────────────────┘
+               │ HTTP Requests
+               ▼
+┌────────────────────────────────────────┐
+│  OSM-Notes-Viewer (GitHub Pages)      │
+│  Web application                        │
+└────────────────────────────────────────┘
+```
 
 ### Benefits
 
-- ✅ No duplication - Single source of truth
-- ✅ No sync step - Direct export/read
-- ✅ Better performance - No copying overhead
-- ✅ Simpler updates - Analytics exports, viewer reads
-- ✅ Keeps analytics code private
+- ✅ **Separation of concerns** - Data and viewer are independent
+- ✅ **Easy updates** - Update data without rebuilding viewer
+- ✅ **Better caching** - Separate caching for data and app
+- ✅ **Scalable** - Easy to migrate to CDN later
+- ✅ **Public data** - Data repository is publicly accessible
 
-For detailed setup instructions, see [docs/SHARED_DATA_DIRECTORY.md](docs/SHARED_DATA_DIRECTORY.md)
+### Updating Data
+
+To update the data files:
+
+```bash
+cd ~/github/OSM-Notes-Analytics
+./bin/dwh/exportAndPushToGitHub.sh
+```
+
+The script will:
+1. Export JSON files from the analytics database
+2. Push them to the OSM-Notes-Data repository
+3. GitHub Pages automatically updates within 1-2 minutes
 
 ### Related Projects
 
@@ -200,13 +223,9 @@ npm run preview
 
 ### For Production Deployment
 
-See [DEPLOYMENT.md](docs/DEPLOYMENT.md) for deployment instructions to:
-- Netlify
-- Vercel
-- GitHub Pages
-- Cloudflare Pages
-
-For server setup with shared data directory, see [SHARED_DATA_DIRECTORY.md](docs/SHARED_DATA_DIRECTORY.md)
+The application is deployed via GitHub Pages using GitHub Actions. Configuration files:
+- `.github/workflows/deploy-pages.yml` - Deployment workflow
+- Data is served from a separate repository: [OSM-Notes-Data](https://github.com/OSMLatam/OSM-Notes-Data)
 
 ## Configuration
 
@@ -254,7 +273,7 @@ OSM-Notes-Viewer/
 - [Components](docs/COMPONENTS.md) - Component documentation
 - [API](docs/API.md) - API endpoints and data structure
 - [Features](docs/FEATURES.md) - Feature documentation
-- [Deployment](docs/DEPLOYMENT.md) - Deployment guides
+- [Build Guide](docs/BUILD.md) - Building the project
 - [Contributing](docs/CONTRIBUTING.md) - Contribution guidelines
 
 ## 🤝 Contributing
