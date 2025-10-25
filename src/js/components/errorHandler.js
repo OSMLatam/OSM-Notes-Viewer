@@ -7,10 +7,14 @@
  * @param {string} message - Error message
  * @param {Function} retryFn - Function to retry the operation
  */
+let retryCount = 0;
+
 export function showError(container, message, retryFn = null) {
+    retryCount++;
     const retryButton = retryFn ? `
         <button class="retry-btn" onclick="location.reload()">
             🔄 Retry
+            ${retryCount > 1 ? `<span class="retry-count">(${retryCount})</span>` : ''}
         </button>
     ` : '';
 
@@ -19,6 +23,7 @@ export function showError(container, message, retryFn = null) {
             <div class="error-icon">⚠️</div>
             <div class="error-message">${escapeHtml(message)}</div>
             ${retryButton}
+            ${retryCount > 2 ? '<small class="retry-hint">Tip: Check your internet connection</small>' : ''}
         </div>
     `;
 }
@@ -72,7 +77,7 @@ export function handleApiError(error, container, retryFn = null) {
     console.error('API Error:', error);
 
     let message = 'An error occurred while loading data.';
-    
+
     if (error.message.includes('404')) {
         message = 'Data not found. Please try again later.';
     } else if (error.message.includes('network') || error.message.includes('Failed to fetch')) {
