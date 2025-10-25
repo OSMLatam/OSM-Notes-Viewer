@@ -10,6 +10,7 @@ import { analytics } from './utils/analytics.js';
 import { i18n } from './utils/i18n.js';
 import { animationManager } from './components/animationManager.js';
 import { keyboardShortcuts } from './components/keyboardShortcuts.js';
+import { getCountryFlagFromObject } from './utils/countryFlags.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
@@ -31,9 +32,11 @@ class UserSearchComponent extends SearchComponent {
                 </div>
             `;
         } else {
+            const countryName = item.country_name_en || item.country_name;
+            const countryFlag = getCountryFlagFromObject(item);
             return `
                 <div class="search-result-item">
-                    <strong>${this.highlightMatch(item.country_name_en || item.country_name, this.input.value)}</strong>
+                    <strong>${countryFlag ? `${countryFlag} ` : ''}${this.highlightMatch(countryName, this.input.value)}</strong>
                     <span class="text-light">ID: ${item.country_id}</span>
                 </div>
             `;
@@ -379,7 +382,11 @@ async function loadTopCountries(page = 1) {
             return `
                 <div class="leaderboard-item" onclick="window.location.href='pages/country.html?id=${country.country_id}'">
                     <span class="leaderboard-rank">#${globalRank}</span>
-                    <span class="leaderboard-name">${country.country_name_en || country.country_name}</span>
+                    <span class="leaderboard-name">${(() => {
+                        const countryName = country.country_name_en || country.country_name;
+                        const countryFlag = getCountryFlagFromObject(country);
+                        return countryFlag ? `${countryFlag} ${countryName}` : countryName;
+                    })()}</span>
                     <span class="leaderboard-value">${formatNumber(country.history_whole_open || 0)}</span>
                 </div>
             `;

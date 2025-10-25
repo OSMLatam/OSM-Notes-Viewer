@@ -3,6 +3,7 @@ import { apiClient } from '../api/apiClient.js';
 import { formatNumber, formatDate } from '../utils/formatter.js';
 import { shareComponent } from '../components/share.js';
 import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js';
+import { getCountryFlagFromObject } from '../utils/countryFlags.js';
 
 // Get country ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -34,8 +35,11 @@ async function loadCountryProfile(countryId) {
         content.style.display = 'block';
 
         // Populate profile
-        document.getElementById('countryName').textContent =
-            country.country_name_en || country.country_name || 'Unknown Country';
+        const countryName = country.country_name_en || country.country_name || 'Unknown Country';
+        const countryFlag = getCountryFlagFromObject(country);
+        document.getElementById('countryName').innerHTML = countryFlag
+            ? `${countryFlag} ${countryName}`
+            : countryName;
         document.getElementById('countryId').textContent = country.country_id;
 
         // Statistics
