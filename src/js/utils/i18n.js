@@ -1,6 +1,12 @@
-// Internationalization (i18n) configuration and utilities
+/**
+ * @fileoverview Internationalization (i18n) configuration and utilities
+ * @module utils/i18n
+ */
 
-// Supported languages
+/**
+ * Supported languages configuration
+ * @type {Object<string, {code: string, name: string, nativeName: string, flag: string}>}
+ */
 export const SUPPORTED_LANGUAGES = {
     en: {
         code: 'en',
@@ -28,10 +34,18 @@ export const SUPPORTED_LANGUAGES = {
     }
 };
 
-// Default language
+/**
+ * Default language code
+ * @type {string}
+ */
 export const DEFAULT_LANGUAGE = 'en';
 
-// Language detection
+/**
+ * Detect user's preferred language from browser settings or localStorage
+ * @returns {string} Language code (en, es, de, fr)
+ * @example
+ * const lang = detectLanguage(); // Returns 'es' if browser is Spanish
+ */
 export function detectLanguage() {
     // 1. Check localStorage
     const savedLang = localStorage.getItem('osm-notes-lang');
@@ -57,7 +71,13 @@ export function detectLanguage() {
     return DEFAULT_LANGUAGE;
 }
 
-// Set language
+/**
+ * Set the application language
+ * @param {string} langCode - Language code to set (en, es, de, fr)
+ * @returns {boolean} True if language was set successfully, false otherwise
+ * @example
+ * setLanguage('es'); // Switch to Spanish
+ */
 export function setLanguage(langCode) {
     if (!SUPPORTED_LANGUAGES[langCode]) {
         console.warn(`Language ${langCode} not supported`);
@@ -75,16 +95,29 @@ export function setLanguage(langCode) {
     return true;
 }
 
-// Get current language
+/**
+ * Get the current language code
+ * @returns {string} Current language code
+ * @example
+ * const currentLang = getCurrentLanguage(); // Returns 'en'
+ */
 export function getCurrentLanguage() {
     return localStorage.getItem('osm-notes-lang') || detectLanguage();
 }
 
-// Language utilities
+/**
+ * Internationalization utilities
+ * @namespace i18n
+ */
 export const i18n = {
+    /** @type {string} Current language code */
     currentLang: getCurrentLanguage(),
 
-    // Set language
+    /**
+     * Set the application language
+     * @param {string} langCode - Language code to set
+     * @returns {void}
+     */
     setLanguage(langCode) {
         if (setLanguage(langCode)) {
             this.currentLang = langCode;
@@ -92,7 +125,10 @@ export const i18n = {
         }
     },
 
-    // Load translations for current language
+    /**
+     * Load translations for the current language
+     * @returns {Promise<void>}
+     */
     async loadTranslations() {
         try {
             const translations = await import(`../locales/${this.currentLang}.js`);
@@ -108,7 +144,15 @@ export const i18n = {
         }
     },
 
-    // Get translation
+    /**
+     * Get translation for a key with optional parameters
+     * @param {string} key - Translation key
+     * @param {Object<string, string>} [params={}] - Parameters to replace in translation
+     * @returns {string} Translated text
+     * @example
+     * i18n.t('home.hero.title'); // Returns "Explore OpenStreetMap Notes Analytics"
+     * i18n.t('explore.results.showing', { count: 10, total: 100 }); // Returns "Showing 10 of 100 results"
+     */
     t(key, params = {}) {
         if (!this.translations) {
             return key; // Fallback to key if translations not loaded
@@ -129,7 +173,11 @@ export const i18n = {
         return translation;
     },
 
-    // Update page content
+    /**
+     * Update all page content with current translations
+     * Searches for elements with data-i18n attributes and updates their content
+     * @returns {void}
+     */
     updatePageContent() {
         // Update elements with data-i18n attribute
         document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -171,7 +219,11 @@ export const i18n = {
         }
     },
 
-    // Initialize i18n
+    /**
+     * Initialize the i18n system
+     * Detects language, loads translations, and sets up event listeners
+     * @returns {Promise<void>}
+     */
     async init() {
         this.currentLang = detectLanguage();
         document.documentElement.lang = this.currentLang;
@@ -185,7 +237,10 @@ export const i18n = {
     }
 };
 
-// Export default instance
+/**
+ * Default export of i18n utilities
+ * @type {i18n}
+ */
 export default i18n;
 
 

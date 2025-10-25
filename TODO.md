@@ -35,7 +35,7 @@
 - [x] Add screenshots to README ✅
 - [ ] Create video tutorial
 - [x] Document all components ✅
-- [ ] Add JSDoc comments to all functions
+- [x] Add JSDoc comments to all functions ✅
 - [x] Create architecture diagram ✅
 
 ## Testing
