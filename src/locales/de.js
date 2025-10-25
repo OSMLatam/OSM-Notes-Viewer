@@ -4,17 +4,17 @@ export default {
     'nav.home': 'Startseite',
     'nav.explore': 'Erkunden',
     'nav.about': 'Über',
-    
+
     // Page titles
     'title.home': 'OSM Notes Viewer - Analysen und Statistiken',
     'title.user': 'Benutzerprofil - OSM Notes Viewer',
     'title.country': 'Länderprofil - OSM Notes Viewer',
     'title.explore': 'Erkunden - OSM Notes Viewer',
     'title.about': 'Über - OSM Notes Viewer',
-    
+
     // Meta descriptions
     'meta.description': 'Interaktiver Viewer für OpenStreetMap Notes Analysen - Erkunden Sie Benutzerstatistiken, Ländedaten und Hashtag-Trends',
-    
+
     // Home page
     'home.hero.title': 'Erkunden Sie OpenStreetMap Notes Analysen',
     'home.hero.subtitle': 'Entdecken Sie Einblicke in OSM Notes Aktivität über Benutzer und Länder',
@@ -30,7 +30,7 @@ export default {
     'home.stats.lastUpdate': 'Letzte Aktualisierung',
     'home.leaderboard.topContributors': 'Top Mitwirkende',
     'home.leaderboard.mostActiveCountries': 'Aktivste Länder',
-    
+
     // User profile
     'user.profile.title': 'Benutzerprofil',
     'user.profile.userId': 'Benutzer-ID',
@@ -43,9 +43,14 @@ export default {
     'user.hashtags.title': 'Top Hashtags',
     'user.countries.title': 'Länder-Aktivität',
     'user.workingHours.title': 'Arbeitszeiten',
+    'user.workingHours.opening': 'Notes Öffnen',
+    'user.workingHours.commenting': 'Kommentieren',
+    'user.workingHours.closing': 'Notes Schließen',
+    'user.workingHours.legend.less': 'Weniger',
+    'user.workingHours.legend.more': 'Mehr',
     'user.activityHistory.title': 'Aktivitätsverlauf',
     'user.firstActions.title': 'Erste Aktionen',
-    
+
     // Country profile
     'country.profile.title': 'Länderprofil',
     'country.profile.countryId': 'Länder-ID',
@@ -57,9 +62,12 @@ export default {
     'country.hashtags.title': 'Top Hashtags',
     'country.users.title': 'Top Mitwirkende',
     'country.workingHours.title': 'Arbeitszeiten',
+    'country.workingHours.opening': 'Notes Öffnen',
+    'country.workingHours.commenting': 'Kommentieren',
+    'country.workingHours.closing': 'Notes Schließen',
     'country.activityHistory.title': 'Aktivitätsverlauf',
     'country.firstActions.title': 'Erste Aktionen',
-    
+
     // Explore page
     'explore.title': 'Daten Erkunden',
     'explore.subtitle': 'Durchsuchen Sie alle Benutzer und Länder im OSM Notes Datensatz',
@@ -71,7 +79,7 @@ export default {
     'explore.sort.alphabeticalDesc': 'Z-A',
     'explore.limit.show': 'Anzeigen',
     'explore.results.showing': 'Zeige {{count}} von {{total}} {{type}}',
-    
+
     // About page
     'about.title': 'Über OSM Notes Viewer',
     'about.description': 'OSM Notes Viewer ist eine Webanwendung, die Analysen und Einblicke für OpenStreetMap Notes Daten bietet.',
@@ -81,7 +89,7 @@ export default {
     'about.data.description': 'Daten werden aus OpenStreetMap Notes verarbeitet und über das OSM-Notes-Analytics Projekt verfügbar gemacht.',
     'about.tech.title': 'Technologie',
     'about.tech.description': 'Erstellt mit Vanilla JavaScript, CSS3 und modernen Web-Standards.',
-    
+
     // Common
     'common.loading': 'Laden...',
     'common.error': 'Fehler',
@@ -96,17 +104,17 @@ export default {
     'common.notes': 'Notes',
     'common.users': 'Benutzer',
     'common.countries': 'Länder',
-    
+
     // Search
     'search.noResults': 'Keine Ergebnisse gefunden',
     'search.loading': 'Suchen...',
     'search.error': 'Suchfehler',
-    
+
     // Theme
     'theme.dark': 'Dunkel',
     'theme.light': 'Hell',
     'theme.toggle': 'Dunkelmodus umschalten',
-    
+
     // Share
     'share.title': 'Teilen',
     'share.copy': 'Link kopieren',
@@ -118,17 +126,17 @@ export default {
     'share.telegram': 'Telegram',
     'share.copied': 'Link in Zwischenablage kopiert!',
     'share.failed': 'Link kopieren fehlgeschlagen',
-    
+
     // Language
     'language.title': 'Sprache',
     'language.select': 'Sprache auswählen',
     'language.current': 'Aktuelle Sprache: {{lang}}',
-    
+
     // Footer
     'footer.dataSource': 'Daten von OpenStreetMap',
     'footer.processedBy': 'Verarbeitet von OSM-Notes-Analytics',
     'footer.viewOnGitHub': 'Auf GitHub anzeigen',
-    
+
     // Accessibility
     'a11y.skipToContent': 'Zum Hauptinhalt springen',
     'a11y.mainNavigation': 'Hauptnavigation',
@@ -144,6 +152,7 @@ export default {
     'a11y.searchInput': 'Nach Benutzern oder Ländern suchen',
     'a11y.searchType': 'Suchtyp-Auswahl'
 };
+
 
 
 

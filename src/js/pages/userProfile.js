@@ -4,6 +4,7 @@ import { formatNumber, formatDate } from '../utils/formatter.js';
 import { renderActivityHeatmap } from '../components/activityHeatmap.js';
 import { createBarChart } from '../components/chart.js';
 import { shareComponent } from '../components/share.js';
+import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js';
 
 // Get user ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -64,7 +65,7 @@ async function loadUserProfile(userId) {
         await renderCountries(user.countries_open_notes);
 
         // Working hours
-        renderWorkingHours(user.working_hours_of_week_opening, user.working_hours_of_week_commenting, user.working_hours_of_week_closing);
+        renderWorkingHoursSection(user.working_hours_of_week_opening, user.working_hours_of_week_commenting, user.working_hours_of_week_closing, document.getElementById('workingHoursContainer'), 'user');
 
         // Activity history
         renderActivityHistory(user);
@@ -84,13 +85,13 @@ async function loadUserProfile(userId) {
 function setupShareButton(user) {
     const shareBtn = document.getElementById('shareBtn');
     const shareMenu = document.getElementById('shareMenu');
-    
+
     if (!shareBtn || !shareMenu) return;
 
     shareBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         const isVisible = shareMenu.style.display !== 'none';
-        
+
         if (isVisible) {
             shareMenu.style.display = 'none';
         } else {
@@ -173,36 +174,7 @@ async function renderCountries(countries) {
     }
 }
 
-function renderWorkingHours(openingHours, commentingHours, closingHours) {
-    const container = document.getElementById('workingHoursContainer');
-
-    if (!openingHours || openingHours.length === 0) {
-        container.innerHTML = '<p>No working hours data available</p>';
-        return;
-    }
-
-    let html = '<div class="working-hours-section">';
-
-    if (openingHours && openingHours.length > 0) {
-        html += '<h4>Opening Notes</h4>';
-        html += '<p class="text-light">' + openingHours.length + ' time slots with activity</p>';
-    }
-
-    if (commentingHours && commentingHours.length > 0) {
-        html += '<h4>Commenting</h4>';
-        html += '<p class="text-light">' + commentingHours.length + ' time slots with activity</p>';
-    }
-
-    if (closingHours && closingHours.length > 0) {
-        html += '<h4>Closing Notes</h4>';
-        html += '<p class="text-light">' + closingHours.length + ' time slots with activity</p>';
-    }
-
-    html += '</div>';
-    html += '<p class="text-light">Working hours heatmap visualization coming soon...</p>';
-
-    container.innerHTML = html;
-}
+// This function is now replaced by renderWorkingHoursSection from workingHoursHeatmap.js
 
 function renderActivityHistory(user) {
     const container = document.getElementById('activityHistoryContainer');

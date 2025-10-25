@@ -43,6 +43,11 @@ export default {
     'user.hashtags.title': 'Top Hashtags',
     'user.countries.title': 'Countries Activity',
     'user.workingHours.title': 'Working Hours',
+    'user.workingHours.opening': 'Opening Notes',
+    'user.workingHours.commenting': 'Commenting',
+    'user.workingHours.closing': 'Closing Notes',
+    'user.workingHours.legend.less': 'Less',
+    'user.workingHours.legend.more': 'More',
     'user.activityHistory.title': 'Activity History',
     'user.firstActions.title': 'First Actions',
 
@@ -57,6 +62,9 @@ export default {
     'country.hashtags.title': 'Top Hashtags',
     'country.users.title': 'Top Contributors',
     'country.workingHours.title': 'Working Hours',
+    'country.workingHours.opening': 'Opening Notes',
+    'country.workingHours.commenting': 'Commenting',
+    'country.workingHours.closing': 'Closing Notes',
     'country.activityHistory.title': 'Activity History',
     'country.firstActions.title': 'First Actions',
 
