@@ -70,6 +70,7 @@ class UserSearchComponent extends SearchComponent {
 let searchInput, searchBtn, searchResults;
 let currentSearchType = 'users';
 let searchComponent = null;
+let isUpdatingSearchData = false; // Flag to prevent concurrent updates
 
 // Pagination state
 let currentUserPage = 1;
@@ -147,35 +148,46 @@ function initMobileMenu() {
 }
 
 function setupEventListeners() {
-    // Tab switching
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            switchTab(e.target.dataset.tab);
+    // Tab switching - only add listeners if not already added
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    if (tabButtons.length > 0 && !tabButtons[0].hasAttribute('data-listeners-added')) {
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                switchTab(e.target.dataset.tab);
+            });
+            btn.setAttribute('data-listeners-added', 'true');
         });
-    });
+    }
 
-    // Setup autocomplete search
-    if (searchInput && searchResults) {
+    // Setup autocomplete search (only once)
+    if (searchInput && searchResults && !searchComponent) {
         searchComponent = new UserSearchComponent(searchInput, searchResults, handleSearchSelect);
     }
 
-    // Search button
-    searchBtn?.addEventListener('click', performSearch);
+    // Search button - only add listener if not already added
+    if (searchBtn && !searchBtn.hasAttribute('data-listener-added')) {
+        searchBtn.addEventListener('click', performSearch);
+        searchBtn.setAttribute('data-listener-added', 'true');
+    }
 
     // Theme toggle
     const themeToggle = document.getElementById('themeToggle');
-    if (themeToggle) {
+    if (themeToggle && !themeToggle.hasAttribute('data-listener-added')) {
         themeToggle.addEventListener('click', toggleTheme);
+        themeToggle.setAttribute('data-listener-added', 'true');
     }
 
     // Listen for language changes to update placeholder
-    window.addEventListener('languageChanged', () => {
-        if (searchInput) {
-            searchInput.placeholder = currentSearchType === 'users'
-                ? i18n.t('home.search.placeholderUsers')
-                : i18n.t('home.search.placeholderCountries');
-        }
-    });
+    if (!window.hasLanguageListener) {
+        window.addEventListener('languageChanged', () => {
+            if (searchInput) {
+                searchInput.placeholder = currentSearchType === 'users'
+                    ? i18n.t('home.search.placeholderUsers')
+                    : i18n.t('home.search.placeholderCountries');
+            }
+        });
+        window.hasLanguageListener = true;
+    }
 }
 
 function switchTab(tab) {
@@ -191,19 +203,25 @@ function switchTab(tab) {
         searchInput.placeholder = tab === 'users'
             ? i18n.t('home.search.placeholderUsers')
             : i18n.t('home.search.placeholderCountries');
-    }
 
-    // Update search component data
-    updateSearchData();
+        // Clear input and hide results when switching tabs
+        searchInput.value = '';
+    }
 
     // Clear results
     if (searchResults) {
         searchResults.innerHTML = '';
+        searchResults.style.display = 'none';
     }
+
+    // Update search component data
+    updateSearchData();
 }
 
 async function updateSearchData() {
-    if (!searchComponent) return;
+    if (!searchComponent || isUpdatingSearchData) return;
+
+    isUpdatingSearchData = true;
 
     try {
         if (currentSearchType === 'users') {
@@ -215,6 +233,8 @@ async function updateSearchData() {
         }
     } catch (error) {
         console.error('Error loading search data:', error);
+    } finally {
+        isUpdatingSearchData = false;
     }
 }
 
@@ -254,10 +274,15 @@ async function searchUsers(query) {
         user.user_id.toString() === query
     );
 
-    // Remove duplicates based on user_id
-    const uniqueResults = results.filter((user, index, self) =>
-        index === self.findIndex(u => u.user_id === user.user_id)
-    ).slice(0, 10);
+    // Remove duplicates using Set for better performance
+    const seenIds = new Set();
+    const uniqueResults = results.filter(user => {
+        if (seenIds.has(user.user_id)) {
+            return false;
+        }
+        seenIds.add(user.user_id);
+        return true;
+    }).slice(0, 10);
 
     displaySearchResults(uniqueResults, 'user');
 }
@@ -272,10 +297,15 @@ async function searchCountries(query) {
         country.country_id.toString() === query
     );
 
-    // Remove duplicates based on country_id
-    const uniqueResults = results.filter((country, index, self) =>
-        index === self.findIndex(c => c.country_id === country.country_id)
-    ).slice(0, 10);
+    // Remove duplicates using Set for better performance
+    const seenIds = new Set();
+    const uniqueResults = results.filter(country => {
+        if (seenIds.has(country.country_id)) {
+            return false;
+        }
+        seenIds.add(country.country_id);
+        return true;
+    }).slice(0, 10);
 
     displaySearchResults(uniqueResults, 'country');
 }
