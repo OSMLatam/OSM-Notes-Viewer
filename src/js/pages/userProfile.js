@@ -6,6 +6,7 @@ import { createBarChart } from '../components/chart.js';
 import { shareComponent } from '../components/share.js';
 import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js';
 import { getUserAvatarSync } from '../utils/userAvatar.js';
+import { createSimpleNoteCard } from '../utils/noteMap.js';
 
 // Get user ID or username from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -142,6 +143,9 @@ async function loadUserProfile(userId) {
 
         // Setup share button
         setupShareButton(user);
+
+        // Load recent notes in sidebars
+        loadRecentNotes(user);
 
     } catch (error) {
         loading.style.display = 'none';
@@ -334,6 +338,39 @@ function loadUserAvatar(user) {
             avatarImg.style.display = 'none';
             avatarContainer.style.display = 'none';
         };
+    }
+}
+
+function loadRecentNotes(user) {
+    // Load recent open notes
+    const openNotesContainer = document.getElementById('recentOpenNotesContainer');
+    if (openNotesContainer) {
+        const noteIds = [];
+
+        // Collect note IDs from user data
+        if (user.lastest_open_note_id) noteIds.push(user.lastest_open_note_id);
+        if (user.lastest_commented_note_id) noteIds.push(user.lastest_commented_note_id);
+
+        if (noteIds.length > 0) {
+            openNotesContainer.innerHTML = noteIds.map(id => createSimpleNoteCard(id, 'open')).join('');
+        } else {
+            openNotesContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">No recent open notes</p>';
+        }
+    }
+
+    // Load recent closed notes
+    const closedNotesContainer = document.getElementById('recentClosedNotesContainer');
+    if (closedNotesContainer) {
+        const noteIds = [];
+
+        // Collect note IDs from user data
+        if (user.lastest_closed_note_id) noteIds.push(user.lastest_closed_note_id);
+
+        if (noteIds.length > 0) {
+            closedNotesContainer.innerHTML = noteIds.map(id => createSimpleNoteCard(id, 'closed')).join('');
+        } else {
+            closedNotesContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">No recent closed notes</p>';
+        }
     }
 }
 
