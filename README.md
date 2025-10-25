@@ -1,27 +1,77 @@
-# OSM Notes Viewer
+# OSM Notes Viewer 🗺️
 
 Interactive web viewer for OpenStreetMap Notes analytics data.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![OpenStreetMap](https://img.shields.io/badge/OpenStreetMap-%23E7352B?logo=openstreetmap&logoColor=white)](https://www.openstreetmap.org/)
+
 🌐 **Live Demo**: Coming soon...
 
-## Overview
+## 🎯 Overview
 
 This web application provides an interactive interface to explore OpenStreetMap notes statistics, including:
 - User profiles with activity analysis
 - Country-level statistics
 - Hashtag usage trends
 - Activity heatmaps and visualizations
+- Working hours patterns
 
-## Features
+## 📸 Screenshots
 
-- 🔍 **Search** - Find users and countries quickly
-- 📊 **Interactive Statistics** - Charts and graphs powered by Chart.js
-- 📈 **Activity Heatmaps** - GitHub-style contribution calendars
-- 🌍 **Geographic Distribution** - See where notes are created
-- #️⃣ **Hashtag Analysis** - Track popular hashtags
-- ⚡ **Real-time Updates** - Data refreshed every 15 minutes
-- 📱 **Responsive Design** - Works on desktop, tablet, and mobile
-- 🚀 **Fast & Static** - Pure HTML/CSS/JS, no backend needed
+### Home Page
+![Home Page](docs/screenshots/home.png)
+*Overview of global statistics and top contributors*
+
+### User Profile
+![User Profile](docs/screenshots/user-profile.png)
+*Detailed user statistics with activity heatmap and working hours*
+
+### Country Profile
+![Country Profile](docs/screenshots/country-profile.png)
+*Country-level analytics and top contributors*
+
+### Working Hours Heatmap
+![Working Hours](docs/screenshots/working-hours.png)
+*24/7 activity patterns visualization*
+
+> 📝 **Note**: Screenshots will be added after deployment. Check back soon!
+
+## ✨ Features
+
+### 🔍 Search & Navigation
+- **Instant Search** - Find users and countries with autocomplete
+- **Advanced Filtering** - Sort by activity, date, or alphabetically
+- **Quick Access** - Direct links to user and country profiles
+
+### 📊 Visualizations
+- **Activity Heatmaps** - GitHub-style contribution calendars (365 days)
+- **Working Hours** - 24/7 activity patterns visualization
+- **Interactive Charts** - Bar charts for hashtags and countries
+- **Statistics Cards** - Real-time counts and metrics
+
+### 🌍 Geographic Analysis
+- **Country Profiles** - Detailed statistics per country
+- **Top Contributors** - Most active users worldwide
+- **Geographic Distribution** - See where notes are created
+
+### #️⃣ Hashtag Tracking
+- **Trending Hashtags** - Most used hashtags
+- **User-specific Tags** - Personalized hashtag analysis
+- **Country-specific Tags** - Regional hashtag patterns
+
+### 🎨 User Experience
+- **Dark Mode** - Eye-friendly dark theme
+- **Internationalization** - Support for 4 languages (EN, ES, DE, FR)
+- **Animations** - Smooth transitions and micro-interactions
+- **Responsive Design** - Works on desktop, tablet, and mobile
+- **PWA Support** - Installable progressive web app
+- **Offline Mode** - Works without internet connection
+
+### ⚡ Performance
+- **Lightning Fast** - Pure HTML/CSS/JS, no build step
+- **Smart Caching** - LocalStorage with TTL for instant loading
+- **Minimal Bundle** - ~50KB total size
+- **CDN Ready** - Easy deployment to any static host
 
 ## Data Storage
 
@@ -103,24 +153,48 @@ ajv -s lib/OSM-Notes-Common/schemas/user-profile.schema.json -d src/data/users/*
 
 For more details, see [docs/DATA_CONTRACT.md](docs/DATA_CONTRACT.md) and [lib/OSM-Notes-Common/schemas/README.md](lib/OSM-Notes-Common/schemas/README.md).
 
-## Quick Start
+## 🚀 Quick Start
 
-### For Development
+### Prerequisites
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Node.js 14+ (for development)
+- Python 3+ (alternative server)
+
+### Installation
 
 ```bash
 # Clone the repository
 git clone https://github.com/OSMLatam/OSM-Notes-Viewer.git
 cd OSM-Notes-Viewer
 
-# Open with a local server (required for CORS)
-# Option 1: Using Python
+# Install dependencies (optional, for development)
+npm install
+```
+
+### Development Server
+
+```bash
+# Option 1: Using Vite (recommended)
+npm run dev
+
+# Option 2: Using Python
 python3 -m http.server 8000
 
-# Option 2: Using Node.js
+# Option 3: Using Node.js http-server
 npx http-server -p 8000
 
 # Open browser
 open http://localhost:8000/src/index.html
+```
+
+### Build for Production
+
+```bash
+# Build static files
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
 ### For Production Deployment
@@ -172,16 +246,34 @@ OSM-Notes-Viewer/
 - Safari: Latest 2 versions
 - Mobile browsers: iOS Safari, Chrome Mobile
 
-## Contributing
+## 📚 Documentation
+
+- [Architecture](docs/ARCHITECTURE.md) - System architecture overview
+- [Components](docs/COMPONENTS.md) - Component documentation
+- [API](docs/API.md) - API endpoints and data structure
+- [Features](docs/FEATURES.md) - Feature documentation
+- [Deployment](docs/DEPLOYMENT.md) - Deployment guides
+- [Contributing](docs/CONTRIBUTING.md) - Contribution guidelines
+
+## 🤝 Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) first.
 
 ### Development Guidelines
 
-1. Keep it simple - vanilla JS preferred
-2. Mobile-first responsive design
-3. Accessibility is important (ARIA labels, keyboard navigation)
-4. Performance matters (lazy loading, caching)
+1. **Keep it simple** - Vanilla JS preferred, no frameworks
+2. **Mobile-first** - Responsive design from the start
+3. **Accessibility** - ARIA labels, keyboard navigation, screen readers
+4. **Performance** - Lazy loading, caching, minimal bundle size
+5. **Documentation** - Add JSDoc comments and update docs
+
+### Code Style
+
+- Use ES6+ features
+- Follow existing code patterns
+- Add comments for complex logic
+- Keep functions small and focused
+- Test on multiple browsers
 
 ## Related Projects
 

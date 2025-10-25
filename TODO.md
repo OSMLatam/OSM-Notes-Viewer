@@ -32,11 +32,11 @@
 
 ## Documentation
 
-- [ ] Add screenshots to README
+- [x] Add screenshots to README ✅
 - [ ] Create video tutorial
-- [ ] Document all components
+- [x] Document all components ✅
 - [ ] Add JSDoc comments to all functions
-- [ ] Create architecture diagram
+- [x] Create architecture diagram ✅
 
 ## Testing
 
