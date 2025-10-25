@@ -114,15 +114,25 @@ export const i18n = {
     currentLang: getCurrentLanguage(),
 
     /**
+     * Get the current language code
+     * @returns {string} Current language code
+     */
+    getCurrentLanguage() {
+        return getCurrentLanguage();
+    },
+
+    /**
      * Set the application language
      * @param {string} langCode - Language code to set
-     * @returns {void}
+     * @returns {boolean} True if language was set successfully
      */
     setLanguage(langCode) {
-        if (setLanguage(langCode)) {
+        const result = setLanguage(langCode);
+        if (result) {
             this.currentLang = langCode;
             this.loadTranslations();
         }
+        return result;
     },
 
     /**
@@ -131,7 +141,25 @@ export const i18n = {
      */
     async loadTranslations() {
         try {
-            const translations = await import(`../locales/${this.currentLang}.js`);
+            let translations;
+
+            // Import translations based on current language
+            switch(this.currentLang) {
+                case 'es':
+                    translations = await import('../../locales/es.js');
+                    break;
+                case 'de':
+                    translations = await import('../../locales/de.js');
+                    break;
+                case 'fr':
+                    translations = await import('../../locales/fr.js');
+                    break;
+                case 'en':
+                default:
+                    translations = await import('../../locales/en.js');
+                    break;
+            }
+
             this.translations = translations.default;
             this.updatePageContent();
         } catch (error) {
