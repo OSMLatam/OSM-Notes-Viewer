@@ -41,11 +41,11 @@
 ## Testing
 
 - [x] Add unit tests ✅
-- [ ] Add integration tests
-- [ ] Test on different browsers
-- [ ] Test on mobile devices
-- [ ] Performance testing
-- [ ] Accessibility testing
+- [x] Add integration tests ✅
+- [x] Test on different browsers ✅
+- [x] Test on mobile devices ✅
+- [x] Performance testing ✅
+- [x] Accessibility testing ✅
 
 ## Infrastructure
 
