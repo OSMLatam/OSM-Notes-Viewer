@@ -31,15 +31,17 @@
                 Browse through all users and countries in the OSM Notes dataset
             </p>
 
-            <section style="margin: 2rem 0;">
-                <h3>All Users</h3>
-                <div id="allUsers" class="loading">Loading users...</div>
-            </section>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+                <section>
+                    <h3>All Users</h3>
+                    <div id="allUsers" class="loading">Loading users...</div>
+                </section>
 
-            <section style="margin: 2rem 0;">
-                <h3>All Countries</h3>
-                <div id="allCountries" class="loading">Loading countries...</div>
-            </section>
+                <section>
+                    <h3>All Countries</h3>
+                    <div id="allCountries" class="loading">Loading countries...</div>
+                </section>
+            </div>
         </div>
     </main>
 
@@ -154,6 +156,12 @@
 
             .explore-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .container > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
             }
         }
     </style>

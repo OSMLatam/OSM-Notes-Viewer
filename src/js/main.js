@@ -91,6 +91,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     initializeElements();
     setupEventListeners();
+
+    // Set initial placeholder based on default tab
+    if (searchInput) {
+        searchInput.placeholder = i18n.t('home.search.placeholderUsers');
+    }
+
     console.log('📊 Loading initial data...');
     await loadInitialData();
     console.log('🔍 Loading search data...');
@@ -161,6 +167,15 @@ function setupEventListeners() {
     if (themeToggle) {
         themeToggle.addEventListener('click', toggleTheme);
     }
+
+    // Listen for language changes to update placeholder
+    window.addEventListener('languageChanged', () => {
+        if (searchInput) {
+            searchInput.placeholder = currentSearchType === 'users'
+                ? i18n.t('home.search.placeholderUsers')
+                : i18n.t('home.search.placeholderCountries');
+        }
+    });
 }
 
 function switchTab(tab) {
@@ -358,8 +373,11 @@ async function loadGlobalStats() {
         totalCountriesEl.textContent = formatNumber(metadata.total_countries);
         lastUpdateEl.textContent = formatDate(metadata.export_date);
 
-        // Total ${i18n.t('common.notes')} would come from summing user data if available
-        totalNotesEl.textContent = '~';
+        // Calculate total notes by summing all user notes
+        console.log('📥 Fetching user index to calculate total notes...');
+        const users = await apiClient.getUserIndex();
+        const totalNotes = users.reduce((sum, user) => sum + (user.history_whole_open || 0), 0);
+        totalNotesEl.textContent = formatNumber(totalNotes);
     } catch (error) {
         console.error('Error loading global stats:', error);
         // Show error on individual stat cards
