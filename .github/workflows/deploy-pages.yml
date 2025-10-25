@@ -1,5 +1,8 @@
 name: Deploy to GitHub Pages
 
+# IMPORTANT: GitHub Pages must be enabled in repository settings
+# Go to: Settings > Pages > Source: GitHub Actions
+
 on:
   push:
     branches: [ main ]
