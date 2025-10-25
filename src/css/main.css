@@ -599,7 +599,8 @@ section {
 }
 
 .leaderboard-item {
-    display: flex;
+    display: flex !important;
+    flex-wrap: nowrap !important;
     justify-content: space-between;
     align-items: center;
     padding: 0.4rem 0.75rem;
@@ -610,6 +611,11 @@ section {
     line-height: 1.2;
     text-decoration: none;
     color: inherit;
+    overflow: hidden;
+}
+
+.leaderboard-item * {
+    white-space: nowrap;
 }
 
 .leaderboard-item:hover,
@@ -638,6 +644,18 @@ section {
 .leaderboard-value {
     font-weight: 600;
     color: var(--text-light);
+    flex-shrink: 0;
+}
+
+.leaderboard-item > a {
+    display: inline-flex !important;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.leaderboard-item > img {
+    flex-shrink: 0;
 }
 
 /* === Loading & Empty States === */

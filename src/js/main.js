@@ -174,8 +174,8 @@ function switchTab(tab) {
     // Update placeholder
     if (searchInput) {
         searchInput.placeholder = tab === 'users'
-            ? i18n.t('home.search.placeholder')
-            : i18n.t('home.search.placeholder');
+            ? i18n.t('home.search.placeholderUsers')
+            : i18n.t('home.search.placeholderCountries');
     }
 
     // Update search component data
@@ -237,9 +237,14 @@ async function searchUsers(query) {
     const results = index.filter(user =>
         user.username.toLowerCase().includes(query.toLowerCase()) ||
         user.user_id.toString() === query
+    );
+
+    // Remove duplicates based on user_id
+    const uniqueResults = results.filter((user, index, self) =>
+        index === self.findIndex(u => u.user_id === user.user_id)
     ).slice(0, 10);
 
-    displaySearchResults(results, 'user');
+    displaySearchResults(uniqueResults, 'user');
 }
 
 async function searchCountries(query) {
@@ -250,9 +255,14 @@ async function searchCountries(query) {
         country.country_name_en?.toLowerCase().includes(query.toLowerCase()) ||
         country.country_name_es?.toLowerCase().includes(query.toLowerCase()) ||
         country.country_id.toString() === query
+    );
+
+    // Remove duplicates based on country_id
+    const uniqueResults = results.filter((country, index, self) =>
+        index === self.findIndex(c => c.country_id === country.country_id)
     ).slice(0, 10);
 
-    displaySearchResults(results, 'country');
+    displaySearchResults(uniqueResults, 'country');
 }
 
 function displaySearchResults(results, type) {
@@ -391,20 +401,18 @@ async function loadTopUsers(page = 1, sortBy = 'open') {
             const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
             const userProfileUrl = `pages/user.html?username=${encodeURIComponent(user.username)}`;
             return `
-                <a href="${userProfileUrl}" class="leaderboard-item">
+                <div class="leaderboard-item" onclick="window.location.href='${userProfileUrl}'" style="cursor: pointer;">
                     <span class="leaderboard-rank">#${globalRank}</span>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">` : ''}
-                        <span class="leaderboard-name">${user.username}</span>
-                        <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
-                            <span style="font-size: 0.9rem;">↗</span>
-                        </a>
-                        <a href="${hdycProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on HDYC">
-                            <span style="font-size: 0.9rem;">⚡</span>
-                        </a>
-                    </div>
-                    <span class="leaderboard-value">${sortBy === 'closed' ? formatNumber(user.history_whole_closed || 0) : formatNumber(user.history_whole_open || 0)}</span>
-                </a>
+                    ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; margin-right: 0.5rem;">` : ''}
+                    <span class="leaderboard-name">${user.username}</span>
+                    <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s; display: inline-flex; align-items: center; text-decoration: none; margin-left: 0.5rem;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
+                        <span style="font-size: 0.9rem;">↗</span>
+                    </a>
+                    <a href="${hdycProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s; display: inline-flex; align-items: center; text-decoration: none; margin-left: 0.25rem;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on HDYC">
+                        <span style="font-size: 0.9rem;">⚡</span>
+                    </a>
+                    <span class="leaderboard-value" style="margin-left: auto;">${sortBy === 'closed' ? formatNumber(user.history_whole_closed || 0) : formatNumber(user.history_whole_open || 0)}</span>
+                </div>
             `;
         }).join('');
 

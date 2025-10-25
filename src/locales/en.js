@@ -22,6 +22,8 @@ export default {
     'home.search.users': 'Users',
     'home.search.countries': 'Countries',
     'home.search.placeholder': 'Search by username or user ID...',
+    'home.search.placeholderUsers': 'Search by username or user ID...',
+    'home.search.placeholderCountries': 'Search by country name or ID...',
     'home.search.button': 'Search',
     'home.stats.title': 'Global Statistics',
     'home.stats.totalNotes': 'Total Notes',
