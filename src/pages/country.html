@@ -86,10 +86,14 @@
                 <section class="profile-section">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
                         <h3 style="margin: 0; flex: 1;">Top Contributors</h3>
-                        <select id="userSortCriteria" style="padding: 0.5rem 1rem; border: 2px solid var(--primary-color); border-radius: 6px; background: white; color: var(--text-color); cursor: pointer; font-size: 0.9rem; font-weight: 500; min-width: 180px;">
-                            <option value="solving">📊 Notes Closed</option>
-                            <option value="open">📝 Notes Opened</option>
-                        </select>
+                        <div class="sort-icons" style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button id="countryUserSortClosed" class="sort-icon-btn active" value="solving" title="Notes Closed" aria-label="Sort by notes closed">
+                                ✅
+                            </button>
+                            <button id="countryUserSortOpen" class="sort-icon-btn" value="open" title="Notes Opened" aria-label="Sort by notes opened">
+                                📝
+                            </button>
+                        </div>
                     </div>
                     <div id="usersContainer" class="countries-container">
                         <p class="loading">Loading users...</p>

@@ -192,6 +192,8 @@
     border-radius: var(--radius);
     transition: var(--transition);
     cursor: pointer;
+    text-decoration: none;
+    color: inherit;
 }
 
 .country-item:hover {

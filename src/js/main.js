@@ -287,6 +287,37 @@ async function loadInitialData() {
             loadTopUsers(),
             loadTopCountries()
         ]);
+
+        // Set up sort buttons
+        const userSortOpen = document.getElementById('mainUserSortOpen');
+        const userSortClosed = document.getElementById('mainUserSortClosed');
+        if (userSortOpen && userSortClosed) {
+            userSortOpen.addEventListener('click', () => {
+                userSortOpen.classList.add('active');
+                userSortClosed.classList.remove('active');
+                loadTopUsers(1, 'open');
+            });
+            userSortClosed.addEventListener('click', () => {
+                userSortClosed.classList.add('active');
+                userSortOpen.classList.remove('active');
+                loadTopUsers(1, 'closed');
+            });
+        }
+
+        const countrySortOpen = document.getElementById('mainCountrySortOpen');
+        const countrySortClosed = document.getElementById('mainCountrySortClosed');
+        if (countrySortOpen && countrySortClosed) {
+            countrySortOpen.addEventListener('click', () => {
+                countrySortOpen.classList.add('active');
+                countrySortClosed.classList.remove('active');
+                loadTopCountries(1, 'open');
+            });
+            countrySortClosed.addEventListener('click', () => {
+                countrySortClosed.classList.add('active');
+                countrySortOpen.classList.remove('active');
+                loadTopCountries(1, 'closed');
+            });
+        }
     } catch (error) {
         console.error('Error loading initial data:', error);
         // Show a general error message
@@ -329,7 +360,7 @@ async function loadGlobalStats() {
     }
 }
 
-async function loadTopUsers(page = 1) {
+async function loadTopUsers(page = 1, sortBy = 'open') {
     const container = document.getElementById('topUsers');
     currentUserPage = page;
 
@@ -341,8 +372,13 @@ async function loadTopUsers(page = 1) {
         const users = await apiClient.getUserIndex();
         console.log(`✅ Received ${users.length} users`);
 
-        // Sort by ${i18n.t('common.notes')} opened
-        const sortedUsers = users.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
+        // Sort by selected criteria
+        let sortedUsers;
+        if (sortBy === 'closed') {
+            sortedUsers = users.sort((a, b) => (b.history_whole_closed || 0) - (a.history_whole_closed || 0));
+        } else {
+            sortedUsers = users.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
+        }
 
         // Calculate pagination
         const pagination = getPaginationInfo(sortedUsers.length, ITEMS_PER_PAGE, page);
@@ -353,8 +389,9 @@ async function loadTopUsers(page = 1) {
             const avatarUrl = getUserAvatarSync(user, 40);
             const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(user.username)}`;
             const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
+            const userProfileUrl = `pages/user.html?username=${encodeURIComponent(user.username)}`;
             return `
-                <div class="leaderboard-item" onclick="window.location.href='pages/user.html?username=${encodeURIComponent(user.username)}'">
+                <a href="${userProfileUrl}" class="leaderboard-item">
                     <span class="leaderboard-rank">#${globalRank}</span>
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">` : ''}
@@ -366,8 +403,8 @@ async function loadTopUsers(page = 1) {
                             <span style="font-size: 0.9rem;">⚡</span>
                         </a>
                     </div>
-                    <span class="leaderboard-value">${formatNumber(user.history_whole_open || 0)}</span>
-                </div>
+                    <span class="leaderboard-value">${sortBy === 'closed' ? formatNumber(user.history_whole_closed || 0) : formatNumber(user.history_whole_open || 0)}</span>
+                </a>
             `;
         }).join('');
 
@@ -376,7 +413,7 @@ async function loadTopUsers(page = 1) {
         // Add pagination if needed
         const paginationContainer = document.getElementById('topUsersPagination');
         if (paginationContainer) {
-            renderPagination(paginationContainer, page, pagination.totalPages, loadTopUsers, 'users');
+            renderPagination(paginationContainer, page, pagination.totalPages, (pageNum) => loadTopUsers(pageNum, sortBy), 'users');
         }
     } catch (error) {
         handleApiError(error, container, () => {
@@ -385,7 +422,7 @@ async function loadTopUsers(page = 1) {
     }
 }
 
-async function loadTopCountries(page = 1) {
+async function loadTopCountries(page = 1, sortBy = 'open') {
     const container = document.getElementById('topCountries');
     currentCountryPage = page;
 
@@ -395,8 +432,13 @@ async function loadTopCountries(page = 1) {
     try {
         const countries = await apiClient.getCountryIndex();
 
-        // Sort by ${i18n.t('common.notes')} opened
-        const sortedCountries = countries.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
+        // Sort by selected criteria
+        let sortedCountries;
+        if (sortBy === 'closed') {
+            sortedCountries = countries.sort((a, b) => (b.history_whole_closed || 0) - (a.history_whole_closed || 0));
+        } else {
+            sortedCountries = countries.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
+        }
 
         // Calculate pagination
         const pagination = getPaginationInfo(sortedCountries.length, ITEMS_PER_PAGE, page);
@@ -404,16 +446,14 @@ async function loadTopCountries(page = 1) {
 
         const html = topCountries.map((country, index) => {
             const globalRank = pagination.startIndex + index + 1;
+            const countryName = country.country_name_en || country.country_name;
+            const countryFlag = getCountryFlagFromObject(country);
             return `
-                <div class="leaderboard-item" onclick="window.location.href='pages/country.html?id=${country.country_id}'">
+                <a href="pages/country.html?id=${country.country_id}" class="leaderboard-item">
                     <span class="leaderboard-rank">#${globalRank}</span>
-                    <span class="leaderboard-name">${(() => {
-                        const countryName = country.country_name_en || country.country_name;
-                        const countryFlag = getCountryFlagFromObject(country);
-                        return countryFlag ? `${countryFlag} ${countryName}` : countryName;
-                    })()}</span>
-                    <span class="leaderboard-value">${formatNumber(country.history_whole_open || 0)}</span>
-                </div>
+                    <span class="leaderboard-name">${countryFlag ? `${countryFlag} ${countryName}` : countryName}</span>
+                    <span class="leaderboard-value">${sortBy === 'closed' ? formatNumber(country.history_whole_closed || 0) : formatNumber(country.history_whole_open || 0)}</span>
+                </a>
             `;
         }).join('');
 
@@ -422,7 +462,7 @@ async function loadTopCountries(page = 1) {
         // Add pagination if needed
         const paginationContainer = document.getElementById('topCountriesPagination');
         if (paginationContainer) {
-            renderPagination(paginationContainer, page, pagination.totalPages, loadTopCountries, 'countries');
+            renderPagination(paginationContainer, page, pagination.totalPages, (pageNum) => loadTopCountries(pageNum, sortBy), 'countries');
         }
     } catch (error) {
         handleApiError(error, container, () => {

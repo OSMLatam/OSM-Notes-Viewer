@@ -194,8 +194,9 @@ function displayUsers(users) {
                 const avatarUrl = getUserAvatarSync(user, 40);
                 const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(user.username)}`;
                 const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
+                const userProfileUrl = `user.html?username=${encodeURIComponent(user.username)}`;
                 return `
-                <div class="explore-item" onclick="window.location.href='user.html?username=${encodeURIComponent(user.username)}'">
+                <a href="${userProfileUrl}" class="explore-item">
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
                         <span class="explore-name">${user.username}</span>
@@ -207,7 +208,7 @@ function displayUsers(users) {
                         </a>
                     </div>
                     <span class="explore-value">${formatNumber(user.history_whole_open || 0)} notes</span>
-                </div>
+                </a>
             `;
             }).join('')}
         </div>
@@ -256,10 +257,10 @@ function displayCountries(countries) {
                 const countryName = country.country_name_en || country.country_name;
                 const countryFlag = getCountryFlagFromObject(country);
                 return `
-                <div class="explore-item" onclick="window.location.href='country.html?id=${country.country_id}'">
+                <a href="country.html?id=${country.country_id}" class="explore-item">
                     <span class="explore-name">${countryFlag ? `${countryFlag} ` : ''}${countryName}</span>
                     <span class="explore-value">${formatNumber(country.history_whole_open || 0)} notes</span>
-                </div>
+                </a>
             `;
             }).join('')}
         </div>

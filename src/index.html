@@ -70,16 +70,17 @@
         <section class="search-section animate-fade-in-up" aria-label="Search section" style="animation-delay: 0.3s;">
             <div class="container">
                 <div class="search-box card">
-                    <h3 data-i18n="home.search.title">Search</h3>
-                    <div class="search-tabs" role="tablist" aria-label="Search type selection" data-i18n-aria-label="a11y.searchType">
-                        <button class="tab-btn active" data-tab="users" role="tab" aria-selected="true" aria-controls="searchResults">
-                            <span aria-hidden="true">👤</span> <span data-i18n="home.search.users">Users</span>
-                        </button>
-                        <button class="tab-btn" data-tab="countries" role="tab" aria-selected="false" aria-controls="searchResults">
-                            <span aria-hidden="true">🌍</span> <span data-i18n="home.search.countries">Countries</span>
-                        </button>
-                    </div>
-                    <div class="search-input-wrapper">
+                    <div class="search-compact-wrapper" style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                        <span class="search-label" style="font-weight: 600; color: var(--text-color); font-size: 1rem;" data-i18n="home.search.title">Search</span>
+                        <div class="search-tabs" role="tablist" aria-label="Search type selection" data-i18n-aria-label="a11y.searchType" style="display: flex; gap: 0.25rem;">
+                            <button class="tab-btn active" data-tab="users" role="tab" aria-selected="true" aria-controls="searchResults" title="Users">
+                                <span aria-hidden="true">👤</span>
+                            </button>
+                            <button class="tab-btn" data-tab="countries" role="tab" aria-selected="false" aria-controls="searchResults" title="Countries">
+                                <span aria-hidden="true">🌍</span>
+                            </button>
+                        </div>
+                        <div class="search-input-wrapper" style="flex: 1; min-width: 200px;">
                         <label for="searchInput" class="sr-only">Search input</label>
                         <input
                             type="text"
@@ -96,6 +97,7 @@
                         <button id="searchBtn" class="search-btn btn btn-primary" aria-label="Perform search" data-i18n="home.search.button">
                             Search
                         </button>
+                        </div>
                     </div>
                     <div id="searchResults" class="search-results" role="listbox" aria-label="Search results" data-i18n-aria-label="a11y.searchResults"></div>
                 </div>
@@ -134,14 +136,34 @@
             <div class="container">
                 <div class="leaderboards">
                     <div class="leaderboard" role="region" aria-label="Top contributors" data-i18n-aria-label="a11y.topContributors">
-                        <h3><span aria-hidden="true">🏆</span> <span data-i18n="home.leaderboard.topContributors">Top Contributors</span></h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <h3 style="margin: 0;"><span aria-hidden="true">🏆</span> <span data-i18n="home.leaderboard.topContributors">Top Contributors</span></h3>
+                            <div class="sort-icons" style="display: flex; gap: 0.5rem; align-items: center;">
+                                <button id="mainUserSortOpen" class="sort-icon-btn active" value="open" title="Notes Opened" aria-label="Sort by notes opened">
+                                    📝
+                                </button>
+                                <button id="mainUserSortClosed" class="sort-icon-btn" value="closed" title="Notes Closed" aria-label="Sort by notes closed">
+                                    ✅
+                                </button>
+                            </div>
+                        </div>
                         <div id="topUsers" class="leaderboard-list" role="list" aria-live="polite">
                             <!-- Skeleton loaders will be inserted here -->
                         </div>
                         <div id="topUsersPagination" role="navigation" aria-label="Users pagination" data-i18n-aria-label="a11y.pagination"></div>
                     </div>
                     <div class="leaderboard" role="region" aria-label="Most active countries" data-i18n-aria-label="a11y.mostActiveCountries">
-                        <h3><span aria-hidden="true">🌍</span> <span data-i18n="home.leaderboard.mostActiveCountries">Most Active Countries</span></h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <h3 style="margin: 0;"><span aria-hidden="true">🌍</span> <span data-i18n="home.leaderboard.mostActiveCountries">Most Active Countries</span></h3>
+                            <div class="sort-icons" style="display: flex; gap: 0.5rem; align-items: center;">
+                                <button id="mainCountrySortOpen" class="sort-icon-btn active" value="open" title="Notes Opened" aria-label="Sort by notes opened">
+                                    📝
+                                </button>
+                                <button id="mainCountrySortClosed" class="sort-icon-btn" value="closed" title="Notes Closed" aria-label="Sort by notes closed">
+                                    ✅
+                                </button>
+                            </div>
+                        </div>
                         <div id="topCountries" class="leaderboard-list" role="list" aria-live="polite">
                             <!-- Skeleton loaders will be inserted here -->
                         </div>

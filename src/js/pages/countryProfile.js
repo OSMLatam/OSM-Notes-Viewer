@@ -147,11 +147,20 @@ async function setupUsersSection(country) {
         solving: country.users_solving_notes || []
     };
 
-    // Setup event listener for sort criteria
-    const sortSelect = document.getElementById('userSortCriteria');
-    if (sortSelect) {
-        sortSelect.addEventListener('change', () => {
-            renderUsers(window.countryUserData, sortSelect.value);
+    // Setup event listener for sort buttons
+    const sortOpen = document.getElementById('countryUserSortOpen');
+    const sortClosed = document.getElementById('countryUserSortClosed');
+
+    if (sortOpen && sortClosed) {
+        sortOpen.addEventListener('click', () => {
+            sortOpen.classList.add('active');
+            sortClosed.classList.remove('active');
+            renderUsers(window.countryUserData, 'open');
+        });
+        sortClosed.addEventListener('click', () => {
+            sortClosed.classList.add('active');
+            sortOpen.classList.remove('active');
+            renderUsers(window.countryUserData, 'solving');
         });
     }
 
@@ -192,9 +201,10 @@ async function renderUsers(userData, sortBy = 'solving') {
 
             const openedCount = formatNumber(openMap.get(item.username) || 0);
             const solvedCount = formatNumber(solvingMap.get(item.username) || 0);
+            const userProfileUrl = `user.html?username=${encodeURIComponent(item.username)}`;
 
             return `
-                <div class="country-item" onclick="window.location.href='user.html?username=${encodeURIComponent(item.username)}'">
+                <a href="${userProfileUrl}" class="country-item">
                     <span class="country-rank">#${index + 1}</span>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
@@ -210,7 +220,7 @@ async function renderUsers(userData, sortBy = 'solving') {
                         <span title="Notes opened">${openedCount}📝</span>
                         <span title="Notes closed">${solvedCount}✅</span>
                     </div>
-                </div>
+                </a>
             `;
         }).join('');
 
