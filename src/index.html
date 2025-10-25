@@ -10,6 +10,7 @@
     <link rel="icon" type="image/svg+xml" href="../public/favicon.svg">
     <link rel="apple-touch-icon" href="../public/favicon.svg">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
     <link rel="manifest" href="../public/manifest.json">
     <meta name="theme-color" content="#7ebc6f">
 </head>
@@ -43,18 +44,18 @@
     </header>
 
     <main class="main" id="main-content" role="main">
-        <section class="hero">
+        <section class="hero animate-fade-in">
             <div class="container">
-                <h2 class="hero-title" data-i18n="home.hero.title">Explore OpenStreetMap Notes Analytics</h2>
-                <p class="hero-subtitle" data-i18n="home.hero.subtitle">
+                <h2 class="hero-title animate-fade-in-up" data-i18n="home.hero.title">Explore OpenStreetMap Notes Analytics</h2>
+                <p class="hero-subtitle animate-fade-in-up" data-i18n="home.hero.subtitle" style="animation-delay: 0.2s;">
                     Discover insights about OSM notes activity across users and countries
                 </p>
             </div>
         </section>
 
-        <section class="search-section" aria-label="Search section">
+        <section class="search-section animate-fade-in-up" aria-label="Search section" style="animation-delay: 0.3s;">
             <div class="container">
-                <div class="search-box">
+                <div class="search-box card">
                     <h3 data-i18n="home.search.title">Search</h3>
                     <div class="search-tabs" role="tablist" aria-label="Search type selection" data-i18n-aria-label="a11y.searchType">
                         <button class="tab-btn active" data-tab="users" role="tab" aria-selected="true" aria-controls="searchResults">
@@ -69,7 +70,7 @@
                         <input
                             type="text"
                             id="searchInput"
-                            class="search-input"
+                            class="search-input form-input focus-ring"
                             placeholder="Search by username or user ID..."
                             autocomplete="off"
                             role="searchbox"
@@ -78,7 +79,7 @@
                             aria-controls="searchResults"
                             data-i18n-aria-label="a11y.searchInput"
                         >
-                        <button id="searchBtn" class="search-btn" aria-label="Perform search" data-i18n="home.search.button">
+                        <button id="searchBtn" class="search-btn btn btn-primary" aria-label="Perform search" data-i18n="home.search.button">
                             Search
                         </button>
                     </div>
@@ -87,26 +88,26 @@
             </div>
         </section>
 
-        <section class="stats-section" aria-label="Global statistics">
+        <section class="stats-section animate-fade-in-up" aria-label="Global statistics" style="animation-delay: 0.4s;">
             <div class="container">
                 <h3 data-i18n="home.stats.title">Global Statistics</h3>
                 <div id="globalStats" class="stats-grid" role="region" aria-label="Statistics" data-i18n-aria-label="a11y.statistics">
-                    <div class="stat-card" role="article">
+                    <div class="stat-card card stagger-item" role="article">
                         <div class="stat-icon" aria-hidden="true">📝</div>
                         <div class="stat-value" id="totalNotes" aria-live="polite">-</div>
                         <div class="stat-label" data-i18n="home.stats.totalNotes">Total Notes</div>
                     </div>
-                    <div class="stat-card" role="article">
+                    <div class="stat-card card stagger-item" role="article">
                         <div class="stat-icon" aria-hidden="true">👥</div>
                         <div class="stat-value" id="totalUsers" aria-live="polite">-</div>
                         <div class="stat-label" data-i18n="home.stats.activeUsers">Active Users</div>
                     </div>
-                    <div class="stat-card" role="article">
+                    <div class="stat-card card stagger-item" role="article">
                         <div class="stat-icon" aria-hidden="true">🌍</div>
                         <div class="stat-value" id="totalCountries" aria-live="polite">-</div>
                         <div class="stat-label" data-i18n="home.stats.countries">Countries</div>
                     </div>
-                    <div class="stat-card" role="article">
+                    <div class="stat-card card stagger-item" role="article">
                         <div class="stat-icon" aria-hidden="true">🕐</div>
                         <div class="stat-value" id="lastUpdate" aria-live="polite">-</div>
                         <div class="stat-label" data-i18n="home.stats.lastUpdate">Last Updated</div>

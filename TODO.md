@@ -21,7 +21,7 @@
 
 ## Low Priority
 
-- [ ] Add animations and transitions
+- [x] Add animations and transitions ✅
 - [ ] Implement advanced search (multiple filters)
 - [ ] Add export functionality (CSV, PDF)
 - [ ] Create embeddable widgets

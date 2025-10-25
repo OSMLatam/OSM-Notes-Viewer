@@ -8,6 +8,7 @@ import { renderPagination, getPaginationInfo } from './components/pagination.js'
 import { initDarkMode, toggleTheme } from './components/darkMode.js';
 import { analytics } from './utils/analytics.js';
 import { i18n } from './utils/i18n.js';
+import { animationManager } from './components/animationManager.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
@@ -67,6 +68,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize dark mode
     initDarkMode();
+
+    // Initialize animations
+    animationManager.animatePageTransition('forward');
 
     initializeElements();
     setupEventListeners();
@@ -243,25 +247,20 @@ function displaySearchResults(results, type) {
         return;
     }
 
-    const html = results.map(item => {
+    // Animate search results
+    animationManager.animateSearchResults(searchResults, results.map(item => {
         if (type === 'user') {
-            return `
-                <div class="leaderboard-item" onclick="window.location.href='pages/user.html?id=${item.user_id}'">
-                    <span class="leaderboard-name">${item.username}</span>
-                    <span class="leaderboard-value">${formatNumber(item.history_whole_open || 0)} ${i18n.t('common.notes')}</span>
-                </div>
-            `;
+            return {
+                title: item.username,
+                description: `ID: ${item.user_id} • ${formatNumber(item.history_whole_open || 0)} ${i18n.t('common.notes')}`
+            };
         } else {
-            return `
-                <div class="leaderboard-item" onclick="window.location.href='pages/country.html?id=${item.country_id}'">
-                    <span class="leaderboard-name">${item.country_name_en || item.country_name}</span>
-                    <span class="leaderboard-value">${formatNumber(item.history_whole_open || 0)} ${i18n.t('common.notes')}</span>
-                </div>
-            `;
+            return {
+                title: item.country_name_en || item.country_name,
+                description: `ID: ${item.country_id} • ${formatNumber(item.history_whole_open || 0)} ${i18n.t('common.notes')}`
+            };
         }
-    }).join('');
-
-    searchResults.innerHTML = html;
+    }));
 }
 
 async function loadInitialData() {

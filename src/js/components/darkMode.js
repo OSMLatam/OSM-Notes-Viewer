@@ -1,5 +1,6 @@
 // Dark Mode Toggle Component
 import { analytics } from '../utils/analytics.js';
+import { animationManager } from './animationManager.js';
 
 const THEME_KEY = 'osm-notes-theme';
 const DARK_THEME = 'dark';
@@ -47,10 +48,17 @@ export function setTheme(theme) {
 export function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === DARK_THEME ? LIGHT_THEME : DARK_THEME;
+
+    // Animate theme transition
+    animationManager.animateThemeTransition();
+
     setTheme(newTheme);
-    
+
     // Track theme toggle
     analytics.trackThemeToggle(newTheme);
+
+    // Show toast notification
+    animationManager.showToast(`Switched to ${newTheme} mode`, 'success');
 }
 
 /**
