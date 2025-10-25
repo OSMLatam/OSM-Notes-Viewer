@@ -206,7 +206,7 @@ function handleSearchSelect(item) {
     // Track profile navigation
     if (currentSearchType === 'users') {
         analytics.trackProfileView('user', item.user_id);
-        window.location.href = `pages/user.html?id=${item.user_id}`;
+        window.location.href = `pages/user.html?username=${encodeURIComponent(item.username)}`;
     } else {
         analytics.trackProfileView('country', item.country_id);
         window.location.href = `pages/country.html?id=${item.country_id}`;
@@ -353,7 +353,7 @@ async function loadTopUsers(page = 1) {
             const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(user.username)}`;
             const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
             return `
-                <div class="leaderboard-item" onclick="window.location.href='pages/user.html?id=${user.user_id}'">
+                <div class="leaderboard-item" onclick="window.location.href='pages/user.html?username=${encodeURIComponent(user.username)}'">
                     <span class="leaderboard-rank">#${globalRank}</span>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}

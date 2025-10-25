@@ -7,23 +7,54 @@ import { shareComponent } from '../components/share.js';
 import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js';
 import { getUserAvatarSync } from '../utils/userAvatar.js';
 
-// Get user ID from URL
+// Get user ID or username from URL
 const urlParams = new URLSearchParams(window.location.search);
 const userId = urlParams.get('id');
+const username = urlParams.get('username');
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
-    if (!userId) {
-        showError('No user ID provided');
-        return;
-    }
-
     try {
-        await loadUserProfile(userId);
+        // Try to load by username first if provided
+        if (username) {
+            await loadUserProfileByUsername(username);
+        } else if (userId) {
+            await loadUserProfile(userId);
+        } else {
+            showError('No user ID or username provided');
+        }
     } catch (error) {
         showError(`Failed to load user profile: ${error.message}`);
     }
 });
+
+async function loadUserProfileByUsername(username) {
+    const loading = document.getElementById('profileLoading');
+
+    try {
+        // Fetch user index to find user_id by username
+        const userIndex = await apiClient.getUserIndex();
+        const user = userIndex.find(u => u.username === username);
+
+        if (!user) {
+            throw new Error(`User "${username}" not found`);
+        }
+
+        // Load profile using user_id
+        await loadUserProfile(user.user_id);
+
+        // Update URL to include username for better SEO and shareability
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('username', username);
+        if (!newUrl.searchParams.has('id')) {
+            newUrl.searchParams.set('id', user.user_id);
+        }
+        window.history.replaceState({}, '', newUrl);
+    } catch (error) {
+        loading.style.display = 'none';
+        throw error;
+    }
+}
 
 async function loadUserProfile(userId) {
     const loading = document.getElementById('profileLoading');
@@ -58,6 +89,22 @@ async function loadUserProfile(userId) {
         if (hdycProfileLinkEl && hdycProfileLinkAnchor && user.username) {
             hdycProfileLinkAnchor.href = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
             hdycProfileLinkEl.style.display = 'block';
+        }
+
+        // Add link to OSM Stats
+        const osmStatsLinkEl = document.getElementById('osmStatsLink');
+        const osmStatsLinkAnchor = document.getElementById('osmStatsLinkAnchor');
+        if (osmStatsLinkEl && osmStatsLinkAnchor && user.username) {
+            osmStatsLinkAnchor.href = `https://resultmaps.neis-one.org/osm-statistics/${encodeURIComponent(user.username)}`;
+            osmStatsLinkEl.style.display = 'block';
+        }
+
+        // Add link to OSM Wiki
+        const osmWikiLinkEl = document.getElementById('osmWikiLink');
+        const osmWikiLinkAnchor = document.getElementById('osmWikiLinkAnchor');
+        if (osmWikiLinkEl && osmWikiLinkAnchor && user.username) {
+            osmWikiLinkAnchor.href = `https://wiki.openstreetmap.org/wiki/User:${encodeURIComponent(user.username)}`;
+            osmWikiLinkEl.style.display = 'block';
         }
 
         // Contributor type

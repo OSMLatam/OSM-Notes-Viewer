@@ -195,7 +195,7 @@ function displayUsers(users) {
                 const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(user.username)}`;
                 const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
                 return `
-                <div class="explore-item" onclick="window.location.href='user.html?id=${user.user_id}'">
+                <div class="explore-item" onclick="window.location.href='user.html?username=${encodeURIComponent(user.username)}'">
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
                         <span class="explore-name">${user.username}</span>

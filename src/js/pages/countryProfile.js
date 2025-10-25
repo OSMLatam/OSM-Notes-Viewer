@@ -160,7 +160,7 @@ async function renderUsers(users) {
             const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(item.username)}`;
             const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(item.username)}`;
             return `
-                <div class="country-item" onclick="window.location.href='user.html?id=${userId}'">
+                <div class="country-item" onclick="window.location.href='user.html?username=${encodeURIComponent(item.username)}'">
                     <span class="country-rank">#${item.rank}</span>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
