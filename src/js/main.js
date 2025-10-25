@@ -26,11 +26,19 @@ class UserSearchComponent extends SearchComponent {
     renderItem(item, index) {
         if (currentSearchType === 'users') {
             const avatarUrl = getUserAvatarSync(item, 40);
+            const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(item.username)}`;
+            const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(item.username)}`;
             return `
                 <div class="search-result-item">
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
                         <strong>${this.highlightMatch(item.username, this.input.value)}</strong>
+                        <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
+                            <span style="font-size: 0.9rem;">↗</span>
+                        </a>
+                        <a href="${hdycProfileUrl}" target="_blank" rel="noopener noreferrer" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on HDYC">
+                            <span style="font-size: 0.9rem;">⚡</span>
+                        </a>
                     </div>
                     <span class="text-light">ID: ${item.user_id}</span>
                 </div>
@@ -342,12 +350,20 @@ async function loadTopUsers(page = 1) {
         const html = topUsers.map((user, index) => {
             const globalRank = pagination.startIndex + index + 1;
             const avatarUrl = getUserAvatarSync(user, 40);
+            const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(user.username)}`;
+            const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
             return `
                 <div class="leaderboard-item" onclick="window.location.href='pages/user.html?id=${user.user_id}'">
                     <span class="leaderboard-rank">#${globalRank}</span>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
                         <span class="leaderboard-name">${user.username}</span>
+                        <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
+                            <span style="font-size: 0.9rem;">↗</span>
+                        </a>
+                        <a href="${hdycProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on HDYC">
+                            <span style="font-size: 0.9rem;">⚡</span>
+                        </a>
                     </div>
                     <span class="leaderboard-value">${formatNumber(user.history_whole_open || 0)}</span>
                 </div>

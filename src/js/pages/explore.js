@@ -192,11 +192,19 @@ function displayUsers(users) {
         <div class="explore-grid">
             ${users.map(user => {
                 const avatarUrl = getUserAvatarSync(user, 40);
+                const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(user.username)}`;
+                const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
                 return `
                 <div class="explore-item" onclick="window.location.href='user.html?id=${user.user_id}'">
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
                         <span class="explore-name">${user.username}</span>
+                        <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
+                            <span style="font-size: 0.9rem;">↗</span>
+                        </a>
+                        <a href="${hdycProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on HDYC">
+                            <span style="font-size: 0.9rem;">⚡</span>
+                        </a>
                     </div>
                     <span class="explore-value">${formatNumber(user.history_whole_open || 0)} notes</span>
                 </div>

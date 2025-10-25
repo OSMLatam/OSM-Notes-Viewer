@@ -44,6 +44,22 @@ async function loadUserProfile(userId) {
         // Load user avatar
         loadUserAvatar(user);
 
+        // Add link to OSM profile
+        const osmProfileLinkEl = document.getElementById('osmProfileLink');
+        const osmProfileLinkAnchor = document.getElementById('osmProfileLinkAnchor');
+        if (osmProfileLinkEl && osmProfileLinkAnchor && user.username) {
+            osmProfileLinkAnchor.href = `https://www.openstreetmap.org/user/${encodeURIComponent(user.username)}`;
+            osmProfileLinkEl.style.display = 'block';
+        }
+
+        // Add link to HDYC profile
+        const hdycProfileLinkEl = document.getElementById('hdycProfileLink');
+        const hdycProfileLinkAnchor = document.getElementById('hdycProfileLinkAnchor');
+        if (hdycProfileLinkEl && hdycProfileLinkAnchor && user.username) {
+            hdycProfileLinkAnchor.href = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
+            hdycProfileLinkEl.style.display = 'block';
+        }
+
         // Contributor type
         const contributorTypeEl = document.getElementById('contributorType');
         if (user.contributor_type_name) {

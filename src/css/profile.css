@@ -44,6 +44,30 @@
     font-size: 1rem;
 }
 
+/* OSM Profile Link */
+#osmProfileLinkAnchor {
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+#osmProfileLinkAnchor:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+/* HDYC Profile Link */
+#hdycProfileLinkAnchor {
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+#hdycProfileLinkAnchor:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
 .profile-section {
     background: white;
     padding: 2rem;

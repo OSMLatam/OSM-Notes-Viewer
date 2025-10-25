@@ -157,12 +157,20 @@ async function renderUsers(users) {
             const userId = userMap.get(item.username) || '';
             const userObj = { username: item.username, user_id: userId };
             const avatarUrl = getUserAvatarSync(userObj, 40);
+            const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(item.username)}`;
+            const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(item.username)}`;
             return `
                 <div class="country-item" onclick="window.location.href='user.html?id=${userId}'">
                     <span class="country-rank">#${item.rank}</span>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
                         <span class="country-name">${item.username}</span>
+                        <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
+                            <span style="font-size: 0.9rem;">↗</span>
+                        </a>
+                        <a href="${hdycProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on HDYC">
+                            <span style="font-size: 0.9rem;">⚡</span>
+                        </a>
                     </div>
                     <span class="country-count">${formatNumber(item.quantity)}</span>
                 </div>
