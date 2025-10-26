@@ -257,7 +257,8 @@ function handleSearchSelect(item) {
         window.location.href = `pages/user.html?username=${encodeURIComponent(item.username)}`;
     } else {
         analytics.trackProfileView('country', item.country_id);
-        window.location.href = `pages/country.html?id=${item.country_id}`;
+        const countryName = item.country_name_en || item.country_name;
+        window.location.href = `pages/country.html?name=${encodeURIComponent(countryName)}`;
     }
 }
 
@@ -517,7 +518,7 @@ async function loadTopCountries(page = 1, sortBy = 'open') {
             const countryName = country.country_name_en || country.country_name;
             const countryFlag = getCountryFlagFromObject(country);
             return `
-                <a href="pages/country.html?id=${country.country_id}" class="leaderboard-item">
+                <a href="pages/country.html?name=${encodeURIComponent(countryName)}" class="leaderboard-item">
                     <span class="leaderboard-rank">#${globalRank}</span>
                     <span class="leaderboard-name">${countryFlag ? `${countryFlag} ${countryName}` : countryName}</span>
                     <span class="leaderboard-value">${sortBy === 'closed' ? formatNumber(country.history_whole_closed || 0) : formatNumber(country.history_whole_open || 0)}</span>

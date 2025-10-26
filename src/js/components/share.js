@@ -28,7 +28,7 @@ export class ShareComponent {
                     text: text || '',
                     url: currentUrl
                 });
-                
+
                 analytics.trackShare('native', 'web_share');
                 return true;
             } catch (error) {
@@ -51,15 +51,15 @@ export class ShareComponent {
     async copyToClipboard(url) {
         try {
             await navigator.clipboard.writeText(url);
-            
+
             // Show feedback
             this.showToast('Link copied to clipboard!');
-            
+
             analytics.trackShare('clipboard', 'copy_link');
             return true;
         } catch (error) {
             console.error('Copy failed:', error);
-            
+
             // Fallback to old method
             return this.fallbackCopy(url);
         }
@@ -76,7 +76,7 @@ export class ShareComponent {
         textArea.style.opacity = '0';
         document.body.appendChild(textArea);
         textArea.select();
-        
+
         try {
             document.execCommand('copy');
             this.showToast('Link copied to clipboard!');
@@ -100,17 +100,19 @@ export class ShareComponent {
         const { title, text, url } = options;
         const currentUrl = encodeURIComponent(url || window.location.href);
         const shareText = encodeURIComponent(text || title || document.title);
-        
+
         let shareUrl = '';
 
         switch (platform) {
             case 'twitter':
-                shareUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${currentUrl}`;
+                shareUrl = `https://twitter.com/intent/tweet?text=${shareText}%20%23OpenStreetMap&url=${currentUrl}`;
                 break;
             case 'facebook':
                 shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`;
                 break;
             case 'linkedin':
+                // Copy text to clipboard for LinkedIn since it doesn't accept pre-filled text
+                this.copyToClipboard(`${text || title || document.title} ${url || window.location.href}`);
                 shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}`;
                 break;
             case 'whatsapp':
@@ -126,7 +128,14 @@ export class ShareComponent {
 
         // Open in new window
         window.open(shareUrl, '_blank', 'width=600,height=400');
-        
+
+        // Show toast for LinkedIn to remind user to paste
+        if (platform === 'linkedin') {
+            setTimeout(() => {
+                this.showToast('Text copied to clipboard! Paste it in your LinkedIn post.', 'success');
+            }, 500);
+        }
+
         analytics.trackShare(platform, 'social_share');
         return true;
     }
@@ -147,7 +156,7 @@ export class ShareComponent {
         const toast = document.createElement('div');
         toast.className = `share-toast share-toast-${type}`;
         toast.textContent = message;
-        
+
         // Add styles
         Object.assign(toast.style, {
             position: 'fixed',
@@ -180,7 +189,7 @@ export class ShareComponent {
      */
     createShareButton(options = {}) {
         const { type = 'button', size = 'medium', icon = true } = options;
-        
+
         return `
             <button class="share-btn share-btn-${size}" ${type === 'button' ? 'type="button"' : ''}>
                 ${icon ? '<span class="share-icon">🔗</span>' : ''}
@@ -196,7 +205,7 @@ export class ShareComponent {
      */
     renderShareMenu(container, options) {
         const { title, text, url } = options;
-        
+
         container.innerHTML = `
             <div class="share-menu">
                 <div class="share-menu-header">
@@ -242,7 +251,7 @@ export class ShareComponent {
         container.querySelectorAll('.share-option').forEach(option => {
             option.addEventListener('click', async (e) => {
                 const action = e.currentTarget.dataset.action;
-                
+
                 switch (action) {
                     case 'native':
                         await this.share({ title, text, url });
@@ -254,7 +263,7 @@ export class ShareComponent {
                         this.shareToSocial(action, { title, text, url });
                         break;
                 }
-                
+
                 // Close menu
                 container.innerHTML = '';
             });
@@ -280,7 +289,7 @@ if (!document.querySelector('#share-animations')) {
                 opacity: 1;
             }
         }
-        
+
         @keyframes slideOutDown {
             from {
                 transform: translateY(0);

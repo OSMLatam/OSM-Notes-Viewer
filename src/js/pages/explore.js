@@ -318,7 +318,7 @@ function displayCountries(countries, page = 1, totalPages = 1) {
                 const countryName = country.country_name_en || country.country_name;
                 const countryFlag = getCountryFlagFromObject(country);
                 return `
-                <div class="explore-item" onclick="window.location.href='country.html?id=${country.country_id}'">
+                <div class="explore-item" onclick="window.location.href='country.html?name=${encodeURIComponent(countryName)}'">
                     <div style="display: flex; align-items: center; gap: 0.75rem; min-height: 32px;">
                         <span class="explore-name">${countryFlag ? `${countryFlag} ` : ''}${countryName}</span>
                     </div>
