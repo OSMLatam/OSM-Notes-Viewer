@@ -91,9 +91,24 @@ function createWorkingHoursSVG(matrix, title) {
 
     // Legend
     const legendY = height + 20;
+
+    // Get translations with fallback
+    let lessLabel = 'Less';
+    let moreLabel = 'More';
+    try {
+        if (i18n && typeof i18n.t === 'function') {
+            const less = i18n.t('user.workingHours.legend.less');
+            const more = i18n.t('user.workingHours.legend.more');
+            if (less && less !== 'user.workingHours.legend.less') lessLabel = less;
+            if (more && more !== 'user.workingHours.legend.more') moreLabel = more;
+        }
+    } catch (e) {
+        // Use defaults
+    }
+
     const legendItems = [
-        { label: i18n.t('user.workingHours.legend.less'), color: '#ebedf0' },
-        { label: i18n.t('user.workingHours.legend.more'), color: '#216e39' }
+        { label: lessLabel, color: '#ebedf0' },
+        { label: moreLabel, color: '#216e39' }
     ];
 
     let legendContent = '';
@@ -137,12 +152,39 @@ function getHeatColor(value, maxValue) {
  * @param {string} context - Context: 'user' or 'country'
  */
 export function renderWorkingHoursSection(openingHours, commentingHours, closingHours, container, context = 'user') {
+    // Helper function to safely get translations
+    const safeT = (key) => {
+        try {
+            if (i18n && typeof i18n.t === 'function') {
+                const result = i18n.t(key);
+                // If result is the same as key, translation not found
+                return result && result !== key ? result : getDefaultTranslation(key, context);
+            }
+            return getDefaultTranslation(key, context);
+        } catch (e) {
+            return getDefaultTranslation(key, context);
+        }
+    };
+
+    // Default translations
+    function getDefaultTranslation(key, ctx) {
+        const defaults = {
+            'user.workingHours.opening': 'Opening Notes',
+            'user.workingHours.commenting': 'Commenting',
+            'user.workingHours.closing': 'Closing Notes',
+            'country.workingHours.opening': 'Opening Notes',
+            'country.workingHours.commenting': 'Commenting',
+            'country.workingHours.closing': 'Closing Notes'
+        };
+        return defaults[key] || 'Working Hours';
+    }
+
     let html = '<div class="working-hours-section">';
 
     // Opening hours
     if (openingHours && openingHours.length > 0) {
         html += '<div class="heatmap-subsection">';
-        html += `<h4>${i18n.t(`${context}.workingHours.opening`)}</h4>`;
+        html += `<h4>${safeT(`${context}.workingHours.opening`)}</h4>`;
         html += '<div id="openingHeatmap"></div>';
         html += '</div>';
     }
@@ -150,7 +192,7 @@ export function renderWorkingHoursSection(openingHours, commentingHours, closing
     // Commenting hours
     if (commentingHours && commentingHours.length > 0) {
         html += '<div class="heatmap-subsection">';
-        html += `<h4>${i18n.t(`${context}.workingHours.commenting`)}</h4>`;
+        html += `<h4>${safeT(`${context}.workingHours.commenting`)}</h4>`;
         html += '<div id="commentingHeatmap"></div>';
         html += '</div>';
     }
@@ -158,7 +200,7 @@ export function renderWorkingHoursSection(openingHours, commentingHours, closing
     // Closing hours
     if (closingHours && closingHours.length > 0) {
         html += '<div class="heatmap-subsection">';
-        html += `<h4>${i18n.t(`${context}.workingHours.closing`)}</h4>`;
+        html += `<h4>${safeT(`${context}.workingHours.closing`)}</h4>`;
         html += '<div id="closingHeatmap"></div>';
         html += '</div>';
     }
@@ -169,17 +211,17 @@ export function renderWorkingHoursSection(openingHours, commentingHours, closing
     // Render individual heatmaps
     if (openingHours && openingHours.length > 0) {
         const openingContainer = container.querySelector('#openingHeatmap');
-        renderWorkingHoursHeatmap(openingHours, openingContainer, i18n.t(`${context}.workingHours.opening`));
+        renderWorkingHoursHeatmap(openingHours, openingContainer, safeT(`${context}.workingHours.opening`));
     }
 
     if (commentingHours && commentingHours.length > 0) {
         const commentingContainer = container.querySelector('#commentingHeatmap');
-        renderWorkingHoursHeatmap(commentingHours, commentingContainer, i18n.t(`${context}.workingHours.commenting`));
+        renderWorkingHoursHeatmap(commentingHours, commentingContainer, safeT(`${context}.workingHours.commenting`));
     }
 
     if (closingHours && closingHours.length > 0) {
         const closingContainer = container.querySelector('#closingHeatmap');
-        renderWorkingHoursHeatmap(closingHours, closingContainer, i18n.t(`${context}.workingHours.closing`));
+        renderWorkingHoursHeatmap(closingHours, closingContainer, safeT(`${context}.workingHours.closing`));
     }
 }
 
