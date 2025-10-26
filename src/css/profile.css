@@ -314,10 +314,6 @@
     border-radius: 4px;
 }
 
-#activityHeatmap::-webkit-scrollbar-thumb:hover {
-    background: var(--text-light);
-}
-
 /* Responsive: Stack contributors columns on mobile */
 @media (max-width: 768px) {
     .contributors-grid {

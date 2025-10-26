@@ -11,7 +11,11 @@ import { createSimpleNoteCard } from '../utils/noteMap.js';
 // Get user ID or username from URL
 const urlParams = new URLSearchParams(window.location.search);
 const userId = urlParams.get('id');
-const username = urlParams.get('username');
+let username = urlParams.get('username');
+// Decode username in case it has special characters
+if (username) {
+    username = decodeURIComponent(username);
+}
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {

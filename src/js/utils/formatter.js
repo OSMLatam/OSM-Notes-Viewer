@@ -28,13 +28,34 @@ export function formatDate(dateString) {
 
     try {
         const date = new Date(dateString);
-        return new Intl.DateTimeFormat('en-US', {
+        const formatted = new Intl.DateTimeFormat('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
         }).format(date);
+        return formatted;
+    } catch (error) {
+        return dateString;
+    }
+}
+
+export function formatDateWithBreak(dateString) {
+    if (!dateString) return '-';
+
+    try {
+        const date = new Date(dateString);
+        const datePart = new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        }).format(date);
+        const timePart = new Intl.DateTimeFormat('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+        return `${datePart}<br>${timePart}`;
     } catch (error) {
         return dateString;
     }

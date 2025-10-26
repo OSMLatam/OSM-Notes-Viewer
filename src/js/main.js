@@ -1,6 +1,6 @@
 // Main application script
 import { apiClient } from './api/apiClient.js';
-import { formatNumber, formatDate } from './utils/formatter.js';
+import { formatNumber, formatDate, formatDateWithBreak } from './utils/formatter.js';
 import { showError, showLoading, showEmpty, handleApiError } from './components/errorHandler.js';
 import { SearchComponent } from './components/search.js';
 import { createStatSkeletons, createLeaderboardSkeletons } from './components/skeleton.js';
@@ -414,7 +414,7 @@ async function loadGlobalStats() {
 
         totalUsersEl.textContent = formatNumber(metadata.total_users);
         totalCountriesEl.textContent = formatNumber(metadata.total_countries);
-        lastUpdateEl.textContent = formatDate(metadata.export_date);
+        lastUpdateEl.innerHTML = formatDateWithBreak(metadata.export_date);
 
         // Calculate total notes by summing all user notes
         console.log('📥 Fetching user index to calculate total notes...');
@@ -426,7 +426,7 @@ async function loadGlobalStats() {
         // Show error on individual stat cards
         totalUsersEl.textContent = '?';
         totalCountriesEl.textContent = '?';
-        lastUpdateEl.textContent = '?';
+        lastUpdateEl.innerHTML = '?';
         totalNotesEl.textContent = '?';
     }
 }
