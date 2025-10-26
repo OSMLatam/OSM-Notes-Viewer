@@ -5,7 +5,7 @@ import { renderActivityHeatmap } from '../components/activityHeatmap.js';
 import { createBarChart } from '../components/chart.js';
 import { shareComponent } from '../components/share.js';
 import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js';
-import { getUserAvatarSync } from '../utils/userAvatar.js';
+import { getUserAvatarSync, loadOSMAvatarInBackground } from '../utils/userAvatar.js';
 import { createSimpleNoteCard } from '../utils/noteMap.js';
 
 // Get user ID or username from URL
@@ -22,13 +22,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Try to load by username first if provided
         if (username) {
+            console.log('Loading user by username:', username);
             await loadUserProfileByUsername(username);
         } else if (userId) {
+            console.log('Loading user by ID:', userId);
             await loadUserProfile(userId);
         } else {
             showError('No user ID or username provided');
         }
     } catch (error) {
+        console.error('Error loading user profile:', error);
         showError(`Failed to load user profile: ${error.message}`);
     }
 });
@@ -39,23 +42,38 @@ async function loadUserProfileByUsername(username) {
     try {
         // Fetch user index to find user_id by username
         const userIndex = await apiClient.getUserIndex();
-        const user = userIndex.find(u => u.username === username);
+
+        // Try exact match first
+        let user = userIndex.find(u => u.username === username);
+
+        // If not found, try case-insensitive match
+        if (!user) {
+            user = userIndex.find(u => u.username.toLowerCase() === username.toLowerCase());
+        }
+
+        // If still not found, try with trimmed whitespace
+        if (!user) {
+            user = userIndex.find(u => u.username.trim() === username.trim());
+        }
 
         if (!user) {
+            console.error('User not found:', username);
+            console.log('Available users (first 10):', userIndex.slice(0, 10).map(u => u.username));
             throw new Error(`User "${username}" not found`);
         }
+
+        console.log('Found user:', user.username, 'ID:', user.user_id);
 
         // Load profile using user_id
         await loadUserProfile(user.user_id);
 
-        // Update URL to include username for better SEO and shareability
+        // Update URL to only use username (not ID)
         const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('id'); // Remove ID from URL
         newUrl.searchParams.set('username', username);
-        if (!newUrl.searchParams.has('id')) {
-            newUrl.searchParams.set('id', user.user_id);
-        }
         window.history.replaceState({}, '', newUrl);
     } catch (error) {
+        console.error('Error in loadUserProfileByUsername:', error);
         loading.style.display = 'none';
         throw error;
     }
@@ -94,22 +112,6 @@ async function loadUserProfile(userId) {
         if (hdycProfileLinkEl && hdycProfileLinkAnchor && user.username) {
             hdycProfileLinkAnchor.href = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
             hdycProfileLinkEl.style.display = 'block';
-        }
-
-        // Add link to OSM Stats
-        const osmStatsLinkEl = document.getElementById('osmStatsLink');
-        const osmStatsLinkAnchor = document.getElementById('osmStatsLinkAnchor');
-        if (osmStatsLinkEl && osmStatsLinkAnchor && user.username) {
-            osmStatsLinkAnchor.href = `https://resultmaps.neis-one.org/osm-statistics/${encodeURIComponent(user.username)}`;
-            osmStatsLinkEl.style.display = 'block';
-        }
-
-        // Add link to OSM Wiki
-        const osmWikiLinkEl = document.getElementById('osmWikiLink');
-        const osmWikiLinkAnchor = document.getElementById('osmWikiLinkAnchor');
-        if (osmWikiLinkEl && osmWikiLinkAnchor && user.username) {
-            osmWikiLinkAnchor.href = `https://wiki.openstreetmap.org/wiki/User:${encodeURIComponent(user.username)}`;
-            osmWikiLinkEl.style.display = 'block';
         }
 
         // Contributor type
@@ -342,6 +344,9 @@ function loadUserAvatar(user) {
             avatarImg.style.display = 'none';
             avatarContainer.style.display = 'none';
         };
+
+        // Load OSM avatar in background
+        loadOSMAvatarInBackground(user, avatarImg);
     }
 }
 

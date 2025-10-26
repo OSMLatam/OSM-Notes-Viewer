@@ -5,7 +5,7 @@ import { shareComponent } from '../components/share.js';
 import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js';
 import { renderActivityHeatmap } from '../components/activityHeatmap.js';
 import { getCountryFlagFromObject } from '../utils/countryFlags.js';
-import { getUserAvatarSync } from '../utils/userAvatar.js';
+import { getUserAvatarSync, loadOSMAvatarInBackground } from '../utils/userAvatar.js';
 
 // Get country name from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -329,7 +329,7 @@ async function renderUsersList(users, containerId, showOpened) {
                 <div class="country-item" style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0;">
                         <span class="country-rank" style="flex-shrink: 0;">#${index + 1}</span>
-                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">` : ''}
+                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" data-user-id="${userId}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">` : ''}
                         <a href="${userProfileUrl}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
                             <span class="country-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.username}</span>
                         </a>
@@ -348,6 +348,16 @@ async function renderUsersList(users, containerId, showOpened) {
         }).join('');
 
         container.innerHTML = html;
+
+        // Load OSM avatars in background
+        const imgElements = container.querySelectorAll('img');
+        users.forEach((item, index) => {
+            const userId = userMap.get(item.username) || '';
+            const userObj = { username: item.username, user_id: userId };
+            if (imgElements[index] && userId) {
+                loadOSMAvatarInBackground(userObj, imgElements[index]);
+            }
+        });
     } catch (error) {
         console.error('Error loading user index:', error);
         container.innerHTML = '<p style="color: var(--text-light);">Error loading user data</p>';

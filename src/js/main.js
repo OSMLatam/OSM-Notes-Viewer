@@ -11,7 +11,7 @@ import { i18n } from './utils/i18n.js';
 import { animationManager } from './components/animationManager.js';
 import { keyboardShortcuts } from './components/keyboardShortcuts.js';
 import { getCountryFlagFromObject } from './utils/countryFlags.js';
-import { getUserAvatarSync } from './utils/userAvatar.js';
+import { getUserAvatarSync, loadOSMAvatarInBackground } from './utils/userAvatar.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
@@ -24,6 +24,24 @@ class UserSearchComponent extends SearchComponent {
                item.country_id?.toString() === query;
     }
 
+    showResults(items) {
+        super.showResults(items);
+
+        // Load OSM avatars in background for search results
+        if (currentSearchType === 'users') {
+            setTimeout(() => {
+                this.results.querySelectorAll('img.search-avatar').forEach((img) => {
+                    const userId = parseInt(img.getAttribute('data-user-id'));
+                    const username = img.alt;
+                    if (userId && username) {
+                        const userObj = { username, user_id: userId };
+                        loadOSMAvatarInBackground(userObj, img);
+                    }
+                });
+            }, 0);
+        }
+    }
+
     renderItem(item, index) {
         if (currentSearchType === 'users') {
             const avatarUrl = getUserAvatarSync(item, 40);
@@ -32,7 +50,7 @@ class UserSearchComponent extends SearchComponent {
             return `
                 <div class="search-result-item">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">` : ''}
+                        ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" class="search-avatar" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" data-user-id="${item.user_id}">` : ''}
                         <strong>${this.highlightMatch(item.username, this.input.value)}</strong>
                         <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
                             <span style="font-size: 0.9rem;">↗</span>
@@ -478,6 +496,15 @@ async function loadTopUsers(page = 1, sortBy = 'open') {
         }).join('');
 
         container.innerHTML = html;
+
+        // Load OSM avatars in background
+        const imgElements = container.querySelectorAll('img[src*="ui-avatars.com"]');
+        imgElements.forEach((img, index) => {
+            if (topUsers[index]) {
+                const userObj = { username: topUsers[index].username, user_id: topUsers[index].user_id };
+                loadOSMAvatarInBackground(userObj, img);
+            }
+        });
 
         // Add pagination if needed
         const paginationContainer = document.getElementById('topUsersPagination');
