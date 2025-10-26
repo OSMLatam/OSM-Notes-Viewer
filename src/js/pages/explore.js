@@ -71,8 +71,8 @@ let currentUsersPage = 1;
 let currentCountriesPage = 1;
 const USERS_PER_PAGE = 200;
 const COUNTRIES_PER_PAGE = 200;
-const MAX_USERS_PAGES = 10; // Show up to 2000 users (200 per page)
-const MAX_COUNTRIES_PAGES = 10; // Show up to 2000 countries (200 per page)
+const MAX_USERS_PAGES = 50; // Show up to 10,000 users (200 per page)
+const MAX_COUNTRIES_PAGES = 50; // Show up to 10,000 countries (200 per page)
 
 // Filter and sort state
 const filters = {
