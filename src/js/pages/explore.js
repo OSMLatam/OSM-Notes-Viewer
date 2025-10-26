@@ -10,13 +10,32 @@ import { getUserAvatarSync } from '../utils/userAvatar.js';
 function createPagination(page, totalPages, onPageChange, type) {
     if (totalPages <= 1) return '';
 
-    let html = '<div class="pagination" style="display: flex; gap: 0.5rem; justify-content: center; margin: 1rem 0;">';
+    // Show always 5 pages when possible
+    let startPage = Math.max(1, page - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
 
-    if (page > 1) {
-        html += `<button onclick="applyFiltersAndDisplay('${type}', ${page - 1})" class="pagination-btn" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer;">← Previous</button>`;
+    // Adjust start if we're near the end
+    if (endPage - startPage < 4) {
+        startPage = Math.max(1, endPage - 4);
     }
 
-    for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
+    let html = '<div class="pagination" style="display: flex; gap: 0.5rem; justify-content: center; margin: 1rem 0; flex-wrap: wrap;">';
+
+    // Previous button
+    if (page > 1) {
+        html += `<button onclick="applyFiltersAndDisplay('${type}', ${page - 1})" class="pagination-btn" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">← Anterior</button>`;
+    }
+
+    // Always show page 1 if not in range
+    if (startPage > 1) {
+        html += `<button onclick="applyFiltersAndDisplay('${type}', 1)" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">1</button>`;
+        if (startPage > 2) {
+            html += `<span style="padding: 0.5rem 0.25rem; color: var(--text-light);">...</span>`;
+        }
+    }
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
         if (i === page) {
             html += `<span style="padding: 0.5rem 1rem; background: var(--primary-color); color: white; border-radius: 4px;">${i}</span>`;
         } else {
@@ -24,8 +43,17 @@ function createPagination(page, totalPages, onPageChange, type) {
         }
     }
 
+    // Always show last page if not in range
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            html += `<span style="padding: 0.5rem 0.25rem; color: var(--text-light);">...</span>`;
+        }
+        html += `<button onclick="applyFiltersAndDisplay('${type}', ${totalPages})" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">${totalPages}</button>`;
+    }
+
+    // Next button
     if (page < totalPages) {
-        html += `<button onclick="applyFiltersAndDisplay('${type}', ${page + 1})" class="pagination-btn" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer;">Next →</button>`;
+        html += `<button onclick="applyFiltersAndDisplay('${type}', ${page + 1})" class="pagination-btn" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">Siguiente →</button>`;
     }
 
     html += '</div>';
@@ -41,21 +69,35 @@ let filteredCountries = [];
 // Pagination state
 let currentUsersPage = 1;
 let currentCountriesPage = 1;
-const USERS_PER_PAGE = 20;
-const COUNTRIES_PER_PAGE = 50;
-const MAX_USERS_PAGES = 10; // Show up to 200 users (20 per page)
-const MAX_COUNTRIES_PAGES = 20; // Show up to 1000 countries (50 per page)
+const USERS_PER_PAGE = 200;
+const COUNTRIES_PER_PAGE = 200;
+const MAX_USERS_PAGES = 10; // Show up to 2000 users (200 per page)
+const MAX_COUNTRIES_PAGES = 10; // Show up to 2000 countries (200 per page)
 
 // Filter and sort state
 const filters = {
     users: {
-        sortBy: 'most_active', // most_active, recent, alphabetical_asc, alphabetical_desc
+        sortBy: 'notes_closed', // notes_open, notes_closed, alphabetical_asc, alphabetical_desc
         limit: MAX_USERS_PAGES
     },
     countries: {
-        sortBy: 'most_active',
+        sortBy: 'notes_closed',
         limit: MAX_COUNTRIES_PAGES
     }
+};
+
+// Make filters available globally
+window.exploreFilters = filters;
+
+// Global functions for sort buttons
+window.setUserSort = function(sortBy) {
+    filters.users.sortBy = sortBy;
+    applyFiltersAndDisplay('users', 1);
+};
+
+window.setCountrySort = function(sortBy) {
+    filters.countries.sortBy = sortBy;
+    applyFiltersAndDisplay('countries', 1);
 };
 
 // Initialize page
@@ -104,45 +146,8 @@ async function loadAllCountries() {
 }
 
 function setupEventListeners() {
-    // User filters
-    const userSortSelect = document.getElementById('userSortSelect');
-    const userLimitSelect = document.getElementById('userLimitSelect');
-
-    if (userSortSelect) {
-        userSortSelect.addEventListener('change', (e) => {
-            filters.users.sortBy = e.target.value;
-            applyFiltersAndDisplay('users');
-            analytics.trackEvent('explore_filter', 'explore', `users_sort_${e.target.value}`);
-        });
-    }
-
-    if (userLimitSelect) {
-        userLimitSelect.addEventListener('change', (e) => {
-            filters.users.limit = parseInt(e.target.value);
-            applyFiltersAndDisplay('users');
-            analytics.trackEvent('explore_filter', 'explore', `users_limit_${e.target.value}`);
-        });
-    }
-
-    // Country filters
-    const countrySortSelect = document.getElementById('countrySortSelect');
-    const countryLimitSelect = document.getElementById('countryLimitSelect');
-
-    if (countrySortSelect) {
-        countrySortSelect.addEventListener('change', (e) => {
-            filters.countries.sortBy = e.target.value;
-            applyFiltersAndDisplay('countries');
-            analytics.trackEvent('explore_filter', 'explore', `countries_sort_${e.target.value}`);
-        });
-    }
-
-    if (countryLimitSelect) {
-        countryLimitSelect.addEventListener('change', (e) => {
-            filters.countries.limit = parseInt(e.target.value);
-            applyFiltersAndDisplay('countries');
-            analytics.trackEvent('explore_filter', 'explore', `countries_limit_${e.target.value}`);
-        });
-    }
+    // Event listeners are now handled inline via onclick in the buttons
+    // This function is kept for consistency but is essentially a no-op now
 }
 
 function applyFiltersAndDisplay(type, page = 1) {
@@ -165,21 +170,20 @@ function applyFiltersAndDisplay(type, page = 1) {
     }
 }
 
+// Make applyFiltersAndDisplay available globally for onclick handlers
+window.applyFiltersAndDisplay = applyFiltersAndDisplay;
+
 function sortData(data, sortBy) {
     const sorted = [...data];
 
     switch (sortBy) {
-        case 'most_active':
-            // Sort by closed notes (most active = most notes closed)
-            return sorted.sort((a, b) => (b.history_whole_closed || 0) - (a.history_whole_closed || 0));
+        case 'notes_open':
+            // Sort by open notes (descending)
+            return sorted.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
 
-        case 'recent':
-            // Sort by last activity (if available), otherwise by user_id (higher = more recent)
-            return sorted.sort((a, b) => {
-                const aLast = a.last_activity || a.user_id || 0;
-                const bLast = b.last_activity || b.user_id || 0;
-                return bLast - aLast;
-            });
+        case 'notes_closed':
+            // Sort by closed notes (descending)
+            return sorted.sort((a, b) => (b.history_whole_closed || 0) - (a.history_whole_closed || 0));
 
         case 'alphabetical_asc':
             return sorted.sort((a, b) => {
@@ -210,17 +214,31 @@ function displayUsers(users, page = 1, totalPages = 1) {
 
     const html = `
         <div class="filters-container">
-            <div class="filter-group">
-                <label for="userSortSelect">Sort by:</label>
-                <select id="userSortSelect" class="filter-select">
-                    <option value="most_active" ${filters.users.sortBy === 'most_active' ? 'selected' : ''}>Most Active</option>
-                    <option value="recent" ${filters.users.sortBy === 'recent' ? 'selected' : ''}>Most Recent</option>
-                    <option value="alphabetical_asc" ${filters.users.sortBy === 'alphabetical_asc' ? 'selected' : ''}>A-Z</option>
-                    <option value="alphabetical_desc" ${filters.users.sortBy === 'alphabetical_desc' ? 'selected' : ''}>Z-A</option>
-                </select>
+            <div class="filter-group" style="display: flex; gap: 0.5rem; align-items: center;">
+                <span style="font-weight: 600; color: var(--text-color);">Ordenar:</span>
+                <button onclick="setUserSort('notes_open')"
+                    class="filter-icon-btn ${filters.users.sortBy === 'notes_open' ? 'active' : ''}"
+                    title="Notas Abiertas" style="padding: 0.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                    📝 Abiertas
+                </button>
+                <button onclick="setUserSort('notes_closed')"
+                    class="filter-icon-btn ${filters.users.sortBy === 'notes_closed' ? 'active' : ''}"
+                    title="Notas Cerradas" style="padding: 0.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                    ✓ Cerradas
+                </button>
+                <button onclick="setUserSort('alphabetical_asc')"
+                    class="filter-icon-btn ${filters.users.sortBy === 'alphabetical_asc' ? 'active' : ''}"
+                    title="A-Z" style="padding: 0.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                    ↓ A-Z
+                </button>
+                <button onclick="setUserSort('alphabetical_desc')"
+                    class="filter-icon-btn ${filters.users.sortBy === 'alphabetical_desc' ? 'active' : ''}"
+                    title="Z-A" style="padding: 0.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                    ↑ Z-A
+                </button>
             </div>
             <div class="filter-info">
-                Showing ${users.length} of ${allUsers.length} users - Page ${page} of ${totalPages}
+                Mostrando ${users.length} de ${allUsers.length} usuarios - Página ${page} de ${totalPages}
             </div>
         </div>
         ${createPagination(page, totalPages, (p) => applyFiltersAndDisplay('users', p), 'users')}
@@ -242,7 +260,9 @@ function displayUsers(users, page = 1, totalPages = 1) {
                             <span style="font-size: 0.9rem;">⚡</span>
                         </a>
                     </div>
-                    <span class="explore-value">${formatNumber(user.history_whole_closed || 0)} notes closed</span>
+                    <span class="explore-value">${filters.users.sortBy === 'notes_open'
+                        ? formatNumber(user.history_whole_open || 0) + ' notas abiertas'
+                        : formatNumber(user.history_whole_closed || 0) + ' notas cerradas'}</span>
                 </div>
             `;
             }).join('')}
@@ -265,17 +285,31 @@ function displayCountries(countries, page = 1, totalPages = 1) {
 
     const html = `
         <div class="filters-container">
-            <div class="filter-group">
-                <label for="countrySortSelect">Sort by:</label>
-                <select id="countrySortSelect" class="filter-select">
-                    <option value="most_active" ${filters.countries.sortBy === 'most_active' ? 'selected' : ''}>Most Active</option>
-                    <option value="recent" ${filters.countries.sortBy === 'recent' ? 'selected' : ''}>Most Recent</option>
-                    <option value="alphabetical_asc" ${filters.countries.sortBy === 'alphabetical_asc' ? 'selected' : ''}>A-Z</option>
-                    <option value="alphabetical_desc" ${filters.countries.sortBy === 'alphabetical_desc' ? 'selected' : ''}>Z-A</option>
-                </select>
+            <div class="filter-group" style="display: flex; gap: 0.5rem; align-items: center;">
+                <span style="font-weight: 600; color: var(--text-color);">Ordenar:</span>
+                <button onclick="setCountrySort('notes_open')"
+                    class="filter-icon-btn ${filters.countries.sortBy === 'notes_open' ? 'active' : ''}"
+                    title="Notas Abiertas" style="padding: 0.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                    📝 Abiertas
+                </button>
+                <button onclick="setCountrySort('notes_closed')"
+                    class="filter-icon-btn ${filters.countries.sortBy === 'notes_closed' ? 'active' : ''}"
+                    title="Notas Cerradas" style="padding: 0.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                    ✓ Cerradas
+                </button>
+                <button onclick="setCountrySort('alphabetical_asc')"
+                    class="filter-icon-btn ${filters.countries.sortBy === 'alphabetical_asc' ? 'active' : ''}"
+                    title="A-Z" style="padding: 0.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                    ↓ A-Z
+                </button>
+                <button onclick="setCountrySort('alphabetical_desc')"
+                    class="filter-icon-btn ${filters.countries.sortBy === 'alphabetical_desc' ? 'active' : ''}"
+                    title="Z-A" style="padding: 0.5rem; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; transition: all 0.2s;">
+                    ↑ Z-A
+                </button>
             </div>
             <div class="filter-info">
-                Showing ${countries.length} of ${allCountries.length} countries - Page ${page} of ${totalPages}
+                Mostrando ${countries.length} de ${allCountries.length} regiones - Página ${page} de ${totalPages}
             </div>
         </div>
         ${createPagination(page, totalPages, (p) => applyFiltersAndDisplay('countries', p), 'countries')}
@@ -285,8 +319,12 @@ function displayCountries(countries, page = 1, totalPages = 1) {
                 const countryFlag = getCountryFlagFromObject(country);
                 return `
                 <div class="explore-item" onclick="window.location.href='country.html?id=${country.country_id}'">
-                    <span class="explore-name">${countryFlag ? `${countryFlag} ` : ''}${countryName}</span>
-                    <span class="explore-value">${formatNumber(country.history_whole_closed || 0)} notes closed</span>
+                    <div style="display: flex; align-items: center; gap: 0.75rem; min-height: 32px;">
+                        <span class="explore-name">${countryFlag ? `${countryFlag} ` : ''}${countryName}</span>
+                    </div>
+                    <span class="explore-value">${filters.countries.sortBy === 'notes_open'
+                        ? formatNumber(country.history_whole_open || 0) + ' notas abiertas'
+                        : formatNumber(country.history_whole_closed || 0) + ' notas cerradas'}</span>
                 </div>
             `;
             }).join('')}
