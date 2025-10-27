@@ -419,10 +419,14 @@ async function loadGlobalStats() {
     const totalCountriesEl = document.getElementById('totalCountries');
     const lastUpdateEl = document.getElementById('lastUpdate');
     const totalNotesEl = document.getElementById('totalNotes');
+    const totalNotesOpenEl = document.getElementById('totalNotesOpen');
+    const totalNotesClosedEl = document.getElementById('totalNotesClosed');
+    const firstNoteOpenEl = document.getElementById('firstNoteOpen');
+    const firstNoteClosedEl = document.getElementById('firstNoteClosed');
 
     // Show loading spinner
-    [totalUsersEl, totalCountriesEl, lastUpdateEl, totalNotesEl].forEach(el => {
-        el.innerHTML = '<div class="loading-spinner-small"></div>';
+    [totalUsersEl, totalCountriesEl, lastUpdateEl, totalNotesEl, totalNotesOpenEl, totalNotesClosedEl, firstNoteOpenEl, firstNoteClosedEl].forEach(el => {
+        if (el) el.innerHTML = '<div class="loading-spinner-small"></div>';
     });
 
     try {
@@ -434,18 +438,57 @@ async function loadGlobalStats() {
         totalCountriesEl.textContent = formatNumber(metadata.total_countries);
         lastUpdateEl.innerHTML = formatDateWithBreak(metadata.export_date);
 
-        // Calculate total notes by summing all user notes
-        console.log('📥 Fetching user index to calculate total notes...');
-        const users = await apiClient.getUserIndex();
-        const totalNotes = users.reduce((sum, user) => sum + (user.history_whole_open || 0), 0);
+        // Calculate totals by summing all user and country notes
+        console.log('📥 Fetching indexes to calculate stats...');
+        const [users, countries] = await Promise.all([
+            apiClient.getUserIndex(),
+            apiClient.getCountryIndex()
+        ]);
+
+        // Calculate from users
+        const totalNotesOpen = users.reduce((sum, user) => sum + (user.history_whole_open || 0), 0);
+        const totalNotesClosed = users.reduce((sum, user) => sum + (user.history_whole_closed || 0), 0);
+        const totalNotes = totalNotesOpen + totalNotesClosed;
+
+        // Find first notes from countries (they should have earliest dates)
+        let firstOpenDate = null;
+        let firstClosedDate = null;
+
+        countries.forEach(country => {
+            if (country.dates_most_open && country.dates_most_open.length > 0) {
+                const dates = country.dates_most_open.map(d => new Date(d));
+                const earliestDate = new Date(Math.min(...dates));
+                if (!firstOpenDate || earliestDate < firstOpenDate) {
+                    firstOpenDate = earliestDate;
+                }
+            }
+            if (country.dates_most_closed && country.dates_most_closed.length > 0) {
+                const dates = country.dates_most_closed.map(d => new Date(d));
+                const earliestDate = new Date(Math.min(...dates));
+                if (!firstClosedDate || earliestDate < firstClosedDate) {
+                    firstClosedDate = earliestDate;
+                }
+            }
+        });
+
+        // Display values
+        totalNotesOpenEl.textContent = formatNumber(totalNotesOpen);
+        totalNotesClosedEl.textContent = formatNumber(totalNotesClosed);
         totalNotesEl.textContent = formatNumber(totalNotes);
+
+        firstNoteOpenEl.textContent = firstOpenDate
+            ? firstOpenDate.toLocaleDateString()
+            : 'N/A';
+        firstNoteClosedEl.textContent = firstClosedDate
+            ? firstClosedDate.toLocaleDateString()
+            : 'N/A';
+
     } catch (error) {
         console.error('Error loading global stats:', error);
         // Show error on individual stat cards
-        totalUsersEl.textContent = '?';
-        totalCountriesEl.textContent = '?';
-        lastUpdateEl.innerHTML = '?';
-        totalNotesEl.textContent = '?';
+        [totalUsersEl, totalCountriesEl, lastUpdateEl, totalNotesEl, totalNotesOpenEl, totalNotesClosedEl, firstNoteOpenEl, firstNoteClosedEl].forEach(el => {
+            if (el) el.textContent = '?';
+        });
     }
 }
 
@@ -453,8 +496,8 @@ async function loadTopUsers(page = 1, sortBy = 'open') {
     const container = document.getElementById('topUsers');
     currentUserPage = page;
 
-    // Show skeleton loader
-    container.innerHTML = createLeaderboardSkeletons(ITEMS_PER_PAGE);
+    // Show skeleton loader - only 10 items for home page
+    container.innerHTML = createLeaderboardSkeletons(10);
 
     try {
         console.log('📥 Fetching user index...');
@@ -469,12 +512,11 @@ async function loadTopUsers(page = 1, sortBy = 'open') {
             sortedUsers = users.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
         }
 
-        // Calculate pagination
-        const pagination = getPaginationInfo(sortedUsers.length, ITEMS_PER_PAGE, page);
-        const topUsers = sortedUsers.slice(pagination.startIndex, pagination.endIndex);
+        // Only show top 10
+        const topUsers = sortedUsers.slice(0, 10);
 
         const html = topUsers.map((user, index) => {
-            const globalRank = pagination.startIndex + index + 1;
+            const globalRank = index + 1;
             const avatarUrl = getUserAvatarSync(user, 40);
             const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(user.username)}`;
             const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
@@ -505,12 +547,6 @@ async function loadTopUsers(page = 1, sortBy = 'open') {
                 loadOSMAvatarInBackground(userObj, img);
             }
         });
-
-        // Add pagination if needed
-        const paginationContainer = document.getElementById('topUsersPagination');
-        if (paginationContainer) {
-            renderPagination(paginationContainer, page, pagination.totalPages, (pageNum) => loadTopUsers(pageNum, sortBy), 'users');
-        }
     } catch (error) {
         handleApiError(error, container, () => {
             loadTopUsers(page);
@@ -522,8 +558,8 @@ async function loadTopCountries(page = 1, sortBy = 'open') {
     const container = document.getElementById('topCountries');
     currentCountryPage = page;
 
-    // Show skeleton loader
-    container.innerHTML = createLeaderboardSkeletons(ITEMS_PER_PAGE);
+    // Show skeleton loader - only 10 items for home page
+    container.innerHTML = createLeaderboardSkeletons(10);
 
     try {
         const countries = await apiClient.getCountryIndex();
@@ -536,12 +572,11 @@ async function loadTopCountries(page = 1, sortBy = 'open') {
             sortedCountries = countries.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
         }
 
-        // Calculate pagination
-        const pagination = getPaginationInfo(sortedCountries.length, ITEMS_PER_PAGE, page);
-        const topCountries = sortedCountries.slice(pagination.startIndex, pagination.endIndex);
+        // Only show top 10
+        const topCountries = sortedCountries.slice(0, 10);
 
         const html = topCountries.map((country, index) => {
-            const globalRank = pagination.startIndex + index + 1;
+            const globalRank = index + 1;
             const countryName = country.country_name_en || country.country_name;
             const countryFlag = getCountryFlagFromObject(country);
             return `
@@ -554,12 +589,6 @@ async function loadTopCountries(page = 1, sortBy = 'open') {
         }).join('');
 
         container.innerHTML = html;
-
-        // Add pagination if needed
-        const paginationContainer = document.getElementById('topCountriesPagination');
-        if (paginationContainer) {
-            renderPagination(paginationContainer, page, pagination.totalPages, (pageNum) => loadTopCountries(pageNum, sortBy), 'countries');
-        }
     } catch (error) {
         handleApiError(error, container, () => {
             loadTopCountries(page);

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - OSM Notes Viewer</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="stylesheet" href="../css/main.css">
+    <style>
+        .stats-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .stats-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .stats-header h1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-header p {
+            color: var(--text-light);
+        }
+
+        .controls-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-weight: 500;
+        }
+
+        .control-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .chart-container h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.25rem;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        .comparison-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .comparison-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
+                </a>
+            </h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="stats.html" class="nav-link active">Stats</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="stats-container">
+            <div class="stats-header">
+                <h1>📊 Interactive Statistics</h1>
+                <p>Explore OSM Notes data with interactive visualizations</p>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-group">
+                    <label>Dataset:</label>
+                    <select id="datasetSelect" class="control-select">
+                        <option value="all">All Data</option>
+                        <option value="top10">Top 10</option>
+                        <option value="top20">Top 20</option>
+                        <option value="top50">Top 50</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Type:</label>
+                    <select id="typeSelect" class="control-select">
+                        <option value="users">Users</option>
+                        <option value="countries">Countries</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Metric:</label>
+                    <select id="metricSelect" class="control-select">
+                        <option value="open">Opened Notes</option>
+                        <option value="closed">Closed Notes</option>
+                        <option value="both">Both</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>📈 Bar Chart</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>🥧 Pie Chart</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-container">
+                <h3>⚖️ Comparison Chart</h3>
+                <div class="comparison-wrapper">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <p>
+                <span>Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+                | <span>Processed by</span>
+                <a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
+                & <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
+            </p>
+            <p>
+                <a href="https://github.com/OSMLatam/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                | <span>Version</span> 1.0.0
+            </p>
+            <p class="footer-copyright">
+                © 2025 OSM Latam Community | <span>Made with</span> ❤️ <span>for OSM</span>
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                <span>Made by</span> <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="../js/pages/stats.js"></script>
+    <script type="module" src="../js/analytics-init.js"></script>
+</body>
+</html>

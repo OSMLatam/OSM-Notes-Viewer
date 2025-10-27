@@ -51,6 +51,7 @@
             <nav class="nav" role="navigation" aria-label="Main navigation" data-i18n-aria-label="a11y.mainNavigation">
                 <a href="index.html" class="nav-link active" aria-current="page" data-i18n="nav.home">Home</a>
                 <a href="pages/explore.html" class="nav-link" data-i18n="nav.explore">Explore</a>
+                <a href="pages/stats.html" class="nav-link" data-i18n="nav.stats">Stats</a>
                 <a href="pages/about.html" class="nav-link" data-i18n="nav.about">About</a>
             </nav>
         </div>
@@ -109,6 +110,16 @@
                 <div id="globalStats" class="stats-grid" role="region" aria-label="Statistics" data-i18n-aria-label="a11y.statistics">
                     <div class="stat-card card stagger-item" role="article">
                         <div class="stat-icon" aria-hidden="true">📝</div>
+                        <div class="stat-value" id="totalNotesOpen" aria-live="polite">-</div>
+                        <div class="stat-label" data-i18n="home.stats.totalNotesOpen">Total Notes Opened</div>
+                    </div>
+                    <div class="stat-card card stagger-item" role="article">
+                        <div class="stat-icon" aria-hidden="true">✅</div>
+                        <div class="stat-value" id="totalNotesClosed" aria-live="polite">-</div>
+                        <div class="stat-label" data-i18n="home.stats.totalNotesClosed">Total Notes Closed</div>
+                    </div>
+                    <div class="stat-card card stagger-item" role="article">
+                        <div class="stat-icon" aria-hidden="true">📊</div>
                         <div class="stat-value" id="totalNotes" aria-live="polite">-</div>
                         <div class="stat-label" data-i18n="home.stats.totalNotes">Total Notes</div>
                     </div>
@@ -127,7 +138,20 @@
                         <div class="stat-value" id="lastUpdate" aria-live="polite">-</div>
                         <div class="stat-label" data-i18n="home.stats.lastUpdate">Last Updated</div>
                     </div>
+                    <div class="stat-card card stagger-item" role="article">
+                        <div class="stat-icon" aria-hidden="true">🎯</div>
+                        <div class="stat-value" id="firstNoteOpen" aria-live="polite">-</div>
+                        <div class="stat-label" data-i18n="home.stats.firstNoteOpen">First Note Opened</div>
+                    </div>
+                    <div class="stat-card card stagger-item" role="article">
+                        <div class="stat-icon" aria-hidden="true">🏁</div>
+                        <div class="stat-value" id="firstNoteClosed" aria-live="polite">-</div>
+                        <div class="stat-label" data-i18n="home.stats.firstNoteClosed">First Note Closed</div>
+                    </div>
                 </div>
+                <p style="text-align: center; margin-top: 1.5rem;">
+                    <a href="pages/stats.html" class="btn btn-secondary">📊 View Detailed Statistics</a>
+                </p>
             </div>
         </section>
 
@@ -136,7 +160,7 @@
                 <div class="leaderboards">
                     <div class="leaderboard" role="region" aria-label="Top contributors" data-i18n-aria-label="a11y.topContributors">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                            <h3 style="margin: 0;"><span aria-hidden="true">🏆</span> <span data-i18n="home.leaderboard.topContributors">Top Contributors</span></h3>
+                            <h3 style="margin: 0;"><span aria-hidden="true">🏆</span> <span data-i18n="home.leaderboard.topContributors">Top 10 Contributors (All Time)</span></h3>
                             <div class="sort-icons" style="display: flex; gap: 0.5rem; align-items: center;">
                                 <button id="mainUserSortOpen" class="sort-icon-btn active" value="open" title="Notes Opened" aria-label="Sort by notes opened">
                                     📝
@@ -149,11 +173,13 @@
                         <div id="topUsers" class="leaderboard-list" role="list" aria-live="polite">
                             <!-- Skeleton loaders will be inserted here -->
                         </div>
-                        <div id="topUsersPagination" role="navigation" aria-label="Users pagination" data-i18n-aria-label="a11y.pagination"></div>
+                        <p style="text-align: center; margin-top: 1rem;">
+                            <a href="pages/explore.html" class="btn-link">View All Users →</a>
+                        </p>
                     </div>
                     <div class="leaderboard" role="region" aria-label="Most active countries" data-i18n-aria-label="a11y.mostActiveCountries">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                            <h3 style="margin: 0;"><span aria-hidden="true">🌍</span> <span data-i18n="home.leaderboard.mostActiveCountries">Most Active Countries</span></h3>
+                            <h3 style="margin: 0;"><span aria-hidden="true">🌍</span> <span data-i18n="home.leaderboard.mostActiveCountries">Top 10 Countries (All Time)</span></h3>
                             <div class="sort-icons" style="display: flex; gap: 0.5rem; align-items: center;">
                                 <button id="mainCountrySortOpen" class="sort-icon-btn active" value="open" title="Notes Opened" aria-label="Sort by notes opened">
                                     📝
@@ -166,7 +192,9 @@
                         <div id="topCountries" class="leaderboard-list" role="list" aria-live="polite">
                             <!-- Skeleton loaders will be inserted here -->
                         </div>
-                        <div id="topCountriesPagination" role="navigation" aria-label="Countries pagination" data-i18n-aria-label="a11y.pagination"></div>
+                        <p style="text-align: center; margin-top: 1rem;">
+                            <a href="pages/explore.html" class="btn-link">View All Countries →</a>
+                        </p>
                     </div>
                 </div>
             </div>
