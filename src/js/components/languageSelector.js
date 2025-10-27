@@ -16,7 +16,7 @@ export class LanguageSelector {
 
     render() {
         const currentLangData = SUPPORTED_LANGUAGES[this.currentLang];
-        
+
         this.container.innerHTML = `
             <div class="language-selector">
                 <button class="language-btn" id="languageBtn" aria-label="${i18n.t('language.select')}" aria-expanded="false">
@@ -30,7 +30,7 @@ export class LanguageSelector {
                     </div>
                     <div class="language-options">
                         ${Object.values(SUPPORTED_LANGUAGES).map(lang => `
-                            <button class="language-option ${lang.code === this.currentLang ? 'active' : ''}" 
+                            <button class="language-option ${lang.code === this.currentLang ? 'active' : ''}"
                                     data-lang="${lang.code}">
                                 <span class="language-flag">${lang.flag}</span>
                                 <span class="language-name">${lang.nativeName}</span>
@@ -46,14 +46,14 @@ export class LanguageSelector {
     setupEventListeners() {
         const languageBtn = document.getElementById('languageBtn');
         const languageMenu = document.getElementById('languageMenu');
-        
+
         if (!languageBtn || !languageMenu) return;
 
         // Toggle menu
         languageBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const isVisible = languageMenu.style.display !== 'none';
-            
+
             if (isVisible) {
                 this.closeMenu();
             } else {
@@ -88,7 +88,7 @@ export class LanguageSelector {
     openMenu() {
         const languageMenu = document.getElementById('languageMenu');
         const languageBtn = document.getElementById('languageBtn');
-        
+
         if (languageMenu && languageBtn) {
             languageMenu.style.display = 'block';
             languageBtn.setAttribute('aria-expanded', 'true');
@@ -99,7 +99,7 @@ export class LanguageSelector {
     closeMenu() {
         const languageMenu = document.getElementById('languageMenu');
         const languageBtn = document.getElementById('languageBtn');
-        
+
         if (languageMenu && languageBtn) {
             languageMenu.style.display = 'none';
             languageBtn.setAttribute('aria-expanded', 'false');
@@ -118,7 +118,7 @@ export class LanguageSelector {
 
         // Change language
         i18n.setLanguage(langCode);
-        
+
         // Close menu
         this.closeMenu();
 
@@ -137,7 +137,7 @@ export class LanguageSelector {
         const toast = document.createElement('div');
         toast.className = 'language-toast';
         toast.textContent = message;
-        
+
         // Add styles
         Object.assign(toast.style, {
             position: 'fixed',
