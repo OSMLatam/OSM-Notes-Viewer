@@ -6,7 +6,7 @@ import { createBarChart } from '../components/chart.js';
 import { shareComponent } from '../components/share.js';
 import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js';
 import { getUserAvatarSync, loadOSMAvatarInBackground } from '../utils/userAvatar.js';
-import { createSimpleNoteCard } from '../utils/noteMap.js';
+import { createSimpleNoteCard, createNoteCardWithMap } from '../utils/noteMap.js';
 
 // Get user ID or username from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -151,7 +151,7 @@ async function loadUserProfile(userId) {
         setupShareButton(user);
 
         // Load recent notes in sidebars
-        loadRecentNotes(user);
+        await loadRecentNotes(user);
 
     } catch (error) {
         loading.style.display = 'none';
@@ -350,7 +350,7 @@ function loadUserAvatar(user) {
     }
 }
 
-function loadRecentNotes(user) {
+async function loadRecentNotes(user) {
     // Load recent open notes
     const openNotesContainer = document.getElementById('recentOpenNotesContainer');
     if (openNotesContainer) {
@@ -361,7 +361,14 @@ function loadRecentNotes(user) {
         if (user.lastest_commented_note_id) noteIds.push(user.lastest_commented_note_id);
 
         if (noteIds.length > 0) {
-            openNotesContainer.innerHTML = noteIds.map(id => createSimpleNoteCard(id, 'open')).join('');
+            openNotesContainer.innerHTML = '';
+            // Create cards with maps
+            for (const noteId of noteIds) {
+                const card = await createNoteCardWithMap(noteId, 'open');
+                if (card) {
+                    openNotesContainer.appendChild(card);
+                }
+            }
         } else {
             openNotesContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">No recent open notes</p>';
         }
@@ -376,7 +383,14 @@ function loadRecentNotes(user) {
         if (user.lastest_closed_note_id) noteIds.push(user.lastest_closed_note_id);
 
         if (noteIds.length > 0) {
-            closedNotesContainer.innerHTML = noteIds.map(id => createSimpleNoteCard(id, 'closed')).join('');
+            closedNotesContainer.innerHTML = '';
+            // Create cards with maps
+            for (const noteId of noteIds) {
+                const card = await createNoteCardWithMap(noteId, 'closed');
+                if (card) {
+                    closedNotesContainer.appendChild(card);
+                }
+            }
         } else {
             closedNotesContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">No recent closed notes</p>';
         }

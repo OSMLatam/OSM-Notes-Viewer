@@ -1,0 +1,27 @@
+/* Suppress Leaflet CSS compatibility warnings */
+
+/* Override image-rendering for better compatibility */
+.leaflet-container img {
+    image-rendering: auto !important;
+}
+
+/* Remove IE-specific behavior property */
+.leaflet-pane,
+.leaflet-map-pane,
+.leaflet-tile-pane,
+.leaflet-overlay-pane {
+    behavior: none !important;
+}
+
+/* Use modern filter syntax */
+.leaflet-opacity-enabled img {
+    filter: none !important;
+}
+
+/* Standard zoom control */
+.leaflet-control-zoom {
+    filter: none !important;
+}
+
+
+
