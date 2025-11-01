@@ -148,6 +148,16 @@
                         <div class="stat-value" id="firstNoteClosed" aria-live="polite">-</div>
                         <div class="stat-label" data-i18n="home.stats.firstNoteClosed">First Note Closed</div>
                     </div>
+                    <div class="stat-card card stagger-item" role="article">
+                        <div class="stat-icon" aria-hidden="true">📅</div>
+                        <div class="stat-value" id="notesOpenThisYear" aria-live="polite">-</div>
+                        <div class="stat-label" data-i18n="home.stats.notesOpenThisYear">Notes Opened This Year</div>
+                    </div>
+                    <div class="stat-card card stagger-item" role="article">
+                        <div class="stat-icon" aria-hidden="true">✨</div>
+                        <div class="stat-value" id="notesClosedThisYear" aria-live="polite">-</div>
+                        <div class="stat-label" data-i18n="home.stats.notesClosedThisYear">Notes Closed This Year</div>
+                    </div>
                 </div>
                 <p style="text-align: center; margin-top: 1.5rem;">
                     <a href="pages/stats.html" class="btn btn-secondary">📊 View Detailed Statistics</a>
@@ -156,7 +166,22 @@
         </section>
 
         <section class="leaderboard-section" aria-label="Leaderboards">
-            <div class="container">
+            <div class="container" style="position: relative;">
+                <!-- Decorative sidebars with recent notes -->
+                <aside class="notes-sidebar-decorative notes-sidebar-left-decorative" id="recentOpenNotesSidebar">
+                    <h3>Recently Opened</h3>
+                    <div id="recentOpenNotesContainer" class="notes-grid">
+                        <p class="loading">Loading...</p>
+                    </div>
+                </aside>
+
+                <aside class="notes-sidebar-decorative notes-sidebar-right-decorative" id="recentClosedNotesSidebar">
+                    <h3>Recently Closed</h3>
+                    <div id="recentClosedNotesContainer" class="notes-grid">
+                        <p class="loading">Loading...</p>
+                    </div>
+                </aside>
+
                 <div class="leaderboards">
                     <div class="leaderboard" role="region" aria-label="Top contributors" data-i18n-aria-label="a11y.topContributors">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
