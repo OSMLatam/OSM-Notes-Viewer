@@ -12,6 +12,7 @@ import { animationManager } from './components/animationManager.js';
 import { keyboardShortcuts } from './components/keyboardShortcuts.js';
 import { getCountryFlagFromObject } from './utils/countryFlags.js';
 import { getUserAvatarSync, loadOSMAvatarInBackground } from './utils/userAvatar.js';
+import { createSimpleNoteCard } from './utils/noteMap.js';
 
 // User Search Component
 class UserSearchComponent extends SearchComponent {
@@ -371,7 +372,8 @@ async function loadInitialData() {
         await Promise.all([
             loadGlobalStats(),
             loadTopUsers(),
-            loadTopCountries()
+            loadTopCountries(),
+            loadRecentNotesGlobal()
         ]);
 
         // Set up sort buttons
@@ -423,9 +425,11 @@ async function loadGlobalStats() {
     const totalNotesClosedEl = document.getElementById('totalNotesClosed');
     const firstNoteOpenEl = document.getElementById('firstNoteOpen');
     const firstNoteClosedEl = document.getElementById('firstNoteClosed');
+    const notesOpenThisYearEl = document.getElementById('notesOpenThisYear');
+    const notesClosedThisYearEl = document.getElementById('notesClosedThisYear');
 
     // Show loading spinner
-    [totalUsersEl, totalCountriesEl, lastUpdateEl, totalNotesEl, totalNotesOpenEl, totalNotesClosedEl, firstNoteOpenEl, firstNoteClosedEl].forEach(el => {
+    [totalUsersEl, totalCountriesEl, lastUpdateEl, totalNotesEl, totalNotesOpenEl, totalNotesClosedEl, firstNoteOpenEl, firstNoteClosedEl, notesOpenThisYearEl, notesClosedThisYearEl].forEach(el => {
         if (el) el.innerHTML = '<div class="loading-spinner-small"></div>';
     });
 
@@ -483,10 +487,33 @@ async function loadGlobalStats() {
             ? firstClosedDate.toLocaleDateString()
             : 'N/A';
 
+        // Calculate stats for this year from last_year_activity
+        let notesOpenThisYear = 0;
+        let notesClosedThisYear = 0;
+
+        countries.forEach(country => {
+            if (country.last_year_activity) {
+                // last_year_activity is a binary string, count the '1's for this year's activity
+                // The string represents activity over the last year, counting 1s gives us activity count
+                const activityCount = (country.last_year_activity.match(/1/g) || []).length;
+                // Rough estimation: we don't have separate open/closed counts in the binary string
+                // So we'll use the total notes as a proxy
+                notesOpenThisYear += country.history_whole_open || 0;
+                notesClosedThisYear += country.history_whole_closed || 0;
+            }
+        });
+
+        // Use the index data which has history_year_open and history_year_closed
+        const totalOpenYear = users.reduce((sum, user) => sum + (user.history_year_open || 0), 0);
+        const totalClosedYear = users.reduce((sum, user) => sum + (user.history_year_closed || 0), 0);
+
+        notesOpenThisYearEl.textContent = formatNumber(totalOpenYear);
+        notesClosedThisYearEl.textContent = formatNumber(totalClosedYear);
+
     } catch (error) {
         console.error('Error loading global stats:', error);
         // Show error on individual stat cards
-        [totalUsersEl, totalCountriesEl, lastUpdateEl, totalNotesEl, totalNotesOpenEl, totalNotesClosedEl, firstNoteOpenEl, firstNoteClosedEl].forEach(el => {
+        [totalUsersEl, totalCountriesEl, lastUpdateEl, totalNotesEl, totalNotesOpenEl, totalNotesClosedEl, firstNoteOpenEl, firstNoteClosedEl, notesOpenThisYearEl, notesClosedThisYearEl].forEach(el => {
             if (el) el.textContent = '?';
         });
     }
@@ -593,5 +620,53 @@ async function loadTopCountries(page = 1, sortBy = 'open') {
         handleApiError(error, container, () => {
             loadTopCountries(page);
         });
+    }
+}
+
+// Load recent notes for home page
+async function loadRecentNotesGlobal() {
+    const openContainer = document.getElementById('recentOpenNotesContainer');
+    const closedContainer = document.getElementById('recentClosedNotesContainer');
+
+    if (!openContainer || !closedContainer) return;
+
+    try {
+        // Get users data
+        const users = await apiClient.getUserIndex();
+
+        // Collect unique note IDs from all users
+        const openNoteIds = new Set();
+        const closedNoteIds = new Set();
+
+        users.forEach(user => {
+            if (user.lastest_open_note_id) openNoteIds.add(user.lastest_open_note_id);
+            if (user.lastest_commented_note_id) openNoteIds.add(user.lastest_commented_note_id);
+            if (user.lastest_closed_note_id) closedNoteIds.add(user.lastest_closed_note_id);
+        });
+
+        // Display open notes (limit to 5)
+        const openArray = Array.from(openNoteIds).slice(0, 5);
+        if (openArray.length > 0) {
+            openContainer.innerHTML = openArray.map(noteId =>
+                createSimpleNoteCard(noteId, 'open')
+            ).join('');
+        } else {
+            openContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 0.9rem; padding: 1rem;">No recent open notes available</p>';
+        }
+
+        // Display closed notes (limit to 5)
+        const closedArray = Array.from(closedNoteIds).slice(0, 5);
+        if (closedArray.length > 0) {
+            closedContainer.innerHTML = closedArray.map(noteId =>
+                createSimpleNoteCard(noteId, 'closed')
+            ).join('');
+        } else {
+            closedContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); font-size: 0.9rem; padding: 1rem;">No recent closed notes available</p>';
+        }
+
+    } catch (error) {
+        console.error('Error loading recent notes:', error);
+        openContainer.innerHTML = '<p style="text-align: center; color: var(--text-light);">Error loading notes</p>';
+        closedContainer.innerHTML = '<p style="text-align: center; color: var(--text-light);">Error loading notes</p>';
     }
 }

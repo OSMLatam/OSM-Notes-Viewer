@@ -136,8 +136,8 @@ section {
     order: 2;
 }
 
-/* Show sidebars only on large screens */
-@media (min-width: 1400px) {
+/* Show sidebars on medium and large screens */
+@media (min-width: 1200px) {
     .notes-sidebar {
         display: flex;
     }
@@ -199,6 +199,53 @@ section {
 
 .note-card-link:hover {
     text-decoration: underline;
+}
+
+/* Decorative Sidebars for Leaderboard Section */
+.notes-sidebar-decorative {
+    display: none; /* Hidden by default on mobile */
+}
+
+.notes-sidebar-left-decorative {
+    position: absolute;
+    left: -320px;
+    top: 0;
+    width: 300px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.notes-sidebar-right-decorative {
+    position: absolute;
+    right: -320px;
+    top: 0;
+    width: 300px;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+@media (min-width: 1200px) {
+    .notes-sidebar-decorative {
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-color);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+    }
+
+    .notes-sidebar-decorative h3 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+        text-align: center;
+    }
+}
+
+@media (max-width: 1400px) {
+    .notes-sidebar-decorative {
+        display: none !important;
+    }
 }
 
 /* === Header === */
@@ -568,6 +615,21 @@ section {
 /* === Leaderboard Section === */
 .leaderboard-section {
     padding: 0.5rem 0;
+}
+
+/* Container positioning for decorative sidebars */
+.leaderboard-section .container {
+    position: relative;
+}
+
+@media (min-width: 1400px) {
+    .leaderboard-section .container {
+        max-width: 1400px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 340px; /* Space for left sidebar */
+        padding-right: 340px; /* Space for right sidebar */
+    }
 }
 
 .leaderboards {
