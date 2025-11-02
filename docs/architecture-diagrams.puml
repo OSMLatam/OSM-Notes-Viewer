@@ -1,0 +1,58 @@
+@startuml OSM_Notes_Architecture
+!theme plain
+skinparam backgroundColor #FAFAFA
+skinparam componentStyle rectangle
+
+title OpenStreetMap Notes Analytics - Component Flow
+
+package "OSM Planet / API" #LightBlue {
+    component [OSM Planet Dump] as planet
+    component [OSM Notes API] as api
+}
+
+package "Data Ingestion" #LightGreen {
+    component [OSM-Notes-Ingestion] as ingestion {
+        note right : PostgreSQL Database\n- notes\n- note_comments\n- users\n- countries
+    }
+}
+
+package "Data Processing" #LightYellow {
+    component [OSM-Notes-Analytics] as analytics {
+        note right : Data Warehouse\n- ETL Process\n- Star Schema\n- Datamarts\n- JSON Export\n- CSV Export
+    }
+}
+
+package "Data Repository" #LightCyan {
+    component [OSM-Notes-Data] as data {
+        note right : GitHub Pages / CDN\n- Static JSON files\n- Static CSV files\n- No backend needed
+    }
+}
+
+package "Web Frontend" #LightPink {
+    component [OSM-Notes-Viewer] as viewer {
+        note right : Static Website\n- Vanilla JS\n- Chart.js\n- Responsive UI\n- PWA
+    }
+}
+
+' Data Flow
+planet --> ingestion : Downloads notes
+api --> ingestion : Fetches notes
+
+ingestion --> analytics : Feeds raw data\n(base tables)
+
+analytics --> data : Exports JSON/CSV files\n(via exportAndPushToGitHub.sh)
+
+data --> viewer : Serves static files\nvia HTTP
+
+viewer --> data : Fetches on-demand\n(with caching)
+
+' Optional: AI/External consumers
+rectangle "External Consumers" #LightGray {
+    note right
+        AI Assistants\nOther Tools\nResearchers
+    end note
+}
+data --> "External Consumers" : Consumes public exports
+
+@enduml
+

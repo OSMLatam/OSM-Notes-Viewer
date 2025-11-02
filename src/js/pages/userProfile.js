@@ -8,6 +8,14 @@ import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js'
 import { getUserAvatarSync, loadOSMAvatarInBackground } from '../utils/userAvatar.js';
 import { createSimpleNoteCard, createNoteCardWithMap } from '../utils/noteMap.js';
 
+// Helper function to format username with special styling
+function formatUsernameWithStyle(username) {
+    if (username === 'NeisBot') {
+        return `<span class="bot-username" title="Automated bot account">🤖 ${username}</span>`;
+    }
+    return username;
+}
+
 // Get user ID or username from URL
 const urlParams = new URLSearchParams(window.location.search);
 const userId = urlParams.get('id');
@@ -92,7 +100,7 @@ async function loadUserProfile(userId) {
         content.style.display = 'block';
 
         // Populate profile
-        document.getElementById('username').textContent = user.username || 'Unknown User';
+        document.getElementById('username').innerHTML = formatUsernameWithStyle(user.username || 'Unknown User');
         document.getElementById('userId').textContent = user.user_id;
 
         // Load user avatar
@@ -136,7 +144,8 @@ async function loadUserProfile(userId) {
         renderHashtags(user.hashtags);
 
         // Countries
-        await renderCountries(user.countries_open_notes);
+        await renderCountryRanking(user.countries_open_notes, 'countriesOpenContainer', 'No open country data available');
+        await renderCountryRanking(user.countries_solving_notes, 'countriesSolvingContainer', 'No solving country data available');
 
         // Working hours
         renderWorkingHoursSection(user.working_hours_of_week_opening, user.working_hours_of_week_commenting, user.working_hours_of_week_closing, document.getElementById('workingHoursContainer'), 'user');
@@ -146,6 +155,9 @@ async function loadUserProfile(userId) {
 
         // First actions
         renderFirstActions(user);
+
+        // Peak days
+        renderPeakActivityDays(user);
 
         // Setup share button
         setupShareButton(user);
@@ -218,37 +230,57 @@ function renderHashtags(hashtags) {
     createBarChart(chartData, container);
 }
 
-async function renderCountries(countries) {
-    const container = document.getElementById('countriesContainer');
+async function renderCountryRanking(countries, containerId, emptyMessage) {
+    const container = document.getElementById(containerId);
+
+    if (!container) return;
 
     if (!countries || countries.length === 0) {
-        container.innerHTML = '<p>No country data available</p>';
+        container.innerHTML = `<p class="text-light">${emptyMessage}</p>`;
         return;
     }
 
     try {
-        // Get country index to map country names to country IDs
-        const countryIndex = await apiClient.getCountryIndex();
-        const countryMap = new Map();
-
-        // Map by different name fields
-        countryIndex.forEach(c => {
-            if (c.country_name) countryMap.set(c.country_name, c.country_id);
-            if (c.country_name_en) countryMap.set(c.country_name_en, c.country_id);
-            if (c.country_name_es) countryMap.set(c.country_name_es, c.country_id);
-        });
-
-        // Use bar chart for better visualization
         const chartData = countries.map(item => ({
             label: item.country,
             value: item.quantity
-        }));
+        })).slice(0, 10);
 
         createBarChart(chartData, container);
     } catch (error) {
-        console.error('Error loading country index:', error);
-        container.innerHTML = '<p>Error loading country data</p>';
+        console.error('Error rendering country ranking:', error);
+        container.innerHTML = '<p class="text-light">Error loading country data</p>';
     }
+}
+
+function renderPeakActivityDays(user) {
+    renderActivityDayList(user.dates_most_open, 'topOpeningDays', 'No opening peak days available');
+    renderActivityDayList(user.dates_most_closed, 'topClosingDays', 'No closing peak days available');
+}
+
+function renderActivityDayList(items, containerId, emptyMessage) {
+    const container = document.getElementById(containerId);
+
+    if (!container) return;
+
+    if (!items || items.length === 0) {
+        container.innerHTML = `<p class="text-light">${emptyMessage}</p>`;
+        return;
+    }
+
+    const limitedItems = items.slice(0, 10);
+    const html = limitedItems.map(item => {
+        const formattedDate = item.date ? formatDate(item.date) : 'Unknown date';
+        const quantity = formatNumber(item.quantity || 0);
+        return `
+            <div class="country-item" style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                <span class="country-name" style="flex: 1;">${formattedDate}</span>
+                <span style="font-size: 0.85rem; color: var(--text-light);">${quantity} notes</span>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = html;
 }
 
 // This function is now replaced by renderWorkingHoursSection from workingHoursHeatmap.js

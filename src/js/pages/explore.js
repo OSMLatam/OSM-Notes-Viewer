@@ -6,6 +6,14 @@ import { analytics } from '../utils/analytics.js';
 import { getCountryFlagFromObject } from '../utils/countryFlags.js';
 import { getUserAvatarSync, loadOSMAvatarInBackground } from '../utils/userAvatar.js';
 
+// Helper function to format username with special styling
+function formatUsernameWithStyle(username) {
+    if (username === 'NeisBot') {
+        return `<span class="bot-username" title="Automated bot account">🤖 ${username}</span>`;
+    }
+    return username;
+}
+
 // Import pagination function from main.js
 function createPagination(page, totalPages, onPageChange, type) {
     if (totalPages <= 1) return '';
@@ -252,7 +260,7 @@ function displayUsers(users, page = 1, totalPages = 1) {
                 <div class="explore-item" onclick="window.location.href='${userProfileUrl}'">
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" data-user-id="${user.user_id}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">` : ''}
-                        <span class="explore-name">${user.username}</span>
+                        <span class="explore-name">${formatUsernameWithStyle(user.username)}</span>
                         <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s; text-decoration: none;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
                             <span style="font-size: 0.9rem;">↗</span>
                         </a>

@@ -94,6 +94,56 @@
             height: 400px;
         }
 
+        .animated-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .animated-wrapper {
+            position: relative;
+            height: 500px;
+        }
+
+        .animation-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .anim-btn {
+            padding: 0.5rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .anim-btn:hover {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .anim-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .anim-speed {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         @media (max-width: 768px) {
             .charts-grid {
                 grid-template-columns: 1fr;
@@ -177,6 +227,25 @@
                 <h3>⚖️ Comparison Chart</h3>
                 <div class="comparison-wrapper">
                     <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+
+            <div class="animated-container">
+                <h3>🎬 Animated Top 10 Evolution</h3>
+                <p style="text-align: center; color: var(--text-light); margin-bottom: 1.5rem;">
+                    Watch how the top 10 rankings change over time
+                </p>
+                <div class="animated-wrapper">
+                    <canvas id="animatedChart"></canvas>
+                </div>
+                <div class="animation-controls">
+                    <button class="anim-btn" id="playPauseBtn">▶️ Play</button>
+                    <button class="anim-btn" id="resetBtn">🔄 Reset</button>
+                    <div class="anim-speed">
+                        <label for="speedSlider">Speed:</label>
+                        <input type="range" id="speedSlider" min="1" max="10" value="5" style="width: 100px;">
+                    </div>
+                    <span id="currentDate" style="font-weight: 600; color: var(--text-color);"></span>
                 </div>
             </div>
         </div>

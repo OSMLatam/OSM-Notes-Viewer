@@ -14,6 +14,14 @@ import { getCountryFlagFromObject } from './utils/countryFlags.js';
 import { getUserAvatarSync, loadOSMAvatarInBackground } from './utils/userAvatar.js';
 import { createSimpleNoteCard } from './utils/noteMap.js';
 
+// Helper function to format username with special styling
+function formatUsernameWithStyle(username) {
+    if (username === 'NeisBot') {
+        return `<span class="bot-username" title="Automated bot account">🤖 ${username}</span>`;
+    }
+    return username;
+}
+
 // User Search Component
 class UserSearchComponent extends SearchComponent {
     matchesQuery(item, query) {
@@ -52,7 +60,7 @@ class UserSearchComponent extends SearchComponent {
                 <div class="search-result-item">
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" class="search-avatar" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" data-user-id="${item.user_id}">` : ''}
-                        <strong>${this.highlightMatch(item.username, this.input.value)}</strong>
+                        <strong>${this.highlightMatch(formatUsernameWithStyle(item.username), this.input.value)}</strong>
                         <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" style="opacity: 0.6; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
                             <span style="font-size: 0.9rem;">↗</span>
                         </a>
@@ -373,7 +381,8 @@ async function loadInitialData() {
             loadGlobalStats(),
             loadTopUsers(),
             loadTopCountries(),
-            loadRecentNotesGlobal()
+            loadRecentNotesGlobal(),
+            loadActivityTimeline()
         ]);
 
         // Set up sort buttons
@@ -552,7 +561,7 @@ async function loadTopUsers(page = 1, sortBy = 'open') {
                 <div class="leaderboard-item" onclick="window.location.href='${userProfileUrl}'" style="cursor: pointer;">
                     <span class="leaderboard-rank">#${globalRank}</span>
                     ${avatarUrl ? `<img src="${avatarUrl}" alt="${user.username}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; margin-right: 0.5rem;">` : ''}
-                    <span class="leaderboard-name">${user.username}</span>
+                    <span class="leaderboard-name">${formatUsernameWithStyle(user.username)}</span>
                     <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s; display: inline-flex; align-items: center; text-decoration: none; margin-left: 0.5rem;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
                         <span style="font-size: 0.9rem;">↗</span>
                     </a>
@@ -668,5 +677,113 @@ async function loadRecentNotesGlobal() {
         console.error('Error loading recent notes:', error);
         openContainer.innerHTML = '<p style="text-align: center; color: var(--text-light);">Error loading notes</p>';
         closedContainer.innerHTML = '<p style="text-align: center; color: var(--text-light);">Error loading notes</p>';
+    }
+}
+
+// Load activity timeline chart
+let activityChart = null;
+async function loadActivityTimeline() {
+    const canvas = document.getElementById('activityTimelineChart');
+    if (!canvas) return;
+
+    try {
+        const countries = await apiClient.getCountryIndex();
+
+        // Aggregate activity from all countries for the last year
+        const lastYear = new Date();
+        lastYear.setFullYear(lastYear.getFullYear() - 1);
+
+        // We'll create a simple aggregated view: monthly counts
+        const monthlyData = {
+            opened: {},
+            closed: {}
+        };
+
+        // Process countries data to build monthly timeline
+        countries.forEach(country => {
+            // For now, we'll use a simple aggregation since we don't have detailed date ranges
+            // This is a placeholder - in production you'd use dates_most_open/dates_most_closed
+            if (!country.dates_most_open || country.dates_most_open.length === 0) return;
+
+            country.dates_most_open.forEach(entry => {
+                const date = new Date(entry.date);
+                if (date >= lastYear) {
+                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    monthlyData.opened[monthKey] = (monthlyData.opened[monthKey] || 0) + (entry.quantity || 0);
+                }
+            });
+
+            if (country.dates_most_closed) {
+                country.dates_most_closed.forEach(entry => {
+                    const date = new Date(entry.date);
+                    if (date >= lastYear) {
+                        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                        monthlyData.closed[monthKey] = (monthlyData.closed[monthKey] || 0) + (entry.quantity || 0);
+                    }
+                });
+            }
+        });
+
+        // Create sorted month labels
+        const allMonths = new Set([...Object.keys(monthlyData.opened), ...Object.keys(monthlyData.closed)]);
+        const sortedMonths = Array.from(allMonths).sort();
+
+        const openedValues = sortedMonths.map(month => monthlyData.opened[month] || 0);
+        const closedValues = sortedMonths.map(month => monthlyData.closed[month] || 0);
+
+        // Create the chart
+        const ctx = canvas.getContext('2d');
+        activityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sortedMonths,
+                datasets: [
+                    {
+                        label: 'Notes Opened',
+                        data: openedValues,
+                        borderColor: 'rgba(126, 188, 111, 1)',
+                        backgroundColor: 'rgba(126, 188, 111, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Notes Closed',
+                        data: closedValues,
+                        borderColor: 'rgba(74, 144, 226, 1)',
+                        backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Error loading activity timeline:', error);
+        if (canvas && canvas.parentElement) {
+            canvas.parentElement.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">Unable to load activity data</p>';
+        }
     }
 }

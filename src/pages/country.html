@@ -114,6 +114,28 @@
                 </section>
 
                 <section class="profile-section">
+                    <h3>Peak Activity Days</h3>
+                    <div class="contributors-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+                        <div>
+                            <h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>📈</span> Top Opening Days
+                            </h4>
+                            <div id="countryTopOpeningDays" class="countries-container">
+                                <p class="loading">Loading opening days...</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>📉</span> Top Closing Days
+                            </h4>
+                            <div id="countryTopClosingDays" class="countries-container">
+                                <p class="loading">Loading closing days...</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="profile-section">
                     <h3>Working Hours</h3>
                     <div id="workingHoursContainer" class="working-hours-container">
                         <p class="loading">Loading working hours...</p>

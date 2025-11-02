@@ -7,6 +7,14 @@ import { renderActivityHeatmap } from '../components/activityHeatmap.js';
 import { getCountryFlagFromObject } from '../utils/countryFlags.js';
 import { getUserAvatarSync, loadOSMAvatarInBackground } from '../utils/userAvatar.js';
 
+// Helper function to format username with special styling
+function formatUsernameWithStyle(username) {
+    if (username === 'NeisBot') {
+        return `<span class="bot-username" title="Automated bot account">🤖 ${username}</span>`;
+    }
+    return username;
+}
+
 // Get country name from URL
 const urlParams = new URLSearchParams(window.location.search);
 const countryNameParam = urlParams.get('name');
@@ -111,6 +119,9 @@ async function loadCountryProfile(countryId) {
 
         // First actions
         renderFirstActions(country);
+
+        // Peak days
+        renderCountryPeakActivityDays(country);
 
         // Setup share button
         setupShareButton(country);
@@ -331,7 +342,7 @@ async function renderUsersList(users, containerId, showOpened) {
                         <span class="country-rank" style="flex-shrink: 0;">#${index + 1}</span>
                         ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" data-user-id="${userId}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">` : ''}
                         <a href="${userProfileUrl}" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
-                            <span class="country-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.username}</span>
+                            <span class="country-name" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${formatUsernameWithStyle(item.username)}</span>
                         </a>
                         <a href="${osmProfileUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" style="opacity: 0.6; transition: opacity 0.2s; flex-shrink: 0;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'" title="View on OpenStreetMap">
                             <span style="font-size: 0.9rem;">↗</span>
@@ -434,6 +445,36 @@ function renderFirstActions(country) {
     }
 
     html += '</div>';
+
+    container.innerHTML = html;
+}
+
+function renderCountryPeakActivityDays(country) {
+    renderCountryDayList(country.dates_most_open, 'countryTopOpeningDays', 'No opening peak days available');
+    renderCountryDayList(country.dates_most_closed, 'countryTopClosingDays', 'No closing peak days available');
+}
+
+function renderCountryDayList(items, containerId, emptyMessage) {
+    const container = document.getElementById(containerId);
+
+    if (!container) return;
+
+    if (!items || items.length === 0) {
+        container.innerHTML = `<p class="text-light">${emptyMessage}</p>`;
+        return;
+    }
+
+    const limitedItems = items.slice(0, 10);
+    const html = limitedItems.map(item => {
+        const formattedDate = item.date ? formatDate(item.date) : 'Unknown date';
+        const quantity = formatNumber(item.quantity || 0);
+        return `
+            <div class="country-item" style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                <span class="country-name" style="flex: 1;">${formattedDate}</span>
+                <span style="font-size: 0.85rem; color: var(--text-light);">${quantity} notes</span>
+            </div>
+        `;
+    }).join('');
 
     container.innerHTML = html;
 }

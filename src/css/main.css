@@ -1562,3 +1562,32 @@ section {
     background: #f0f0f0;
     transform: scale(1.05);
 }
+
+/* === Bot Username Styling === */
+.bot-username {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.1));
+    border-radius: 4px;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    color: var(--text-color);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.bot-username:hover {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.2));
+    border-color: rgba(255, 193, 7, 0.5);
+}
+
+[data-theme="dark"] .bot-username {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
+    border-color: rgba(255, 193, 7, 0.4);
+}
+
+[data-theme="dark"] .bot-username:hover {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.25), rgba(255, 152, 0, 0.25));
+    border-color: rgba(255, 193, 7, 0.6);
+}

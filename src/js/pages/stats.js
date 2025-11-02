@@ -1,5 +1,5 @@
 // Interactive Statistics Page
-let barChart, pieChart, comparisonChart;
+let barChart, pieChart, comparisonChart, animatedChart;
 let usersData = [];
 let countriesData = [];
 
@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadData();
     initializeCharts();
     setupEventListeners();
+    initializeAnimatedChart();
 });
 
 // Load data
@@ -238,4 +239,184 @@ function updateComparisonChart(data) {
             }
         }
     });
+}
+
+// Animated Top 10 Evolution
+let animationFrame = 0;
+let animationData = [];
+let animationInterval = null;
+let isPlaying = false;
+
+function initializeAnimatedChart() {
+    const canvas = document.getElementById('animatedChart');
+    if (!canvas) return;
+
+    // Prepare animation data from countries
+    prepareAnimationData();
+
+    // Create initial empty chart
+    const ctx = canvas.getContext('2d');
+    animatedChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Total Notes',
+                data: [],
+                backgroundColor: 'rgba(126, 188, 111, 0.8)',
+                borderColor: 'rgba(126, 188, 111, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            },
+            animation: {
+                duration: 300
+            }
+        }
+    });
+
+    // Setup controls
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const speedSlider = document.getElementById('speedSlider');
+
+    if (playPauseBtn) {
+        playPauseBtn.addEventListener('click', toggleAnimation);
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetAnimation);
+    }
+
+    if (speedSlider) {
+        speedSlider.addEventListener('input', updateAnimationSpeed);
+    }
+
+    // Display first frame
+    updateAnimatedFrame(0);
+}
+
+function prepareAnimationData() {
+    // Collect all unique dates from all countries
+    const dateMap = new Map();
+
+    countriesData.forEach(country => {
+        if (!country.dates_most_open || country.dates_most_open.length === 0) return;
+
+        country.dates_most_open.forEach(entry => {
+            const date = entry.date;
+            if (!dateMap.has(date)) {
+                dateMap.set(date, {});
+            }
+
+            const countryName = country.country_name_en || country.country_name;
+            const countryId = country.country_id;
+            dateMap.get(date)[countryId] = {
+                name: countryName,
+                value: entry.quantity
+            };
+        });
+    });
+
+    // Sort dates and create animation frames
+    const sortedDates = Array.from(dateMap.keys()).sort();
+    animationData = sortedDates.map(date => {
+        const countriesAtDate = dateMap.get(date);
+        const topCountries = Object.values(countriesAtDate)
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 10);
+
+        return {
+            date: date,
+            top10: topCountries
+        };
+    });
+
+    console.log(`Animation prepared: ${animationData.length} frames from ${sortedDates[0]} to ${sortedDates[sortedDates.length - 1]}`);
+}
+
+function updateAnimatedFrame(frameIndex) {
+    if (!animatedChart || frameIndex >= animationData.length) return;
+
+    const frame = animationData[frameIndex];
+    const labels = frame.top10.map(c => c.name);
+    const values = frame.top10.map(c => c.value);
+
+    animatedChart.data.labels = labels;
+    animatedChart.data.datasets[0].data = values;
+    animatedChart.update('none'); // 'none' for instant update during animation
+
+    // Update date display
+    const currentDateEl = document.getElementById('currentDate');
+    if (currentDateEl) {
+        currentDateEl.textContent = new Date(frame.date).toLocaleDateString();
+    }
+}
+
+function toggleAnimation() {
+    const btn = document.getElementById('playPauseBtn');
+    if (!btn) return;
+
+    if (isPlaying) {
+        // Pause
+        if (animationInterval) {
+            clearInterval(animationInterval);
+            animationInterval = null;
+        }
+        isPlaying = false;
+        btn.textContent = '▶️ Play';
+    } else {
+        // Play
+        const speed = parseInt(document.getElementById('speedSlider').value);
+        const delay = 1100 - (speed * 100); // 100ms to 1000ms
+
+        animationInterval = setInterval(() => {
+            animationFrame++;
+            if (animationFrame >= animationData.length) {
+                animationFrame = 0; // Loop
+            }
+            updateAnimatedFrame(animationFrame);
+        }, delay);
+
+        isPlaying = true;
+        btn.textContent = '⏸️ Pause';
+    }
+}
+
+function resetAnimation() {
+    animationFrame = 0;
+    updateAnimatedFrame(0);
+
+    if (isPlaying) {
+        toggleAnimation(); // Stop playing
+    }
+}
+
+function updateAnimationSpeed() {
+    if (!isPlaying) return;
+
+    // Restart animation with new speed
+    toggleAnimation(); // Pause
+    toggleAnimation(); // Play with new speed
 }
