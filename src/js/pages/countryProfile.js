@@ -388,6 +388,9 @@ function renderActivityHistory(country) {
     html += 'Opened: ' + formatNumber(country.history_year_open || 0) + ', ';
     html += 'Closed: ' + formatNumber(country.history_year_closed || 0) + ', ';
     html += 'Commented: ' + formatNumber(country.history_year_commented || 0);
+    if (country.history_year_reopened) {
+        html += ', Reopened: ' + formatNumber(country.history_year_reopened || 0);
+    }
     html += '</div>';
 
     // Month
@@ -396,6 +399,9 @@ function renderActivityHistory(country) {
     html += 'Opened: ' + formatNumber(country.history_month_open || 0) + ', ';
     html += 'Closed: ' + formatNumber(country.history_month_closed || 0) + ', ';
     html += 'Commented: ' + formatNumber(country.history_month_commented || 0);
+    if (country.history_month_reopened) {
+        html += ', Reopened: ' + formatNumber(country.history_month_reopened || 0);
+    }
     html += '</div>';
 
     // Day
@@ -404,6 +410,9 @@ function renderActivityHistory(country) {
     html += 'Opened: ' + formatNumber(country.history_day_open || 0) + ', ';
     html += 'Closed: ' + formatNumber(country.history_day_closed || 0) + ', ';
     html += 'Commented: ' + formatNumber(country.history_day_commented || 0);
+    if (country.history_day_reopened) {
+        html += ', Reopened: ' + formatNumber(country.history_day_reopened || 0);
+    }
     html += '</div>';
 
     html += '</div>';
@@ -441,6 +450,20 @@ function renderFirstActions(country) {
         html += '<div class="action-item">';
         html += '<strong>First note closed:</strong> ';
         html += '<a href="https://www.openstreetmap.org/note/' + country.first_closed_note_id + '" target="_blank">Note #' + country.first_closed_note_id + '</a>';
+        html += '</div>';
+    }
+
+    if (country.first_commented_note_id) {
+        html += '<div class="action-item">';
+        html += '<strong>First note commented:</strong> ';
+        html += '<a href="https://www.openstreetmap.org/note/' + country.first_commented_note_id + '" target="_blank">Note #' + country.first_commented_note_id + '</a>';
+        html += '</div>';
+    }
+
+    if (country.first_reopened_note_id) {
+        html += '<div class="action-item">';
+        html += '<strong>First note reopened:</strong> ';
+        html += '<a href="https://www.openstreetmap.org/note/' + country.first_reopened_note_id + '" target="_blank">Note #' + country.first_reopened_note_id + '</a>';
         html += '</div>';
     }
 

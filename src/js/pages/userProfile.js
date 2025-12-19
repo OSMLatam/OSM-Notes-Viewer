@@ -296,6 +296,9 @@ function renderActivityHistory(user) {
     html += 'Opened: ' + formatNumber(user.history_year_open || 0) + ', ';
     html += 'Closed: ' + formatNumber(user.history_year_closed || 0) + ', ';
     html += 'Commented: ' + formatNumber(user.history_year_commented || 0);
+    if (user.history_year_reopened) {
+        html += ', Reopened: ' + formatNumber(user.history_year_reopened || 0);
+    }
     html += '</div>';
 
     // Month
@@ -304,6 +307,9 @@ function renderActivityHistory(user) {
     html += 'Opened: ' + formatNumber(user.history_month_open || 0) + ', ';
     html += 'Closed: ' + formatNumber(user.history_month_closed || 0) + ', ';
     html += 'Commented: ' + formatNumber(user.history_month_commented || 0);
+    if (user.history_month_reopened) {
+        html += ', Reopened: ' + formatNumber(user.history_month_reopened || 0);
+    }
     html += '</div>';
 
     // Day
@@ -312,6 +318,9 @@ function renderActivityHistory(user) {
     html += 'Opened: ' + formatNumber(user.history_day_open || 0) + ', ';
     html += 'Closed: ' + formatNumber(user.history_day_closed || 0) + ', ';
     html += 'Commented: ' + formatNumber(user.history_day_commented || 0);
+    if (user.history_day_reopened) {
+        html += ', Reopened: ' + formatNumber(user.history_day_reopened || 0);
+    }
     html += '</div>';
 
     html += '</div>';
@@ -349,6 +358,20 @@ function renderFirstActions(user) {
         html += '<div class="action-item">';
         html += '<strong>First note closed:</strong> ';
         html += '<a href="https://www.openstreetmap.org/note/' + user.first_closed_note_id + '" target="_blank">Note #' + user.first_closed_note_id + '</a>';
+        html += '</div>';
+    }
+
+    if (user.first_commented_note_id) {
+        html += '<div class="action-item">';
+        html += '<strong>First note commented:</strong> ';
+        html += '<a href="https://www.openstreetmap.org/note/' + user.first_commented_note_id + '" target="_blank">Note #' + user.first_commented_note_id + '</a>';
+        html += '</div>';
+    }
+
+    if (user.first_reopened_note_id) {
+        html += '<div class="action-item">';
+        html += '<strong>First note reopened:</strong> ';
+        html += '<a href="https://www.openstreetmap.org/note/' + user.first_reopened_note_id + '" target="_blank">Note #' + user.first_reopened_note_id + '</a>';
         html += '</div>';
     }
 
@@ -413,6 +436,7 @@ async function loadRecentNotes(user) {
 
         // Collect note IDs from user data
         if (user.lastest_closed_note_id) noteIds.push(user.lastest_closed_note_id);
+        if (user.lastest_reopened_note_id) noteIds.push(user.lastest_reopened_note_id);
 
         if (noteIds.length > 0) {
             closedNotesContainer.innerHTML = '';
