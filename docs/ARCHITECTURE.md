@@ -289,11 +289,23 @@ osm_notes_country_456       → countries/456.json
 
 ## Security Considerations
 
+### Current (Static JSON)
+
 - **No sensitive data** - All OSM data is public
-- **No authentication** - Read-only viewer
+- **No authentication** - Read-only viewer (historical data)
 - **HTTPS required** - For CDN and site
 - **No XSS risk** - All data properly escaped
 - **No CSRF risk** - No state-changing operations
+
+### Future (REST API)
+
+- **Hybrid authentication strategy** - Historical data remains public, recent data requires User-Agent
+- **User-Agent required** - Valid User-Agent header required for all API endpoints (format: `AppName/Version (Contact)`)
+- **OAuth 2.0 with OSM** - Optional, only for specific endpoints that require user identity
+- **Rate limiting** - Per IP + User-Agent limits for API access
+- **Usage analytics** - Track and analyze API usage patterns by application (User-Agent)
+
+This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs/API_Proposal.md). For detailed information about the authentication strategy, see [AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md).
 
 ## Browser Compatibility
 

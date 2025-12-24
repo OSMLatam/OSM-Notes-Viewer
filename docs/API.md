@@ -330,6 +330,131 @@ async function fetchUser(userId) {
 
 ## Rate Limiting
 
+### Static JSON Files
+
 No rate limiting since all files are static. However, implement client-side caching to reduce unnecessary requests.
+
+### API REST Endpoints (Future)
+
+When the REST API is implemented, rate limiting will apply:
+- **Authenticated users**: 1000 requests/hour
+- **Rate limit headers**: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
+
+---
+
+## Authentication Strategy
+
+This project uses a **hybrid authentication strategy**:
+
+### Public Access (No Authentication Required)
+
+The following endpoints are publicly accessible via static JSON files:
+- `/api/metadata.json`
+- `/api/indexes/users.json`
+- `/api/indexes/countries.json`
+- `/api/users/{user_id}.json` (historical data)
+- `/api/countries/{country_id}.json` (historical data)
+
+These contain **historical data** exported daily and are suitable for general viewing and analysis.
+
+### API REST Access (User-Agent Required)
+
+Future REST API endpoints for **recent data** (updated every 15 minutes) will require a valid **User-Agent header**:
+
+- `GET /api/v1/users/{user_id}/recent-activity` ⚠️
+- `GET /api/v1/countries/{country_id}/current-stats` ⚠️
+- `GET /api/v1/global/current-stats` ⚠️
+- Dynamic queries (search, filters, rankings) ⚠️
+
+**User-Agent Format Required**: `AppName/Version (Contact)`
+
+**Example**: `OSMNotesViewer/1.0 (https://github.com/OSMLatam/OSM-Notes-Viewer)`
+
+**Benefits**:
+- Control access to real-time data
+- Reduce abuse and enable rate limiting (by IP + User-Agent)
+- Track usage patterns by application for platform improvement
+- Enable geographic analysis of users (via IP geolocation)
+- Lower friction for developers (no OAuth required for most endpoints)
+
+**OAuth with OSM**: Optional, only required for specific endpoints that need user identity (e.g., `/api/v1/users/me/*`)
+
+This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs/API_Proposal.md). 
+
+**Client-Side Protection**: The viewer implements client-side rate limiting, aggressive caching, and abuse detection to prevent overloading the server. See [AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md#🛡️-protección-del-lado-del-cliente-viewer) for details.
+
+For detailed information about the authentication strategy, see [AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md).
+
+---
+
+## Future API Endpoints (Planned)
+
+These endpoints will be available once the REST API backend is implemented. All require a valid User-Agent header (format: `AppName/Version (Contact)`). OAuth is optional and only required for specific endpoints.
+
+### User Endpoints
+
+```
+GET /api/v1/users/{user_id}/recent-activity
+  Authentication: User-Agent required (format: AppName/Version (Contact))
+  Returns: {
+    notes_created_last_30_days: number,
+    notes_resolved_last_30_days: number,
+    days_since_last_action: number,
+    active_notes_count: number,
+    countries_open_notes_current_month: array,
+    countries_solving_notes_current_month: array,
+    countries_open_notes_current_day: array,
+    countries_solving_notes_current_day: array
+  }
+```
+
+### Country Endpoints
+
+```
+GET /api/v1/countries/{country_id}/current-stats
+  Authentication: User-Agent required (format: AppName/Version (Contact))
+  Returns: {
+    currently_open_count: number,
+    currently_closed_count: number,
+    notes_created_last_30_days: number,
+    notes_resolved_last_30_days: number,
+    notes_backlog_size: number,
+    active_notes_count: number,
+    notes_health_score: number,
+    new_vs_resolved_ratio: number
+  }
+```
+
+### Global Endpoints
+
+```
+GET /api/v1/global/current-stats
+  Authentication: User-Agent required (format: AppName/Version (Contact))
+  Returns: {
+    currently_open_count: number,
+    currently_closed_count: number,
+    notes_created_last_30_days: number,
+    notes_resolved_last_30_days: number,
+    notes_backlog_size: number,
+    active_users_count: number,
+    notes_age_distribution: object
+  }
+```
+
+### Dynamic Query Endpoints
+
+```
+GET /api/v1/users?country={id}&min_notes={count}&sort={field}&limit={count}
+GET /api/v1/countries?health_score_min={score}&sort={field}&limit={count}
+GET /api/v1/users?hashtag={tag}&date_from={date}&date_to={date}
+GET /api/v1/users/rankings?metric={field}&limit={count}
+GET /api/v1/countries/rankings?metric={field}&limit={count}
+GET /api/v1/compare/users?ids={id1,id2,id3}
+GET /api/v1/compare/countries?ids={id1,id2,id3}
+```
+
+All dynamic query endpoints require a valid User-Agent header. OAuth is optional.
+
+For complete details on which metrics require API access, see [API_METRICS.md](API_METRICS.md).
 
 

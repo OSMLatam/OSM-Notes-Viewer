@@ -272,6 +272,7 @@ OSM-Notes-Viewer/
 - [Architecture](docs/ARCHITECTURE.md) - System architecture overview
 - [Components](docs/COMPONENTS.md) - Component documentation
 - [API](docs/API.md) - API endpoints and data structure
+- [Authentication Strategy](docs/AUTHENTICATION_STRATEGY.md) - Hybrid authentication approach (User-Agent required, OAuth optional) including client-side protection
 - [Features](docs/FEATURES.md) - Feature documentation
 - [Build Guide](docs/BUILD.md) - Building the project
 - [Contributing](docs/CONTRIBUTING.md) - Contribution guidelines
