@@ -522,7 +522,7 @@ async function loadGlobalStats() {
         // Try to load global stats for additional metrics
         try {
             const globalStats = await apiClient.getGlobalStats();
-            
+
             // Resolution metrics
             const avgDaysEl = document.getElementById('avgDaysToResolution');
             const resolutionRateEl = document.getElementById('resolutionRate');
@@ -545,7 +545,7 @@ async function loadGlobalStats() {
             const avgDaysEl = document.getElementById('avgDaysToResolution');
             const resolutionRateEl = document.getElementById('resolutionRate');
             const totalCommentsEl = document.getElementById('totalComments');
-            
+
             if (avgDaysEl) avgDaysEl.parentElement.style.display = 'none';
             if (resolutionRateEl) resolutionRateEl.parentElement.style.display = 'none';
             if (totalCommentsEl) totalCommentsEl.parentElement.style.display = 'none';
