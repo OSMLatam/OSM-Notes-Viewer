@@ -6,6 +6,7 @@ import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js'
 import { renderActivityHeatmap } from '../components/activityHeatmap.js';
 import { getCountryFlagFromObject } from '../utils/countryFlags.js';
 import { getUserAvatarSync, loadOSMAvatarInBackground } from '../utils/userAvatar.js';
+import { createBarChart } from '../components/chart.js';
 
 // Helper function to format username with special styling
 function formatUsernameWithStyle(username) {
@@ -99,23 +100,45 @@ async function loadCountryProfile(countryId) {
         // Statistics
         document.getElementById('notesOpened').textContent = formatNumber(country.history_whole_open || 0);
         document.getElementById('notesClosed').textContent = formatNumber(country.history_whole_closed || 0);
+        document.getElementById('notesClosedWithComment').textContent = formatNumber(country.history_whole_closed_with_comment || 0);
         document.getElementById('notesCommented').textContent = formatNumber(country.history_whole_commented || 0);
         document.getElementById('notesReopened').textContent = formatNumber(country.history_whole_reopened || 0);
+
+        // Community Health Metrics
+        renderCommunityHealthMetrics(country);
+
+        // Resolution Metrics
+        renderResolutionMetrics(country);
+
+        // Application Statistics
+        renderApplicationStats(country);
+
+        // Content Quality Metrics
+        renderContentQualityMetrics(country);
+
+        // Resolution Trends
+        renderResolutionTrends(country);
 
         // Activity heatmap
         renderCountryActivityHeatmap(country.last_year_activity, country.dates_most_open);
 
         // Hashtags
-        renderHashtags(country.hashtags);
+        renderHashtags(country.hashtags, country.hashtags_opening, country.hashtags_resolution, country.hashtags_comments, country.favorite_opening_hashtag, country.favorite_resolution_hashtag, country.opening_hashtag_count, country.resolution_hashtag_count);
 
         // Users
         await setupUsersSection(country);
+
+        // User Rankings by Year
+        renderUserRankingsByYear(country);
 
         // Working hours
         renderWorkingHoursSection(country.working_hours_of_week_opening, country.working_hours_of_week_commenting, country.working_hours_of_week_closing, document.getElementById('workingHoursContainer'), 'country');
 
         // Activity history
         renderActivityHistory(country);
+
+        // Yearly history breakdown
+        renderYearlyHistory(country);
 
         // First actions
         renderFirstActions(country);
@@ -284,20 +307,100 @@ function renderYearActivityHeatmap(dates) {
     `;
 }
 
-function renderHashtags(hashtags) {
+function renderHashtags(hashtags, hashtagsOpening, hashtagsResolution, hashtagsComments, favoriteOpeningHashtag, favoriteResolutionHashtag, openingHashtagCount, resolutionHashtagCount) {
     const container = document.getElementById('hashtagsContainer');
 
-    if (!hashtags || hashtags.length === 0) {
+    let html = '';
+
+    // Favorite hashtags section
+    if (favoriteOpeningHashtag || favoriteResolutionHashtag) {
+        html += '<div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem;">Favorite Hashtags</h4>';
+        html += '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
+        if (favoriteOpeningHashtag) {
+            html += `<div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--text-light);">📝 Opening:</span>
+                <strong style="color: var(--primary-color);">#${favoriteOpeningHashtag}</strong>
+                ${openingHashtagCount ? `<span style="color: var(--text-light); font-size: 0.85rem;">(${formatNumber(openingHashtagCount)} uses)</span>` : ''}
+            </div>`;
+        }
+        if (favoriteResolutionHashtag) {
+            html += `<div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--text-light);">✅ Resolution:</span>
+                <strong style="color: var(--primary-color);">#${favoriteResolutionHashtag}</strong>
+                ${resolutionHashtagCount ? `<span style="color: var(--text-light); font-size: 0.85rem;">(${formatNumber(resolutionHashtagCount)} uses)</span>` : ''}
+            </div>`;
+        }
+        html += '</div></div>';
+    }
+
+    // All hashtags (general)
+    if (hashtags && hashtags.length > 0) {
+        html += '<div style="margin-bottom: 1.5rem;">';
+        html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem;">All Hashtags</h4>';
+        html += hashtags.map(item => `
+            <div class="hashtag-item">
+                <span class="hashtag-name">${item.hashtag}</span>
+                <span class="hashtag-count">${formatNumber(item.quantity)}</span>
+            </div>
+        `).join('');
+        html += '</div>';
+    }
+
+    // Hashtags by category
+    const hasCategoryHashtags = (hashtagsOpening && hashtagsOpening.length > 0) ||
+                                (hashtagsResolution && hashtagsResolution.length > 0) ||
+                                (hashtagsComments && hashtagsComments.length > 0);
+
+    if (hasCategoryHashtags) {
+        html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">';
+
+        if (hashtagsOpening && hashtagsOpening.length > 0) {
+            html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+            html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.9rem;">📝 Opening Hashtags</h4>';
+            html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            hashtagsOpening.slice(0, 5).forEach(item => {
+                html += `<div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--primary-color);">#${item.hashtag}</span>
+                    <span style="color: var(--text-light); font-size: 0.85rem;">${formatNumber(item.quantity)}</span>
+                </div>`;
+            });
+            html += '</div></div>';
+        }
+
+        if (hashtagsResolution && hashtagsResolution.length > 0) {
+            html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+            html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.9rem;">✅ Resolution Hashtags</h4>';
+            html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            hashtagsResolution.slice(0, 5).forEach(item => {
+                html += `<div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--primary-color);">#${item.hashtag}</span>
+                    <span style="color: var(--text-light); font-size: 0.85rem;">${formatNumber(item.quantity)}</span>
+                </div>`;
+            });
+            html += '</div></div>';
+        }
+
+        if (hashtagsComments && hashtagsComments.length > 0) {
+            html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+            html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.9rem;">💬 Comment Hashtags</h4>';
+            html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            hashtagsComments.slice(0, 5).forEach(item => {
+                html += `<div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--primary-color);">#${item.hashtag}</span>
+                    <span style="color: var(--text-light); font-size: 0.85rem;">${formatNumber(item.quantity)}</span>
+                </div>`;
+            });
+            html += '</div></div>';
+        }
+
+        html += '</div>';
+    }
+
+    if (!html) {
         container.innerHTML = '<p>No hashtags found</p>';
         return;
     }
-
-    const html = hashtags.map(item => `
-        <div class="hashtag-item">
-            <span class="hashtag-name">${item.hashtag}</span>
-            <span class="hashtag-count">${formatNumber(item.quantity)}</span>
-        </div>
-    `).join('');
 
     container.innerHTML = html;
 }
@@ -377,6 +480,62 @@ async function renderUsersList(users, containerId, showOpened) {
 
 // This function is now replaced by renderWorkingHoursSection from workingHoursHeatmap.js
 
+function renderYearlyHistory(country) {
+    const section = document.getElementById('yearlyHistorySection');
+    const container = document.getElementById('yearlyHistoryContainer');
+
+    if (!section || !container) return;
+
+    // Find available years from history_{YEAR}_open fields
+    const availableYears = [];
+    for (let year = 2013; year <= 2025; year++) {
+        const openField = `history_${year}_open`;
+        if (country[openField] !== undefined && country[openField] !== null) {
+            availableYears.push(year);
+        }
+    }
+
+    // Hide section if no year data available
+    if (availableYears.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Create table with yearly data
+    let html = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;">';
+    html += '<thead><tr style="background: var(--card-bg); border-bottom: 2px solid var(--border-color);">';
+    html += '<th style="padding: 0.75rem; text-align: left; color: var(--text-color);">Year</th>';
+    html += '<th style="padding: 0.75rem; text-align: right; color: var(--text-color);">Opened</th>';
+    html += '<th style="padding: 0.75rem; text-align: right; color: var(--text-color);">Closed</th>';
+    html += '<th style="padding: 0.75rem; text-align: right; color: var(--text-color);">Closed w/ Comment</th>';
+    html += '<th style="padding: 0.75rem; text-align: right; color: var(--text-color);">Commented</th>';
+    html += '<th style="padding: 0.75rem; text-align: right; color: var(--text-color);">Reopened</th>';
+    html += '</tr></thead><tbody>';
+
+    availableYears.sort((a, b) => b - a).forEach(year => {
+        const open = country[`history_${year}_open`] || 0;
+        const closed = country[`history_${year}_closed`] || 0;
+        const closedWithComment = country[`history_${year}_closed_with_comment`] || 0;
+        const commented = country[`history_${year}_commented`] || 0;
+        const reopened = country[`history_${year}_reopened`] || 0;
+
+        html += `<tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 0.75rem; color: var(--text-color); font-weight: 500;">${year}</td>
+            <td style="padding: 0.75rem; text-align: right; color: var(--text-color);">${formatNumber(open)}</td>
+            <td style="padding: 0.75rem; text-align: right; color: var(--text-color);">${formatNumber(closed)}</td>
+            <td style="padding: 0.75rem; text-align: right; color: var(--text-color);">${formatNumber(closedWithComment)}</td>
+            <td style="padding: 0.75rem; text-align: right; color: var(--text-color);">${formatNumber(commented)}</td>
+            <td style="padding: 0.75rem; text-align: right; color: var(--text-color);">${formatNumber(reopened)}</td>
+        </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+
+    container.innerHTML = html;
+}
+
 function renderActivityHistory(country) {
     const container = document.getElementById('activityHistoryContainer');
 
@@ -386,8 +545,11 @@ function renderActivityHistory(country) {
     html += '<div class="history-item">';
     html += '<strong>This Year:</strong> ';
     html += 'Opened: ' + formatNumber(country.history_year_open || 0) + ', ';
-    html += 'Closed: ' + formatNumber(country.history_year_closed || 0) + ', ';
-    html += 'Commented: ' + formatNumber(country.history_year_commented || 0);
+    html += 'Closed: ' + formatNumber(country.history_year_closed || 0);
+    if (country.history_year_closed_with_comment) {
+        html += ' (' + formatNumber(country.history_year_closed_with_comment || 0) + ' with comment)';
+    }
+    html += ', Commented: ' + formatNumber(country.history_year_commented || 0);
     if (country.history_year_reopened) {
         html += ', Reopened: ' + formatNumber(country.history_year_reopened || 0);
     }
@@ -397,8 +559,11 @@ function renderActivityHistory(country) {
     html += '<div class="history-item">';
     html += '<strong>This Month:</strong> ';
     html += 'Opened: ' + formatNumber(country.history_month_open || 0) + ', ';
-    html += 'Closed: ' + formatNumber(country.history_month_closed || 0) + ', ';
-    html += 'Commented: ' + formatNumber(country.history_month_commented || 0);
+    html += 'Closed: ' + formatNumber(country.history_month_closed || 0);
+    if (country.history_month_closed_with_comment) {
+        html += ' (' + formatNumber(country.history_month_closed_with_comment || 0) + ' with comment)';
+    }
+    html += ', Commented: ' + formatNumber(country.history_month_commented || 0);
     if (country.history_month_reopened) {
         html += ', Reopened: ' + formatNumber(country.history_month_reopened || 0);
     }
@@ -408,8 +573,11 @@ function renderActivityHistory(country) {
     html += '<div class="history-item">';
     html += '<strong>Today:</strong> ';
     html += 'Opened: ' + formatNumber(country.history_day_open || 0) + ', ';
-    html += 'Closed: ' + formatNumber(country.history_day_closed || 0) + ', ';
-    html += 'Commented: ' + formatNumber(country.history_day_commented || 0);
+    html += 'Closed: ' + formatNumber(country.history_day_closed || 0);
+    if (country.history_day_closed_with_comment) {
+        html += ' (' + formatNumber(country.history_day_closed_with_comment || 0) + ' with comment)';
+    }
+    html += ', Commented: ' + formatNumber(country.history_day_commented || 0);
     if (country.history_day_reopened) {
         html += ', Reopened: ' + formatNumber(country.history_day_reopened || 0);
     }
@@ -418,6 +586,298 @@ function renderActivityHistory(country) {
     html += '</div>';
 
     container.innerHTML = html;
+}
+
+function renderCommunityHealthMetrics(country) {
+    const section = document.getElementById('communityHealthSection');
+    if (!section) return;
+
+    // Hide section if no health data available
+    if (!country.notes_health_score && !country.new_vs_resolved_ratio) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Format score (round to 2 decimals)
+    const formatScore = (score) => {
+        if (score === null || score === undefined) return '-';
+        return score.toFixed(2);
+    };
+
+    // Format ratio (round to 2 decimals)
+    const formatRatio = (ratio) => {
+        if (ratio === null || ratio === undefined) return '-';
+        return ratio.toFixed(2);
+    };
+
+    // Update values
+    const healthScoreEl = document.getElementById('notesHealthScore');
+    const ratioEl = document.getElementById('newVsResolvedRatio');
+
+    if (healthScoreEl) healthScoreEl.textContent = formatScore(country.notes_health_score);
+    if (ratioEl) ratioEl.textContent = formatRatio(country.new_vs_resolved_ratio);
+}
+
+function renderContentQualityMetrics(country) {
+    const section = document.getElementById('contentQualitySection');
+    if (!section) return;
+
+    // Hide section if no content quality data available
+    if (!country.avg_comment_length && !country.comments_with_url_count &&
+        !country.comments_with_url_pct && !country.comments_with_mention_count &&
+        !country.comments_with_mention_pct && !country.avg_comments_per_note) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Format characters
+    const formatChars = (value) => {
+        if (value === null || value === undefined) return '-';
+        return formatNumber(Math.round(value)) + ' chars';
+    };
+
+    // Format percentage
+    const formatPercent = (value) => {
+        if (value === null || value === undefined) return '-';
+        return value.toFixed(1) + '%';
+    };
+
+    // Format number
+    const formatNum = (value) => {
+        if (value === null || value === undefined) return '-';
+        return value.toFixed(1);
+    };
+
+    // Update values
+    const avgLengthEl = document.getElementById('avgCommentLength');
+    const urlCountEl = document.getElementById('commentsWithUrl');
+    const urlPctEl = document.getElementById('commentsWithUrlPct');
+    const mentionCountEl = document.getElementById('commentsWithMention');
+    const mentionPctEl = document.getElementById('commentsWithMentionPct');
+    const avgCommentsEl = document.getElementById('avgCommentsPerNote');
+
+    if (avgLengthEl) avgLengthEl.textContent = formatChars(country.avg_comment_length);
+    if (urlCountEl) urlCountEl.textContent = formatNumber(country.comments_with_url_count || 0);
+    if (urlPctEl) urlPctEl.textContent = formatPercent(country.comments_with_url_pct);
+    if (mentionCountEl) mentionCountEl.textContent = formatNumber(country.comments_with_mention_count || 0);
+    if (mentionPctEl) mentionPctEl.textContent = formatPercent(country.comments_with_mention_pct);
+    if (avgCommentsEl) avgCommentsEl.textContent = formatNum(country.avg_comments_per_note);
+}
+
+function renderApplicationStats(country) {
+    const section = document.getElementById('applicationStatsSection');
+    const container = document.getElementById('applicationStatsContainer');
+    if (!section || !container) return;
+
+    // Hide section if no application data available
+    if (!country.applications_used || (country.applications_used.length === 0 && !country.most_used_application_id && !country.mobile_apps_count && !country.desktop_apps_count)) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">';
+
+    // Summary stats
+    if (country.mobile_apps_count !== undefined || country.desktop_apps_count !== undefined) {
+        html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem;">Device Types</h4>';
+        html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+        if (country.mobile_apps_count !== undefined) {
+            html += `<div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--text-light);">📱 Mobile Apps:</span>
+                <strong style="color: var(--primary-color);">${formatNumber(country.mobile_apps_count)}</strong>
+            </div>`;
+        }
+        if (country.desktop_apps_count !== undefined) {
+            html += `<div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--text-light);">💻 Desktop/Web Apps:</span>
+                <strong style="color: var(--primary-color);">${formatNumber(country.desktop_apps_count)}</strong>
+            </div>`;
+        }
+        html += '</div></div>';
+    }
+
+    // Most used application
+    if (country.most_used_application_id) {
+        // Try to find the application name from applications_used
+        let mostUsedAppName = `App #${country.most_used_application_id}`;
+        if (country.applications_used && country.applications_used.length > 0) {
+            const mostUsed = country.applications_used.find(app => app.application_id === country.most_used_application_id);
+            if (mostUsed && mostUsed.application_name) {
+                mostUsedAppName = mostUsed.application_name;
+            }
+        }
+
+        html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem;">Most Used</h4>';
+        html += `<div style="color: var(--primary-color); font-weight: 500;">${mostUsedAppName}</div>`;
+        html += '</div>';
+    }
+
+    // Applications list
+    if (country.applications_used && country.applications_used.length > 0) {
+        html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); grid-column: 1 / -1;">';
+        html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem;">All Applications</h4>';
+        html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem;">';
+        country.applications_used.slice(0, 10).forEach(app => {
+            html += `<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--bg-color); border-radius: calc(var(--radius) / 2);">
+                <span style="color: var(--text-color); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${app.application_name || `App #${app.application_id}`}</span>
+                <span style="color: var(--text-light); font-size: 0.85rem; margin-left: 0.5rem; flex-shrink: 0;">${formatNumber(app.usage_count || 0)}</span>
+            </div>`;
+        });
+        if (country.applications_used.length > 10) {
+            html += `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-light); font-size: 0.85rem; margin-top: 0.5rem;">
+                +${country.applications_used.length - 10} more applications
+            </div>`;
+        }
+        html += '</div></div>';
+    }
+
+    html += '</div>';
+
+    // Application Usage Trends
+    if (country.application_usage_trends && Array.isArray(country.application_usage_trends) && country.application_usage_trends.length > 0) {
+        html += '<div style="margin-top: 2rem; padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 1rem 0; color: var(--text-color); font-size: 0.95rem;">Application Usage Trends</h4>';
+
+        const trendData = country.application_usage_trends.map(item => ({
+            label: item.period || item.month || item.year || 'Unknown',
+            value: item.usage_count || item.count || 0
+        }));
+
+        const trendContainer = document.createElement('div');
+        createBarChart(trendData.slice(-12), trendContainer);
+        html += trendContainer.innerHTML;
+        html += '</div>';
+    }
+
+    // Version Adoption Rates
+    if (country.version_adoption_rates && (Array.isArray(country.version_adoption_rates) || typeof country.version_adoption_rates === 'object')) {
+        html += '<div style="margin-top: 2rem; padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 1rem 0; color: var(--text-color); font-size: 0.95rem;">Version Adoption Rates</h4>';
+
+        let adoptionData = [];
+        if (Array.isArray(country.version_adoption_rates)) {
+            adoptionData = country.version_adoption_rates.map(item => ({
+                label: item.version || item.version_name || 'Unknown',
+                value: item.adoption_rate || item.usage_count || 0
+            }));
+        } else {
+            // If it's an object, convert to array
+            adoptionData = Object.entries(country.version_adoption_rates).map(([version, rate]) => ({
+                label: version,
+                value: typeof rate === 'number' ? rate : 0
+            }));
+        }
+
+        const adoptionContainer = document.createElement('div');
+        createBarChart(adoptionData.slice(0, 10), adoptionContainer);
+        html += adoptionContainer.innerHTML;
+        html += '</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+function renderResolutionTrends(country) {
+    const section = document.getElementById('resolutionTrendsSection');
+    if (!section) return;
+
+    // Check if we have resolution trend data
+    const hasYearData = country.resolution_by_year && Array.isArray(country.resolution_by_year) && country.resolution_by_year.length > 0;
+    const hasMonthData = country.resolution_by_month && Array.isArray(country.resolution_by_month) && country.resolution_by_month.length > 0;
+
+    if (!hasYearData && !hasMonthData) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    let html = '';
+
+    // Resolution by Year
+    if (hasYearData) {
+        html += '<div style="margin-bottom: 2rem;">';
+        html += '<h4 style="margin: 0 0 1rem 0; color: var(--text-color); font-size: 1rem;">Resolution Trends by Year</h4>';
+
+        const chartData = country.resolution_by_year.map(item => ({
+            label: item.year || item.period || 'Unknown',
+            value: item.avg_days_to_resolution || item.resolution_rate || 0
+        }));
+
+        const chartContainer = document.createElement('div');
+        createBarChart(chartData, chartContainer);
+        html += chartContainer.innerHTML;
+        html += '</div>';
+    }
+
+    // Resolution by Month
+    if (hasMonthData) {
+        html += '<div>';
+        html += '<h4 style="margin: 0 0 1rem 0; color: var(--text-color); font-size: 1rem;">Resolution Trends by Month</h4>';
+
+        const chartData = country.resolution_by_month.slice(-12).map(item => ({
+            label: item.month || item.period || 'Unknown',
+            value: item.avg_days_to_resolution || item.resolution_rate || 0
+        }));
+
+        const chartContainer = document.createElement('div');
+        createBarChart(chartData, chartContainer);
+        html += chartContainer.innerHTML;
+        html += '</div>';
+    }
+
+    const container = document.getElementById('resolutionTrendsContainer');
+    if (container) {
+        container.innerHTML = html;
+    }
+}
+
+function renderResolutionMetrics(country) {
+    const section = document.getElementById('resolutionMetricsSection');
+    if (!section) return;
+
+    // Hide section if no resolution data available
+    if (!country.avg_days_to_resolution && !country.median_days_to_resolution &&
+        !country.resolution_rate && !country.notes_resolved_count &&
+        !country.notes_still_open_count) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Format days (round to 1 decimal)
+    const formatDays = (days) => {
+        if (days === null || days === undefined) return '-';
+        return days.toFixed(1) + ' days';
+    };
+
+    // Format percentage
+    const formatPercent = (value) => {
+        if (value === null || value === undefined) return '-';
+        return value.toFixed(1) + '%';
+    };
+
+    // Update values
+    const avgDaysEl = document.getElementById('avgDaysToResolution');
+    const medianDaysEl = document.getElementById('medianDaysToResolution');
+    const rateEl = document.getElementById('resolutionRate');
+    const resolvedEl = document.getElementById('notesResolvedCount');
+    const stillOpenEl = document.getElementById('notesStillOpenCount');
+
+    if (avgDaysEl) avgDaysEl.textContent = formatDays(country.avg_days_to_resolution);
+    if (medianDaysEl) medianDaysEl.textContent = formatDays(country.median_days_to_resolution);
+    if (rateEl) rateEl.textContent = formatPercent(country.resolution_rate);
+    if (resolvedEl) resolvedEl.textContent = formatNumber(country.notes_resolved_count || 0);
+    if (stillOpenEl) stillOpenEl.textContent = formatNumber(country.notes_still_open_count || 0);
 }
 
 function renderFirstActions(country) {
@@ -470,6 +930,139 @@ function renderFirstActions(country) {
     html += '</div>';
 
     container.innerHTML = html;
+}
+
+function renderUserRankingsByYear(country) {
+    const section = document.getElementById('userRankingsByYearSection');
+    const yearSelector = document.getElementById('countryYearSelector');
+    const openContainer = document.getElementById('usersOpenByYearContainer');
+    const closedContainer = document.getElementById('usersClosedByYearContainer');
+
+    if (!section || !yearSelector || !openContainer || !closedContainer) return;
+
+    // Find available years from ranking_users_opening_{YEAR} or ranking_users_closing_{YEAR} fields
+    const availableYears = [];
+    for (let year = 2013; year <= 2025; year++) {
+        const openingField = `ranking_users_opening_${year}`;
+        const closingField = `ranking_users_closing_${year}`;
+        if ((country[openingField] && Array.isArray(country[openingField]) && country[openingField].length > 0) ||
+            (country[closingField] && Array.isArray(country[closingField]) && country[closingField].length > 0)) {
+            if (!availableYears.includes(year)) {
+                availableYears.push(year);
+            }
+        }
+    }
+
+    // Hide section if no year data available
+    if (availableYears.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Populate year selector
+    availableYears.sort((a, b) => b - a).forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelector.appendChild(option);
+    });
+
+    // Function to render rankings for selected year
+    const renderYearRankings = async (year) => {
+        if (!year) {
+            openContainer.innerHTML = '<p class="text-light">Select a year to view rankings</p>';
+            closedContainer.innerHTML = '<p class="text-light">Select a year to view rankings</p>';
+            return;
+        }
+
+        const openingField = `ranking_users_opening_${year}`;
+        const closingField = `ranking_users_closing_${year}`;
+        const openingRanking = country[openingField];
+        const closingRanking = country[closingField];
+
+        // Render opening ranking
+        if (openingRanking && openingRanking.length > 0) {
+            try {
+                const userIndex = await apiClient.getUserIndex();
+                const userMap = new Map(userIndex.map(u => [u.username, u.user_id]));
+
+                const html = openingRanking.slice(0, 10).map((item, index) => {
+                    const userId = userMap.get(item.username) || '';
+                    const userObj = { username: item.username, user_id: userId };
+                    const avatarUrl = getUserAvatarSync(userObj, 40);
+                    const userProfileUrl = `user.html?username=${encodeURIComponent(item.username)}`;
+
+                    return `
+                        <div class="country-item" style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0;">
+                                <span class="country-rank" style="flex-shrink: 0;">#${index + 1}</span>
+                                ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">` : ''}
+                                <a href="${userProfileUrl}" style="text-decoration: none; color: inherit;">
+                                    <span class="country-name">${formatUsernameWithStyle(item.username)}</span>
+                                </a>
+                            </div>
+                            <span style="font-size: 0.85rem; color: var(--text-light);">${formatNumber(item.quantity || 0)}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                openContainer.innerHTML = html;
+            } catch (error) {
+                console.error(`Error rendering opening ranking for year ${year}:`, error);
+                openContainer.innerHTML = '<p class="text-light">Error loading ranking data</p>';
+            }
+        } else {
+            openContainer.innerHTML = `<p class="text-light">No opening data for ${year}</p>`;
+        }
+
+        // Render closing ranking
+        if (closingRanking && closingRanking.length > 0) {
+            try {
+                const userIndex = await apiClient.getUserIndex();
+                const userMap = new Map(userIndex.map(u => [u.username, u.user_id]));
+
+                const html = closingRanking.slice(0, 10).map((item, index) => {
+                    const userId = userMap.get(item.username) || '';
+                    const userObj = { username: item.username, user_id: userId };
+                    const avatarUrl = getUserAvatarSync(userObj, 40);
+                    const userProfileUrl = `user.html?username=${encodeURIComponent(item.username)}`;
+
+                    return `
+                        <div class="country-item" style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 0;">
+                                <span class="country-rank" style="flex-shrink: 0;">#${index + 1}</span>
+                                ${avatarUrl ? `<img src="${avatarUrl}" alt="${item.username}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0;">` : ''}
+                                <a href="${userProfileUrl}" style="text-decoration: none; color: inherit;">
+                                    <span class="country-name">${formatUsernameWithStyle(item.username)}</span>
+                                </a>
+                            </div>
+                            <span style="font-size: 0.85rem; color: var(--text-light);">${formatNumber(item.quantity || 0)}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                closedContainer.innerHTML = html;
+            } catch (error) {
+                console.error(`Error rendering closing ranking for year ${year}:`, error);
+                closedContainer.innerHTML = '<p class="text-light">Error loading ranking data</p>';
+            }
+        } else {
+            closedContainer.innerHTML = `<p class="text-light">No closing data for ${year}</p>`;
+        }
+    };
+
+    // Event listener for year selector
+    yearSelector.addEventListener('change', (e) => {
+        renderYearRankings(e.target.value);
+    });
+
+    // Set default to most recent year
+    if (availableYears.length > 0) {
+        yearSelector.value = availableYears[0];
+        renderYearRankings(availableYears[0]);
+    }
 }
 
 function renderCountryPeakActivityDays(country) {

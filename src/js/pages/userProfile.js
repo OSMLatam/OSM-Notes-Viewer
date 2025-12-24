@@ -134,24 +134,46 @@ async function loadUserProfile(userId) {
         // Statistics
         document.getElementById('notesOpened').textContent = formatNumber(user.history_whole_open || 0);
         document.getElementById('notesClosed').textContent = formatNumber(user.history_whole_closed || 0);
+        document.getElementById('notesClosedWithComment').textContent = formatNumber(user.history_whole_closed_with_comment || 0);
         document.getElementById('notesCommented').textContent = formatNumber(user.history_whole_commented || 0);
         document.getElementById('notesReopened').textContent = formatNumber(user.history_whole_reopened || 0);
+
+        // Resolution Metrics
+        renderResolutionMetrics(user);
+
+        // Application Statistics
+        renderApplicationStats(user);
+
+        // Content Quality Metrics
+        renderContentQualityMetrics(user);
+
+        // User Behavior Metrics
+        renderUserBehaviorMetrics(user);
+
+        // Resolution Trends
+        renderResolutionTrends(user);
 
         // Activity heatmap
         renderUserActivityHeatmap(user.last_year_activity);
 
         // Hashtags
-        renderHashtags(user.hashtags);
+        renderHashtags(user.hashtags, user.hashtags_opening, user.hashtags_resolution, user.hashtags_comments, user.favorite_opening_hashtag, user.favorite_resolution_hashtag, user.opening_hashtag_count, user.resolution_hashtag_count);
 
         // Countries
         await renderCountryRanking(user.countries_open_notes, 'countriesOpenContainer', 'No open country data available');
         await renderCountryRanking(user.countries_solving_notes, 'countriesSolvingContainer', 'No solving country data available');
+
+        // Country Rankings by Year
+        renderCountryRankingsByYear(user);
 
         // Working hours
         renderWorkingHoursSection(user.working_hours_of_week_opening, user.working_hours_of_week_commenting, user.working_hours_of_week_closing, document.getElementById('workingHoursContainer'), 'user');
 
         // Activity history
         renderActivityHistory(user);
+
+        // Yearly history breakdown
+        renderYearlyHistory(user);
 
         // First actions
         renderFirstActions(user);
@@ -213,21 +235,103 @@ function renderUserActivityHeatmap(activityString) {
     renderActivityHeatmap(activityString, container);
 }
 
-function renderHashtags(hashtags) {
+function renderHashtags(hashtags, hashtagsOpening, hashtagsResolution, hashtagsComments, favoriteOpeningHashtag, favoriteResolutionHashtag, openingHashtagCount, resolutionHashtagCount) {
     const container = document.getElementById('hashtagsContainer');
 
-    if (!hashtags || hashtags.length === 0) {
+    let html = '';
+
+    // Favorite hashtags section
+    if (favoriteOpeningHashtag || favoriteResolutionHashtag) {
+        html += '<div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem;">Favorite Hashtags</h4>';
+        html += '<div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
+        if (favoriteOpeningHashtag) {
+            html += `<div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--text-light);">📝 Opening:</span>
+                <strong style="color: var(--primary-color);">#${favoriteOpeningHashtag}</strong>
+                ${openingHashtagCount ? `<span style="color: var(--text-light); font-size: 0.85rem;">(${formatNumber(openingHashtagCount)} uses)</span>` : ''}
+            </div>`;
+        }
+        if (favoriteResolutionHashtag) {
+            html += `<div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="color: var(--text-light);">✅ Resolution:</span>
+                <strong style="color: var(--primary-color);">#${favoriteResolutionHashtag}</strong>
+                ${resolutionHashtagCount ? `<span style="color: var(--text-light); font-size: 0.85rem;">(${formatNumber(resolutionHashtagCount)} uses)</span>` : ''}
+            </div>`;
+        }
+        html += '</div></div>';
+    }
+
+    // All hashtags (general)
+    if (hashtags && hashtags.length > 0) {
+        html += '<div style="margin-bottom: 1.5rem;">';
+        html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem;">All Hashtags</h4>';
+        const chartData = hashtags.map(item => ({
+            label: item.hashtag,
+            value: item.quantity
+        }));
+        const chartContainer = document.createElement('div');
+        createBarChart(chartData, chartContainer);
+        html += chartContainer.innerHTML;
+        html += '</div>';
+    }
+
+    // Hashtags by category
+    const hasCategoryHashtags = (hashtagsOpening && hashtagsOpening.length > 0) ||
+                                (hashtagsResolution && hashtagsResolution.length > 0) ||
+                                (hashtagsComments && hashtagsComments.length > 0);
+
+    if (hasCategoryHashtags) {
+        html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">';
+
+        if (hashtagsOpening && hashtagsOpening.length > 0) {
+            html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+            html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.9rem;">📝 Opening Hashtags</h4>';
+            html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            hashtagsOpening.slice(0, 5).forEach(item => {
+                html += `<div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--primary-color);">#${item.hashtag}</span>
+                    <span style="color: var(--text-light); font-size: 0.85rem;">${formatNumber(item.quantity)}</span>
+                </div>`;
+            });
+            html += '</div></div>';
+        }
+
+        if (hashtagsResolution && hashtagsResolution.length > 0) {
+            html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+            html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.9rem;">✅ Resolution Hashtags</h4>';
+            html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            hashtagsResolution.slice(0, 5).forEach(item => {
+                html += `<div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--primary-color);">#${item.hashtag}</span>
+                    <span style="color: var(--text-light); font-size: 0.85rem;">${formatNumber(item.quantity)}</span>
+                </div>`;
+            });
+            html += '</div></div>';
+        }
+
+        if (hashtagsComments && hashtagsComments.length > 0) {
+            html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+            html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.9rem;">💬 Comment Hashtags</h4>';
+            html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+            hashtagsComments.slice(0, 5).forEach(item => {
+                html += `<div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--primary-color);">#${item.hashtag}</span>
+                    <span style="color: var(--text-light); font-size: 0.85rem;">${formatNumber(item.quantity)}</span>
+                </div>`;
+            });
+            html += '</div></div>';
+        }
+
+        html += '</div>';
+    }
+
+    if (!html) {
         container.innerHTML = '<p>No hashtags found</p>';
         return;
     }
 
-    // Use bar chart component for better visualization
-    const chartData = hashtags.map(item => ({
-        label: item.hashtag,
-        value: item.quantity
-    }));
-
-    createBarChart(chartData, container);
+    container.innerHTML = html;
 }
 
 async function renderCountryRanking(countries, containerId, emptyMessage) {
@@ -250,6 +354,79 @@ async function renderCountryRanking(countries, containerId, emptyMessage) {
     } catch (error) {
         console.error('Error rendering country ranking:', error);
         container.innerHTML = '<p class="text-light">Error loading country data</p>';
+    }
+}
+
+function renderCountryRankingsByYear(user) {
+    const section = document.getElementById('countryRankingsByYearSection');
+    const yearSelector = document.getElementById('yearSelector');
+    const container = document.getElementById('countriesOpenByYearContainer');
+
+    if (!section || !yearSelector || !container) return;
+
+    // Find available years from ranking_countries_opening_{YEAR} fields
+    const availableYears = [];
+    for (let year = 2013; year <= 2025; year++) {
+        const fieldName = `ranking_countries_opening_${year}`;
+        if (user[fieldName] && Array.isArray(user[fieldName]) && user[fieldName].length > 0) {
+            availableYears.push(year);
+        }
+    }
+
+    // Hide section if no year data available
+    if (availableYears.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Populate year selector
+    availableYears.sort((a, b) => b - a).forEach(year => {
+        const option = document.createElement('option');
+        option.value = year;
+        option.textContent = year;
+        yearSelector.appendChild(option);
+    });
+
+    // Function to render ranking for selected year
+    const renderYearRanking = async (year) => {
+        if (!year) {
+            container.innerHTML = '<p class="text-light">Select a year to view rankings</p>';
+            return;
+        }
+
+        const fieldName = `ranking_countries_opening_${year}`;
+        const ranking = user[fieldName];
+
+        if (!ranking || ranking.length === 0) {
+            container.innerHTML = `<p class="text-light">No data available for ${year}</p>`;
+            return;
+        }
+
+        try {
+            const chartData = ranking.map(item => ({
+                label: item.country || item.name || 'Unknown',
+                value: item.quantity || item.count || 0
+            })).slice(0, 10);
+
+            container.innerHTML = '';
+            createBarChart(chartData, container);
+        } catch (error) {
+            console.error(`Error rendering ranking for year ${year}:`, error);
+            container.innerHTML = '<p class="text-light">Error loading ranking data</p>';
+        }
+    };
+
+    // Event listener for year selector
+    yearSelector.addEventListener('change', (e) => {
+        renderYearRanking(e.target.value);
+    });
+
+    // Set default to most recent year
+    if (availableYears.length > 0) {
+        yearSelector.value = availableYears[0];
+        renderYearRanking(availableYears[0]);
     }
 }
 
@@ -285,6 +462,62 @@ function renderActivityDayList(items, containerId, emptyMessage) {
 
 // This function is now replaced by renderWorkingHoursSection from workingHoursHeatmap.js
 
+function renderYearlyHistory(user) {
+    const section = document.getElementById('yearlyHistorySection');
+    const container = document.getElementById('yearlyHistoryContainer');
+
+    if (!section || !container) return;
+
+    // Find available years from history_{YEAR}_open fields
+    const availableYears = [];
+    for (let year = 2013; year <= 2025; year++) {
+        const openField = `history_${year}_open`;
+        if (user[openField] !== undefined && user[openField] !== null) {
+            availableYears.push(year);
+        }
+    }
+
+    // Hide section if no year data available
+    if (availableYears.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Create table with yearly data
+    let html = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;">';
+    html += '<thead><tr style="background: var(--card-bg); border-bottom: 2px solid var(--border-color);">';
+    html += '<th style="padding: 0.75rem; text-align: left; color: var(--text-color);">Year</th>';
+    html += '<th style="padding: 0.75rem; text-align: right; color: var(--text-color);">Opened</th>';
+    html += '<th style="padding: 0.75rem; text-align: right; color: var(--text-color);">Closed</th>';
+    html += '<th style="padding: 0.75rem; text-align: right; color: var(--text-color);">Closed w/ Comment</th>';
+    html += '<th style="padding: 0.75rem; text-align: right; color: var(--text-color);">Commented</th>';
+    html += '<th style="padding: 0.75rem; text-align: right; color: var(--text-color);">Reopened</th>';
+    html += '</tr></thead><tbody>';
+
+    availableYears.sort((a, b) => b - a).forEach(year => {
+        const open = user[`history_${year}_open`] || 0;
+        const closed = user[`history_${year}_closed`] || 0;
+        const closedWithComment = user[`history_${year}_closed_with_comment`] || 0;
+        const commented = user[`history_${year}_commented`] || 0;
+        const reopened = user[`history_${year}_reopened`] || 0;
+
+        html += `<tr style="border-bottom: 1px solid var(--border-color);">
+            <td style="padding: 0.75rem; color: var(--text-color); font-weight: 500;">${year}</td>
+            <td style="padding: 0.75rem; text-align: right; color: var(--text-color);">${formatNumber(open)}</td>
+            <td style="padding: 0.75rem; text-align: right; color: var(--text-color);">${formatNumber(closed)}</td>
+            <td style="padding: 0.75rem; text-align: right; color: var(--text-color);">${formatNumber(closedWithComment)}</td>
+            <td style="padding: 0.75rem; text-align: right; color: var(--text-color);">${formatNumber(commented)}</td>
+            <td style="padding: 0.75rem; text-align: right; color: var(--text-color);">${formatNumber(reopened)}</td>
+        </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+
+    container.innerHTML = html;
+}
+
 function renderActivityHistory(user) {
     const container = document.getElementById('activityHistoryContainer');
 
@@ -294,8 +527,11 @@ function renderActivityHistory(user) {
     html += '<div class="history-item">';
     html += '<strong>This Year:</strong> ';
     html += 'Opened: ' + formatNumber(user.history_year_open || 0) + ', ';
-    html += 'Closed: ' + formatNumber(user.history_year_closed || 0) + ', ';
-    html += 'Commented: ' + formatNumber(user.history_year_commented || 0);
+    html += 'Closed: ' + formatNumber(user.history_year_closed || 0);
+    if (user.history_year_closed_with_comment) {
+        html += ' (' + formatNumber(user.history_year_closed_with_comment || 0) + ' with comment)';
+    }
+    html += ', Commented: ' + formatNumber(user.history_year_commented || 0);
     if (user.history_year_reopened) {
         html += ', Reopened: ' + formatNumber(user.history_year_reopened || 0);
     }
@@ -305,8 +541,11 @@ function renderActivityHistory(user) {
     html += '<div class="history-item">';
     html += '<strong>This Month:</strong> ';
     html += 'Opened: ' + formatNumber(user.history_month_open || 0) + ', ';
-    html += 'Closed: ' + formatNumber(user.history_month_closed || 0) + ', ';
-    html += 'Commented: ' + formatNumber(user.history_month_commented || 0);
+    html += 'Closed: ' + formatNumber(user.history_month_closed || 0);
+    if (user.history_month_closed_with_comment) {
+        html += ' (' + formatNumber(user.history_month_closed_with_comment || 0) + ' with comment)';
+    }
+    html += ', Commented: ' + formatNumber(user.history_month_commented || 0);
     if (user.history_month_reopened) {
         html += ', Reopened: ' + formatNumber(user.history_month_reopened || 0);
     }
@@ -316,8 +555,11 @@ function renderActivityHistory(user) {
     html += '<div class="history-item">';
     html += '<strong>Today:</strong> ';
     html += 'Opened: ' + formatNumber(user.history_day_open || 0) + ', ';
-    html += 'Closed: ' + formatNumber(user.history_day_closed || 0) + ', ';
-    html += 'Commented: ' + formatNumber(user.history_day_commented || 0);
+    html += 'Closed: ' + formatNumber(user.history_day_closed || 0);
+    if (user.history_day_closed_with_comment) {
+        html += ' (' + formatNumber(user.history_day_closed_with_comment || 0) + ' with comment)';
+    }
+    html += ', Commented: ' + formatNumber(user.history_day_commented || 0);
     if (user.history_day_reopened) {
         html += ', Reopened: ' + formatNumber(user.history_day_reopened || 0);
     }
@@ -326,6 +568,328 @@ function renderActivityHistory(user) {
     html += '</div>';
 
     container.innerHTML = html;
+}
+
+function renderContentQualityMetrics(user) {
+    const section = document.getElementById('contentQualitySection');
+    if (!section) return;
+
+    // Hide section if no content quality data available
+    if (!user.avg_comment_length && !user.comments_with_url_count &&
+        !user.comments_with_url_pct && !user.comments_with_mention_count &&
+        !user.comments_with_mention_pct && !user.avg_comments_per_note) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Format characters
+    const formatChars = (value) => {
+        if (value === null || value === undefined) return '-';
+        return formatNumber(Math.round(value)) + ' chars';
+    };
+
+    // Format percentage
+    const formatPercent = (value) => {
+        if (value === null || value === undefined) return '-';
+        return value.toFixed(1) + '%';
+    };
+
+    // Format number
+    const formatNum = (value) => {
+        if (value === null || value === undefined) return '-';
+        return value.toFixed(1);
+    };
+
+    // Update values
+    const avgLengthEl = document.getElementById('avgCommentLength');
+    const urlCountEl = document.getElementById('commentsWithUrl');
+    const urlPctEl = document.getElementById('commentsWithUrlPct');
+    const mentionCountEl = document.getElementById('commentsWithMention');
+    const mentionPctEl = document.getElementById('commentsWithMentionPct');
+    const avgCommentsEl = document.getElementById('avgCommentsPerNote');
+
+    if (avgLengthEl) avgLengthEl.textContent = formatChars(user.avg_comment_length);
+    if (urlCountEl) urlCountEl.textContent = formatNumber(user.comments_with_url_count || 0);
+    if (urlPctEl) urlPctEl.textContent = formatPercent(user.comments_with_url_pct);
+    if (mentionCountEl) mentionCountEl.textContent = formatNumber(user.comments_with_mention_count || 0);
+    if (mentionPctEl) mentionPctEl.textContent = formatPercent(user.comments_with_mention_pct);
+    if (avgCommentsEl) avgCommentsEl.textContent = formatNum(user.avg_comments_per_note);
+}
+
+function renderApplicationStats(user) {
+    const section = document.getElementById('applicationStatsSection');
+    const container = document.getElementById('applicationStatsContainer');
+    if (!section || !container) return;
+
+    // Hide section if no application data available
+    if (!user.applications_used || (user.applications_used.length === 0 && !user.most_used_application_id && !user.mobile_apps_count && !user.desktop_apps_count)) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">';
+
+    // Summary stats
+    if (user.mobile_apps_count !== undefined || user.desktop_apps_count !== undefined) {
+        html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem;">Device Types</h4>';
+        html += '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+        if (user.mobile_apps_count !== undefined) {
+            html += `<div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--text-light);">📱 Mobile Apps:</span>
+                <strong style="color: var(--primary-color);">${formatNumber(user.mobile_apps_count)}</strong>
+            </div>`;
+        }
+        if (user.desktop_apps_count !== undefined) {
+            html += `<div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: var(--text-light);">💻 Desktop/Web Apps:</span>
+                <strong style="color: var(--primary-color);">${formatNumber(user.desktop_apps_count)}</strong>
+            </div>`;
+        }
+        html += '</div></div>';
+    }
+
+    // Most used application
+    if (user.most_used_application_id) {
+        // Try to find the application name from applications_used
+        let mostUsedAppName = `App #${user.most_used_application_id}`;
+        if (user.applications_used && user.applications_used.length > 0) {
+            const mostUsed = user.applications_used.find(app => app.application_id === user.most_used_application_id);
+            if (mostUsed && mostUsed.application_name) {
+                mostUsedAppName = mostUsed.application_name;
+            }
+        }
+
+        html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem;">Most Used</h4>';
+        html += `<div style="color: var(--primary-color); font-weight: 500;">${mostUsedAppName}</div>`;
+        html += '</div>';
+    }
+
+    // Applications list
+    if (user.applications_used && user.applications_used.length > 0) {
+        html += '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color); grid-column: 1 / -1;">';
+        html += '<h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem;">All Applications</h4>';
+        html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem;">';
+        user.applications_used.slice(0, 10).forEach(app => {
+            html += `<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--bg-color); border-radius: calc(var(--radius) / 2);">
+                <span style="color: var(--text-color); font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${app.application_name || `App #${app.application_id}`}</span>
+                <span style="color: var(--text-light); font-size: 0.85rem; margin-left: 0.5rem; flex-shrink: 0;">${formatNumber(app.usage_count || 0)}</span>
+            </div>`;
+        });
+        if (user.applications_used.length > 10) {
+            html += `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-light); font-size: 0.85rem; margin-top: 0.5rem;">
+                +${user.applications_used.length - 10} more applications
+            </div>`;
+        }
+        html += '</div></div>';
+    }
+
+    html += '</div>';
+
+    // Application Usage Trends
+    if (user.application_usage_trends && Array.isArray(user.application_usage_trends) && user.application_usage_trends.length > 0) {
+        html += '<div style="margin-top: 2rem; padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 1rem 0; color: var(--text-color); font-size: 0.95rem;">Application Usage Trends</h4>';
+
+        const trendData = user.application_usage_trends.map(item => ({
+            label: item.period || item.month || item.year || 'Unknown',
+            value: item.usage_count || item.count || 0
+        }));
+
+        const trendContainer = document.createElement('div');
+        createBarChart(trendData.slice(-12), trendContainer);
+        html += trendContainer.innerHTML;
+        html += '</div>';
+    }
+
+    // Version Adoption Rates
+    if (user.version_adoption_rates && (Array.isArray(user.version_adoption_rates) || typeof user.version_adoption_rates === 'object')) {
+        html += '<div style="margin-top: 2rem; padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 1rem 0; color: var(--text-color); font-size: 0.95rem;">Version Adoption Rates</h4>';
+
+        let adoptionData = [];
+        if (Array.isArray(user.version_adoption_rates)) {
+            adoptionData = user.version_adoption_rates.map(item => ({
+                label: item.version || item.version_name || 'Unknown',
+                value: item.adoption_rate || item.usage_count || 0
+            }));
+        } else {
+            // If it's an object, convert to array
+            adoptionData = Object.entries(user.version_adoption_rates).map(([version, rate]) => ({
+                label: version,
+                value: typeof rate === 'number' ? rate : 0
+            }));
+        }
+
+        const adoptionContainer = document.createElement('div');
+        createBarChart(adoptionData.slice(0, 10), adoptionContainer);
+        html += adoptionContainer.innerHTML;
+        html += '</div>';
+    }
+
+    container.innerHTML = html;
+}
+
+function renderResolutionMetrics(user) {
+    const section = document.getElementById('resolutionMetricsSection');
+    if (!section) return;
+
+    // Hide section if no resolution data available
+    if (!user.avg_days_to_resolution && !user.median_days_to_resolution &&
+        !user.resolution_rate && !user.notes_resolved_count &&
+        !user.notes_still_open_count && !user.notes_opened_but_not_closed_by_user) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Format days (round to 1 decimal)
+    const formatDays = (days) => {
+        if (days === null || days === undefined) return '-';
+        return days.toFixed(1) + ' days';
+    };
+
+    // Format percentage
+    const formatPercent = (value) => {
+        if (value === null || value === undefined) return '-';
+        return value.toFixed(1) + '%';
+    };
+
+    // Update values
+    const avgDaysEl = document.getElementById('avgDaysToResolution');
+    const medianDaysEl = document.getElementById('medianDaysToResolution');
+    const rateEl = document.getElementById('resolutionRate');
+    const resolvedEl = document.getElementById('notesResolvedCount');
+    const stillOpenEl = document.getElementById('notesStillOpenCount');
+    const openedButNotClosedEl = document.getElementById('notesOpenedButNotClosed');
+
+    if (avgDaysEl) avgDaysEl.textContent = formatDays(user.avg_days_to_resolution);
+    if (medianDaysEl) medianDaysEl.textContent = formatDays(user.median_days_to_resolution);
+    if (rateEl) rateEl.textContent = formatPercent(user.resolution_rate);
+    if (resolvedEl) resolvedEl.textContent = formatNumber(user.notes_resolved_count || 0);
+    if (stillOpenEl) stillOpenEl.textContent = formatNumber(user.notes_still_open_count || 0);
+    if (openedButNotClosedEl) openedButNotClosedEl.textContent = formatNumber(user.notes_opened_but_not_closed_by_user || 0);
+}
+
+function renderUserBehaviorMetrics(user) {
+    const section = document.getElementById('userBehaviorSection');
+    if (!section) return;
+
+    // Hide section if no behavior data available
+    if (!user.user_response_time && !user.collaboration_patterns) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    // Format time (could be in hours, days, etc.)
+    const formatResponseTime = (time) => {
+        if (time === null || time === undefined) return '-';
+        if (time < 24) {
+            return time.toFixed(1) + ' hours';
+        } else if (time < 168) {
+            return (time / 24).toFixed(1) + ' days';
+        } else {
+            return (time / 168).toFixed(1) + ' weeks';
+        }
+    };
+
+    // Update response time
+    const responseTimeEl = document.getElementById('userResponseTime');
+    if (responseTimeEl && user.user_response_time !== undefined) {
+        responseTimeEl.textContent = formatResponseTime(user.user_response_time);
+    }
+
+    // Collaboration patterns visualization
+    const collaborationContainer = document.getElementById('collaborationPatternsContainer');
+    if (collaborationContainer && user.collaboration_patterns) {
+        let html = '<div style="padding: 1rem; background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border-color);">';
+        html += '<h4 style="margin: 0 0 1rem 0; color: var(--text-color); font-size: 0.95rem;">Collaboration Patterns</h4>';
+
+        if (Array.isArray(user.collaboration_patterns)) {
+            // If it's an array of patterns
+            html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem;">';
+            user.collaboration_patterns.slice(0, 10).forEach(pattern => {
+                html += `<div style="padding: 0.75rem; background: var(--bg-color); border-radius: calc(var(--radius) / 2);">
+                    <div style="color: var(--text-color); font-size: 0.9rem; font-weight: 500;">${pattern.partner || pattern.user || 'Unknown'}</div>
+                    <div style="color: var(--text-light); font-size: 0.85rem;">${formatNumber(pattern.count || pattern.collaborations || 0)} collaborations</div>
+                </div>`;
+            });
+            html += '</div>';
+        } else if (typeof user.collaboration_patterns === 'object') {
+            // If it's an object with pattern data
+            html += '<div style="color: var(--text-light);">';
+            html += '<p>Collaboration data available. Visualization coming soon.</p>';
+            html += '</div>';
+        }
+
+        html += '</div>';
+        collaborationContainer.innerHTML = html;
+    } else if (collaborationContainer) {
+        collaborationContainer.style.display = 'none';
+    }
+}
+
+function renderResolutionTrends(user) {
+    const section = document.getElementById('resolutionTrendsSection');
+    if (!section) return;
+
+    // Check if we have resolution trend data
+    const hasYearData = user.resolution_by_year && Array.isArray(user.resolution_by_year) && user.resolution_by_year.length > 0;
+    const hasMonthData = user.resolution_by_month && Array.isArray(user.resolution_by_month) && user.resolution_by_month.length > 0;
+
+    if (!hasYearData && !hasMonthData) {
+        section.style.display = 'none';
+        return;
+    }
+
+    section.style.display = 'block';
+
+    let html = '';
+
+    // Resolution by Year
+    if (hasYearData) {
+        html += '<div style="margin-bottom: 2rem;">';
+        html += '<h4 style="margin: 0 0 1rem 0; color: var(--text-color); font-size: 1rem;">Resolution Trends by Year</h4>';
+
+        const chartData = user.resolution_by_year.map(item => ({
+            label: item.year || item.period || 'Unknown',
+            value: item.avg_days_to_resolution || item.resolution_rate || 0
+        }));
+
+        const chartContainer = document.createElement('div');
+        createBarChart(chartData, chartContainer);
+        html += chartContainer.innerHTML;
+        html += '</div>';
+    }
+
+    // Resolution by Month
+    if (hasMonthData) {
+        html += '<div>';
+        html += '<h4 style="margin: 0 0 1rem 0; color: var(--text-color); font-size: 1rem;">Resolution Trends by Month</h4>';
+
+        const chartData = user.resolution_by_month.slice(-12).map(item => ({
+            label: item.month || item.period || 'Unknown',
+            value: item.avg_days_to_resolution || item.resolution_rate || 0
+        }));
+
+        const chartContainer = document.createElement('div');
+        createBarChart(chartData, chartContainer);
+        html += chartContainer.innerHTML;
+        html += '</div>';
+    }
+
+    const container = document.getElementById('resolutionTrendsContainer');
+    if (container) {
+        container.innerHTML = html;
+    }
 }
 
 function renderFirstActions(user) {

@@ -18,6 +18,7 @@ export const API_CONFIG = {
         metadata: '/metadata.json',
         userIndex: '/indexes/users.json',
         countryIndex: '/indexes/countries.json',
+        globalStats: '/global_stats.json',
         user: (userId) => `/users/${userId}.json`,
         country: (countryId) => `/countries/${countryId}.json`
     },

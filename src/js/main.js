@@ -519,6 +519,38 @@ async function loadGlobalStats() {
         notesOpenThisYearEl.textContent = formatNumber(totalOpenYear);
         notesClosedThisYearEl.textContent = formatNumber(totalClosedYear);
 
+        // Try to load global stats for additional metrics
+        try {
+            const globalStats = await apiClient.getGlobalStats();
+            
+            // Resolution metrics
+            const avgDaysEl = document.getElementById('avgDaysToResolution');
+            const resolutionRateEl = document.getElementById('resolutionRate');
+            const totalCommentsEl = document.getElementById('totalComments');
+
+            if (avgDaysEl && globalStats.avg_days_to_resolution !== undefined) {
+                avgDaysEl.textContent = globalStats.avg_days_to_resolution.toFixed(1) + ' days';
+            }
+
+            if (resolutionRateEl && globalStats.resolution_rate !== undefined) {
+                resolutionRateEl.textContent = globalStats.resolution_rate.toFixed(1) + '%';
+            }
+
+            if (totalCommentsEl && globalStats.history_whole_commented !== undefined) {
+                totalCommentsEl.textContent = formatNumber(globalStats.history_whole_commented);
+            }
+        } catch (error) {
+            console.warn('Could not load global stats, using calculated values:', error);
+            // Hide elements if global stats not available
+            const avgDaysEl = document.getElementById('avgDaysToResolution');
+            const resolutionRateEl = document.getElementById('resolutionRate');
+            const totalCommentsEl = document.getElementById('totalComments');
+            
+            if (avgDaysEl) avgDaysEl.parentElement.style.display = 'none';
+            if (resolutionRateEl) resolutionRateEl.parentElement.style.display = 'none';
+            if (totalCommentsEl) totalCommentsEl.parentElement.style.display = 'none';
+        }
+
     } catch (error) {
         console.error('Error loading global stats:', error);
         // Show error on individual stat cards

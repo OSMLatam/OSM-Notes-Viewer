@@ -143,6 +143,17 @@ class APIClient {
     async getCountry(countryId) {
         return this.fetch(API_CONFIG.ENDPOINTS.country(countryId));
     }
+
+    /**
+     * Get global statistics
+     * @returns {Promise<Object>} Global statistics object
+     * @example
+     * const globalStats = await apiClient.getGlobalStats();
+     * console.log(globalStats.avg_days_to_resolution, globalStats.resolution_rate);
+     */
+    async getGlobalStats() {
+        return this.fetch(API_CONFIG.ENDPOINTS.globalStats);
+    }
 }
 
 /**

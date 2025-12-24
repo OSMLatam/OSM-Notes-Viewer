@@ -91,12 +91,90 @@
                         <div class="stat-value" id="notesClosed">-</div>
                     </div>
                     <div class="stat-card">
+                        <div class="stat-label">Closed with Comment</div>
+                        <div class="stat-value" id="notesClosedWithComment">-</div>
+                    </div>
+                    <div class="stat-card">
                         <div class="stat-label">Comments</div>
                         <div class="stat-value" id="notesCommented">-</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-label">Reopened</div>
                         <div class="stat-value" id="notesReopened">-</div>
+                    </div>
+                </section>
+
+                <section class="profile-section" id="resolutionMetricsSection">
+                    <h3>Resolution Metrics</h3>
+                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                        <div class="stat-card">
+                            <div class="stat-label">Avg Days to Resolution</div>
+                            <div class="stat-value" id="avgDaysToResolution">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Median Days to Resolution</div>
+                            <div class="stat-value" id="medianDaysToResolution">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Resolution Rate</div>
+                            <div class="stat-value" id="resolutionRate">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Notes Resolved</div>
+                            <div class="stat-value" id="notesResolvedCount">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Notes Still Open</div>
+                            <div class="stat-value" id="notesStillOpenCount">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Opened but Not Closed</div>
+                            <div class="stat-value" id="notesOpenedButNotClosed">-</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="profile-section" id="contentQualitySection">
+                    <h3>Content Quality Metrics</h3>
+                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                        <div class="stat-card">
+                            <div class="stat-label">Avg Comment Length</div>
+                            <div class="stat-value" id="avgCommentLength">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Comments with URL</div>
+                            <div class="stat-value" id="commentsWithUrl">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Comments with URL %</div>
+                            <div class="stat-value" id="commentsWithUrlPct">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Comments with Mention</div>
+                            <div class="stat-value" id="commentsWithMention">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Comments with Mention %</div>
+                            <div class="stat-value" id="commentsWithMentionPct">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Avg Comments per Note</div>
+                            <div class="stat-value" id="avgCommentsPerNote">-</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="profile-section" id="resolutionTrendsSection">
+                    <h3>Resolution Trends</h3>
+                    <div id="resolutionTrendsContainer">
+                        <p class="loading">Loading resolution trends...</p>
+                    </div>
+                </section>
+
+                <section class="profile-section" id="applicationStatsSection">
+                    <h3>Application Statistics</h3>
+                    <div id="applicationStatsContainer">
+                        <p class="loading">Loading application statistics...</p>
                     </div>
                 </section>
 
@@ -137,6 +215,26 @@
                     </div>
                 </section>
 
+                <section class="profile-section" id="countryRankingsByYearSection">
+                    <h3>Country Rankings by Year</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <label for="yearSelector" style="color: var(--text-color); margin-right: 0.5rem;">Select Year:</label>
+                        <select id="yearSelector" style="padding: 0.5rem; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
+                            <option value="">All Time</option>
+                        </select>
+                    </div>
+                    <div class="contributors-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+                        <div>
+                            <h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <span>📝</span> Opened Notes
+                            </h4>
+                            <div id="countriesOpenByYearContainer" class="countries-container">
+                                <p class="text-light">Select a year to view rankings</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <section class="profile-section">
                     <h3>Peak Activity Days</h3>
                     <div class="contributors-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
@@ -170,6 +268,13 @@
                     <h3>Activity History</h3>
                     <div id="activityHistoryContainer" class="activity-history-container">
                         <p class="loading">Loading activity history...</p>
+                    </div>
+                </section>
+
+                <section class="profile-section" id="yearlyHistorySection">
+                    <h3>Yearly Activity Breakdown</h3>
+                    <div id="yearlyHistoryContainer">
+                        <p class="loading">Loading yearly history...</p>
                     </div>
                 </section>
 
