@@ -537,15 +537,234 @@ function setupXmlLink() {
  * @param {number|string} noteId - Note ID
  */
 async function loadMLRecommendation(noteId) {
+    const mlSection = document.getElementById('mlRecommendationSection');
+    const mlRecommendation = document.getElementById('mlRecommendation');
+    
+    if (!mlSection || !mlRecommendation) return;
+
     try {
-        // TODO: Implement ML recommendation API call
-        // This will call the Analytics API endpoint for ML recommendations
-        // For now, we'll leave it empty
-        const mlSection = document.getElementById('mlRecommendationSection');
-        mlSection.style.display = 'none';
+        // Only show ML recommendation for open notes
+        if (noteData && noteData.status !== 'open') {
+            mlSection.style.display = 'none';
+            return;
+        }
+
+        // Get ML recommendation from Analytics API
+        // Endpoint: /api/v1/notes/{noteId}/recommendation
+        const apiBaseUrl = import.meta.env.PROD 
+            ? 'https://notes-api.osm.lat' 
+            : 'http://localhost:3000';
+        
+        const recommendationUrl = `${apiBaseUrl}/api/v1/notes/${noteId}/recommendation`;
+        const response = await fetch(recommendationUrl, {
+            headers: {
+                'User-Agent': 'OSM-Notes-Viewer/1.0 (https://notes.osm.lat)'
+            }
+        });
+        
+        if (!response.ok) {
+            // If endpoint doesn't exist or ML is not available, hide section
+            if (response.status === 404) {
+                mlSection.style.display = 'none';
+                return;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const apiResponse = await response.json();
+        const recommendation = apiResponse.data || apiResponse;
+
+        // Render recommendation
+        renderMLRecommendation(recommendation);
+        mlSection.style.display = 'block';
+
     } catch (error) {
         console.error('Error loading ML recommendation:', error);
+        // Silently fail - ML recommendation is optional
+        mlSection.style.display = 'none';
     }
+}
+
+/**
+ * Render ML recommendation
+ * @param {Object} recommendation - ML recommendation data
+ */
+function renderMLRecommendation(recommendation) {
+    const mlRecommendation = document.getElementById('mlRecommendation');
+    const josmTagsContainer = document.getElementById('josmTagsContainer');
+    const josmTagsInput = document.getElementById('josmTags');
+    
+    if (!mlRecommendation) return;
+
+    const action = recommendation.action || recommendation.recommended_action || 'comment';
+    const confidence = recommendation.confidence || recommendation.confidence_score || null;
+    const tags = recommendation.tags || recommendation.osm_tags || null;
+    const reason = recommendation.reason || recommendation.explanation || null;
+
+    // Action labels (using i18n if available, fallback to English)
+    const actionKey = `note.mlRecommendation.action.${action.toLowerCase()}`;
+    let actionLabel;
+    try {
+        actionLabel = i18n.t(actionKey);
+        if (actionLabel === actionKey) {
+            // Translation not found, use fallback
+            const fallbackLabels = {
+                'close': 'Close Note',
+                'comment': 'Add Comment',
+                'map': 'Map Feature'
+            };
+            actionLabel = fallbackLabels[action.toLowerCase()] || action;
+        }
+    } catch (e) {
+        // i18n not available, use fallback
+        const fallbackLabels = {
+            'close': 'Close Note',
+            'comment': 'Add Comment',
+            'map': 'Map Feature'
+        };
+        actionLabel = fallbackLabels[action.toLowerCase()] || action;
+    }
+
+    // Build recommendation HTML
+    let html = `
+        <div class="ml-recommendation action-${action.toLowerCase()}">
+            <div class="ml-recommendation-title">
+                <span class="ml-icon">🤖</span>
+                <strong>ML Recommendation: ${escapeHtml(actionLabel)}</strong>
+            </div>
+    `;
+
+    if (reason) {
+        html += `<div class="ml-recommendation-reason">${escapeHtml(reason)}</div>`;
+    }
+
+    if (confidence !== null) {
+        const confidencePercent = Math.round(confidence * 100);
+        let confidenceLabel = 'Confidence';
+        try {
+            const translated = i18n.t('note.mlRecommendation.confidence');
+            if (translated !== 'note.mlRecommendation.confidence') {
+                confidenceLabel = translated;
+            }
+        } catch (e) {
+            // Use default
+        }
+        html += `
+            <div class="ml-recommendation-confidence">
+                ${escapeHtml(confidenceLabel)}: ${confidencePercent}%
+            </div>
+        `;
+    }
+
+    html += `</div>`;
+
+    mlRecommendation.innerHTML = html;
+
+    // Handle "map" action - show JOSM tags
+    if (action.toLowerCase() === 'map' && tags) {
+        renderJosmTags(tags);
+    } else {
+        josmTagsContainer.style.display = 'none';
+    }
+}
+
+/**
+ * Render JOSM tags for mapping recommendation
+ * @param {Object|Array|string} tags - OSM tags (can be object, array of objects, or string)
+ */
+function renderJosmTags(tags) {
+    const josmTagsContainer = document.getElementById('josmTagsContainer');
+    const josmTagsInput = document.getElementById('josmTags');
+    
+    if (!josmTagsContainer || !josmTagsInput) return;
+
+    let josmFormat = '';
+    let displayFormat = '';
+
+    // Parse tags based on format
+    if (typeof tags === 'string') {
+        // If it's already a string, try to parse it
+        josmFormat = tags;
+        displayFormat = tags;
+    } else if (Array.isArray(tags)) {
+        // Array of objects: [{key: 'amenity', value: 'restaurant'}, ...]
+        const tagPairs = tags.map(tag => {
+            const key = tag.key || tag.tag || Object.keys(tag)[0];
+            const value = tag.value || tag[key] || '';
+            return { key, value };
+        });
+        josmFormat = tagPairs.map(t => `${t.key}=${t.value}`).join(',');
+        displayFormat = tagPairs.map(t => `${t.key}=${t.value}`).join('\n');
+    } else if (typeof tags === 'object') {
+        // Object: {amenity: 'restaurant', name: '...'}
+        const tagPairs = Object.entries(tags).map(([key, value]) => ({ key, value }));
+        josmFormat = tagPairs.map(t => `${t.key}=${t.value}`).join(',');
+        displayFormat = tagPairs.map(t => `${t.key}=${t.value}`).join('\n');
+    }
+
+    if (josmFormat) {
+        josmTagsInput.value = displayFormat;
+        josmTagsContainer.style.display = 'block';
+        
+        // Setup copy button
+        setupCopyJosmTagsButton(josmFormat);
+    } else {
+        josmTagsContainer.style.display = 'none';
+    }
+}
+
+/**
+ * Setup copy button for JOSM tags
+ * @param {string} josmFormat - Tags in JOSM format (key1=value1,key2=value2)
+ */
+function setupCopyJosmTagsButton(josmFormat) {
+    const copyBtn = document.getElementById('copyJosmTagsBtn');
+    if (!copyBtn) return;
+
+    // Remove existing listeners
+    const newCopyBtn = copyBtn.cloneNode(true);
+    copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
+
+    newCopyBtn.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(josmFormat);
+            
+            // Show feedback
+            const originalText = newCopyBtn.textContent;
+            let copiedText = 'Copied!';
+            try {
+                const translated = i18n.t('note.mlRecommendation.copied');
+                if (translated !== 'note.mlRecommendation.copied') {
+                    copiedText = translated;
+                }
+            } catch (e) {
+                // Use default
+            }
+            newCopyBtn.textContent = '✓ ' + copiedText;
+            newCopyBtn.style.backgroundColor = '#4caf50';
+            newCopyBtn.style.color = 'white';
+            
+            setTimeout(() => {
+                newCopyBtn.textContent = originalText;
+                newCopyBtn.style.backgroundColor = '';
+                newCopyBtn.style.color = '';
+            }, 2000);
+        } catch (error) {
+            console.error('Error copying to clipboard:', error);
+            // Fallback: select text in textarea
+            const josmTagsInput = document.getElementById('josmTags');
+            if (josmTagsInput) {
+                josmTagsInput.select();
+                josmTagsInput.setSelectionRange(0, 99999); // For mobile devices
+                try {
+                    document.execCommand('copy');
+                    alert('Tags copied to clipboard!');
+                } catch (err) {
+                    alert('Failed to copy. Please select and copy manually.');
+                }
+            }
+        }
+    });
 }
 
 /**

@@ -59,6 +59,16 @@ export default {
     'user.activityHistory.title': 'Activity History',
     'user.firstActions.title': 'First Actions',
 
+    // Note viewer
+    'note.mlRecommendation.title': 'ML Recommendation',
+    'note.mlRecommendation.josmTagsLabel': 'Suggested OSM Tags (for JOSM):',
+    'note.mlRecommendation.copyJosm': 'Copy for JOSM',
+    'note.mlRecommendation.action.close': 'Close Note',
+    'note.mlRecommendation.action.comment': 'Add Comment',
+    'note.mlRecommendation.action.map': 'Map Feature',
+    'note.mlRecommendation.confidence': 'Confidence',
+    'note.mlRecommendation.copied': 'Copied!',
+
     // Country profile
     'country.profile.title': 'Country Profile',
     'country.profile.countryId': 'Country ID',
