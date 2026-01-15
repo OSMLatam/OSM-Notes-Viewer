@@ -3,6 +3,8 @@ export default {
     // Navigation
     'nav.home': 'Accueil',
     'nav.explore': 'Explorer',
+    'nav.stats': 'Statistiques',
+    'nav.map': 'Carte',
     'nav.about': 'À propos',
 
     // Page titles
@@ -21,10 +23,14 @@ export default {
     'home.search.title': 'Rechercher',
     'home.search.users': 'Utilisateurs',
     'home.search.countries': 'Régions',
+    'home.search.notes': 'Notes',
     'home.search.placeholder': 'Rechercher par nom d\'utilisateur ou ID...',
     'home.search.placeholderUsers': 'Rechercher par nom d\'utilisateur ou ID...',
     'home.search.placeholderCountries': 'Rechercher par région ou ID...',
+    'home.search.placeholderNotes': 'Entrez l\'ID de la note (ex: 12345)...',
     'home.search.button': 'Rechercher',
+    'home.search.noteNotFound': 'Note non trouvée',
+    'home.search.invalidNoteId': 'Veuillez entrer un ID de note valide (chiffres uniquement)',
     'home.stats.title': 'Statistiques Globales',
     'home.stats.totalNotes': 'Total Notes',
     'home.stats.activeUsers': 'Utilisateurs Actifs',

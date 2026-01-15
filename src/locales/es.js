@@ -3,6 +3,8 @@ export default {
     // Navigation
     'nav.home': 'Inicio',
     'nav.explore': 'Explorar',
+    'nav.stats': 'Estadísticas',
+    'nav.map': 'Mapa',
     'nav.about': 'Acerca de',
 
     // Page titles
@@ -21,10 +23,14 @@ export default {
     'home.search.title': 'Buscar',
     'home.search.users': 'Usuarios',
     'home.search.countries': 'Regiones',
+    'home.search.notes': 'Notas',
     'home.search.placeholder': 'Buscar por nombre de usuario o ID...',
     'home.search.placeholderUsers': 'Buscar por nombre de usuario o ID...',
     'home.search.placeholderCountries': 'Buscar por región o ID...',
+    'home.search.placeholderNotes': 'Ingrese ID de nota (ej: 12345)...',
     'home.search.button': 'Buscar',
+    'home.search.noteNotFound': 'Nota no encontrada',
+    'home.search.invalidNoteId': 'Por favor ingrese un ID de nota válido (solo números)',
     'home.stats.title': 'Estadísticas Globales',
     'home.stats.totalNotes': 'Total de Notas',
     'home.stats.activeUsers': 'Usuarios Activos',

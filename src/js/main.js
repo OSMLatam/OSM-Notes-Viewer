@@ -214,9 +214,17 @@ function setupEventListeners() {
     if (!window.hasLanguageListener) {
         window.addEventListener('languageChanged', () => {
             if (searchInput) {
-                searchInput.placeholder = currentSearchType === 'users'
-                    ? i18n.t('home.search.placeholderUsers')
-                    : i18n.t('home.search.placeholderCountries');
+                let placeholder;
+                if (currentSearchType === 'users') {
+                    placeholder = i18n.t('home.search.placeholderUsers');
+                } else if (currentSearchType === 'countries') {
+                    placeholder = i18n.t('home.search.placeholderCountries');
+                } else if (currentSearchType === 'notes') {
+                    placeholder = i18n.t('home.search.placeholderNotes');
+                } else {
+                    placeholder = i18n.t('home.search.placeholder');
+                }
+                searchInput.placeholder = placeholder;
             }
         });
         window.hasLanguageListener = true;
@@ -236,9 +244,16 @@ function switchTab(tab) {
 
     // Update placeholder and clear input
     if (searchInput) {
-        const placeholder = tab === 'users'
-            ? i18n.t('home.search.placeholderUsers')
-            : i18n.t('home.search.placeholderCountries');
+        let placeholder;
+        if (tab === 'users') {
+            placeholder = i18n.t('home.search.placeholderUsers');
+        } else if (tab === 'countries') {
+            placeholder = i18n.t('home.search.placeholderCountries');
+        } else if (tab === 'notes') {
+            placeholder = i18n.t('home.search.placeholderNotes');
+        } else {
+            placeholder = i18n.t('home.search.placeholder');
+        }
         console.log('Setting placeholder to:', placeholder);
         searchInput.placeholder = placeholder;
         searchInput.value = '';
@@ -259,6 +274,11 @@ function switchTab(tab) {
 
 async function updateSearchData() {
     if (!searchComponent || isUpdatingSearchData) return;
+    
+    // Don't load data for notes tab (it's a direct ID search)
+    if (currentSearchType === 'notes') {
+        return;
+    }
 
     isUpdatingSearchData = true;
 
@@ -293,6 +313,12 @@ async function performSearch() {
     const query = searchInput?.value.trim();
     if (!query) return;
 
+    // Handle note search differently
+    if (currentSearchType === 'notes') {
+        await searchNoteById(query);
+        return;
+    }
+
     showLoading(searchResults, i18n.t('search.loading'));
 
     try {
@@ -303,6 +329,34 @@ async function performSearch() {
         }
     } catch (error) {
         handleApiError(error, searchResults);
+    }
+}
+
+/**
+ * Search for a note by ID and redirect to note viewer
+ * @param {string} query - Note ID to search for
+ */
+async function searchNoteById(query) {
+    // Validate that query is a number
+    const noteId = parseInt(query, 10);
+    if (isNaN(noteId) || noteId <= 0) {
+        showError(searchResults, i18n.t('home.search.invalidNoteId'));
+        return;
+    }
+
+    // Show loading state
+    showLoading(searchResults, i18n.t('search.loading'));
+
+    try {
+        // Optionally verify note exists by fetching from OSM API
+        // For now, we'll just redirect - if note doesn't exist, the note viewer will handle it
+        // This avoids an extra API call and improves UX
+        
+        // Redirect to note viewer page
+        window.location.href = `pages/note.html?id=${noteId}`;
+    } catch (error) {
+        console.error('Error searching for note:', error);
+        showError(searchResults, i18n.t('home.search.noteNotFound'));
     }
 }
 
