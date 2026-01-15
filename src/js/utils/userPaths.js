@@ -15,13 +15,13 @@
 export function getUserSubdir(userId) {
     // Convert to number if string
     const id = typeof userId === 'string' ? parseInt(userId, 10) : userId;
-    
+
     // Modulo 4096 for uniform distribution
     const mod = id % 4096;
-    
+
     // Convert to hexadecimal with 3 digits (pad with zeros)
     const hexMod = mod.toString(16).padStart(3, '0');
-    
+
     // Divide into 3 levels: first char, second char, third char
     return `${hexMod[0]}/${hexMod[1]}/${hexMod[2]}`;
 }

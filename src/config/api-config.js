@@ -6,7 +6,7 @@ import { getUserPath } from '../js/utils/userPaths.js';
 export const API_CONFIG = {
     // Base URL for JSON files
     // Uses remote data repository in production, local data in development
-    BASE_URL: import.meta.env.PROD 
+    BASE_URL: import.meta.env.PROD
         ? 'https://notes.osm.lat/data'
         : '/data',
 
