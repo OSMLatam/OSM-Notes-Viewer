@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Hashtag - OSM Notes Viewer</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/hashtagViewer.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
+                </a>
+            </h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="stats.html" class="nav-link">Stats</a>
+                <a href="map.html" class="nav-link">Map</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container" style="padding: 3rem 20px;">
+            <div id="hashtagLoading" class="loading">Loading hashtag data...</div>
+            <div id="hashtagError" class="error" style="display: none;"></div>
+
+            <div id="hashtagContent" style="display: none;">
+                <!-- Hashtag Header -->
+                <section class="hashtag-header">
+                    <h1 class="hashtag-title">
+                        <span class="hashtag-badge" id="hashtagBadge">#hashtag</span>
+                    </h1>
+                    <div class="hashtag-stats" id="hashtagStats"></div>
+                </section>
+
+                <!-- Filters -->
+                <section class="hashtag-filters">
+                    <div class="filter-group">
+                        <label for="statusFilter">Status:</label>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="">All</option>
+                            <option value="open">Open</option>
+                            <option value="closed">Closed</option>
+                            <option value="reopened">Reopened</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="dateFromFilter">From:</label>
+                        <input type="date" id="dateFromFilter" class="filter-input">
+                    </div>
+                    <div class="filter-group">
+                        <label for="dateToFilter">To:</label>
+                        <input type="date" id="dateToFilter" class="filter-input">
+                    </div>
+                    <button id="applyFiltersBtn" class="btn btn-primary">Apply Filters</button>
+                    <button id="clearFiltersBtn" class="btn btn-secondary">Clear</button>
+                </section>
+
+                <!-- Notes List -->
+                <section class="hashtag-notes">
+                    <div id="notesList" class="notes-list"></div>
+                    <div id="notesPagination" class="pagination"></div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <span>Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+                    <br>
+                    <span>Processed by</span>
+                    <a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
+                    & <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
+                </div>
+                <div class="footer-section">
+                    <a href="https://github.com/OSMLatam/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                </div>
+                <div class="footer-section">
+                    <span>Made by</span> <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module" src="../js/pages/hashtagViewer.js"></script>
+</body>
+</html>
