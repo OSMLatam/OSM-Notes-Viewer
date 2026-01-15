@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Viewer - OSM Notes Viewer</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/profile.css">
+    <link rel="stylesheet" href="../css/noteViewer.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="../css/leaflet-overrides.css" />
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
+                </a>
+            </h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="stats.html" class="nav-link">Stats</a>
+                <a href="map.html" class="nav-link">Map</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div id="noteLoading" class="loading">Loading note...</div>
+            <div id="noteError" class="error" style="display: none;"></div>
+
+            <div id="noteContent" style="display: none;">
+                <!-- Note Header -->
+                <section class="note-header">
+                    <div class="note-header-main">
+                        <div class="note-title-section">
+                            <h1 class="note-title">
+                                <span id="noteIdDisplay">Note #</span>
+                                <span id="noteStatusBadge" class="status-badge"></span>
+                            </h1>
+                            <div class="note-meta">
+                                <span id="noteCreatedDate" class="note-date"></span>
+                                <span id="noteUpdatedDate" class="note-date"></span>
+                                <span id="noteCommentsCount" class="note-comments-count"></span>
+                            </div>
+                        </div>
+                        <div class="note-actions-header">
+                            <button id="shareBtn" class="btn btn-secondary" aria-label="Share note">
+                                Share
+                            </button>
+                            <a id="osmXmlLink" href="#" target="_blank" class="btn btn-secondary" aria-label="View XML on OSM">
+                                View XML ↗
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Main Layout: Map + Sidebar -->
+                <div class="note-viewer-layout">
+                    <!-- Left: Map -->
+                    <div class="note-map-container">
+                        <div id="noteMap" class="note-map"></div>
+                        <div class="note-map-info">
+                            <div id="countryLinkContainer" class="country-link-container" style="display: none;">
+                                <span>Country:</span>
+                                <a id="countryLink" href="#" class="country-link"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Note Details -->
+                    <div class="note-details-panel">
+                        <!-- Note Text -->
+                        <section class="note-section">
+                            <h2 class="section-title">Note Content</h2>
+                            <div id="noteText" class="note-text"></div>
+                            <div id="noteHashtags" class="note-hashtags"></div>
+                        </section>
+
+                        <!-- ML Recommendation -->
+                        <section id="mlRecommendationSection" class="note-section" style="display: none;">
+                            <h2 class="section-title">ML Recommendation</h2>
+                            <div id="mlRecommendation" class="ml-recommendation"></div>
+                            <div id="josmTagsContainer" class="josm-tags-container" style="display: none;">
+                                <label for="josmTags">Suggested OSM Tags (for JOSM):</label>
+                                <textarea id="josmTags" class="josm-tags-input" readonly></textarea>
+                                <button id="copyJosmTagsBtn" class="btn btn-small">Copy for JOSM</button>
+                            </div>
+                        </section>
+
+                        <!-- Interactions Timeline -->
+                        <section class="note-section">
+                            <h2 class="section-title">Activity Timeline</h2>
+                            <div id="noteInteractions" class="note-interactions"></div>
+                        </section>
+
+                        <!-- Comment Form -->
+                        <section class="note-section">
+                            <h2 class="section-title">Add Comment</h2>
+                            <div id="commentForm" class="comment-form">
+                                <textarea id="commentText" class="comment-textarea" placeholder="Enter your comment..." rows="4"></textarea>
+                                <div id="hashtagSuggestions" class="hashtag-suggestions"></div>
+                                <div class="comment-actions">
+                                    <button id="commentBtn" class="btn btn-primary" disabled>Comment</button>
+                                    <button id="closeBtn" class="btn btn-warning" style="display: none;">Close Note</button>
+                                    <button id="reopenBtn" class="btn btn-success" style="display: none;">Reopen Note</button>
+                                    <button id="reportBtn" class="btn btn-danger" style="display: none;">Report</button>
+                                </div>
+                                <div id="commentError" class="error-message" style="display: none;"></div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="../js/pages/noteViewer.js"></script>
+</body>
+</html>

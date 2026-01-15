@@ -20,6 +20,7 @@ export const API_CONFIG = {
         countryIndex: '/indexes/countries.json',
         user: (userId) => getUserPath(userId),
         country: (countryId) => `/countries/${countryId}.json`
+        // Note: Notes endpoint is handled via REST API (OSM-Notes-API), not static JSON
     },
 
     // Feature flags
