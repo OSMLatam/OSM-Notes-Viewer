@@ -6,7 +6,7 @@ Interactive web viewer for OpenStreetMap Notes analytics data.
 [![OpenStreetMap](https://img.shields.io/badge/OpenStreetMap-%23E7352B?logo=openstreetmap&logoColor=white)](https://www.openstreetmap.org/)
 [![Build Status](https://github.com/OSMLatam/OSM-Notes-Viewer/workflows/CI/badge.svg)](https://github.com/OSMLatam/OSM-Notes-Viewer/actions)
 
-🌐 **Live Demo**: [View on GitHub Pages](https://osmlatam.github.io/OSM-Notes-Viewer/)
+🌐 **Live Demo**: [View on notes.osm.lat](https://notes.osm.lat/)
 
 ## 🎯 Overview
 
@@ -88,8 +88,8 @@ The viewer uses a **separate data repository** served via GitHub Pages for maxim
                │ exportAndPushToGitHub.sh
                ▼
 ┌────────────────────────────────────────┐
-│  OSM-Notes-Data (GitHub Pages)         │
-│  http://www.osmlatam.org/OSM-Notes-Data/ │
+│  OSM-Notes-Data                         │
+│  https://notes.osm.lat/data             │
 │  Serves JSON files                      │
 └──────────────┬─────────────────────────┘
                │ HTTP Requests

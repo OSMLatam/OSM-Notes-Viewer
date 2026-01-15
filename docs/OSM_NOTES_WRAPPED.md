@@ -358,7 +358,7 @@ Este documento describe el plan de desarrollo para implementar una funcionalidad
 │   [Logo del proyecto]           │
 │                                 │
 │   Ver perfil completo:          │
-│   osmlatam.github.io/...        │
+│   notes.osm.lat/...             │
 └─────────────────────────────────┘
 ```
 

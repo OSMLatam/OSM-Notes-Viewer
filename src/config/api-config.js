@@ -1,11 +1,13 @@
 // API Configuration
 // Update this with your actual API endpoint
 
+import { getUserPath } from '../js/utils/userPaths.js';
+
 export const API_CONFIG = {
     // Base URL for JSON files
     // Uses remote data repository in production, local data in development
     BASE_URL: import.meta.env.PROD 
-        ? 'http://www.osmlatam.org/OSM-Notes-Data/data'
+        ? 'https://notes.osm.lat/data'
         : '/data',
 
     // Cache settings
@@ -16,7 +18,7 @@ export const API_CONFIG = {
         metadata: '/metadata.json',
         userIndex: '/indexes/users.json',
         countryIndex: '/indexes/countries.json',
-        user: (userId) => `/users/${userId}.json`,
+        user: (userId) => getUserPath(userId),
         country: (countryId) => `/countries/${countryId}.json`
     },
 
