@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Initialize i18n
         await i18n.init();
-        
+
         // Listen for language changes
         window.addEventListener('languageChanged', () => {
             // Update base layer select options
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Update page content
             i18n.updatePageContent();
         });
-        
+
         setupTabs();
         await initializeMaps();
         setupControls();
@@ -370,7 +370,7 @@ function addWMSLayer(map, layerName, layerKey, bbox = null) {
 
             // Add the specific layer
             const wmsLayer = wmsSource.getLayer(layerName);
-            
+
             if (wmsLayer) {
                 wmsLayer.addTo(map);
                 wmsLayers[layerKey] = wmsLayer;
@@ -388,12 +388,12 @@ function addWMSLayer(map, layerName, layerKey, bbox = null) {
             // Fall through to native implementation
         }
     }
-    
+
     // Fallback to native Leaflet TileLayer.WMS if plugin not available or failed
     if (!wmsLayers[layerKey]) {
         // Fallback to native Leaflet TileLayer.WMS if plugin not available
         console.warn('leaflet.wms plugin not available, using fallback implementation');
-        
+
         const wmsLayer = L.tileLayer.wms(WMS_BASE_URL, {
             layers: layerName,
             format: 'image/png',
@@ -430,16 +430,16 @@ async function handleWMSLayerClick(e, map, layerName) {
             const info = e.info;
             // Try to extract note ID from feature info
             let noteId = null;
-            
+
             if (info.features && info.features.length > 0) {
                 const feature = info.features[0];
-                noteId = feature.properties?.note_id || 
-                         feature.properties?.id || 
+                noteId = feature.properties?.note_id ||
+                         feature.properties?.id ||
                          feature.properties?.noteId ||
                          feature.id;
             } else if (info.properties) {
-                noteId = info.properties.note_id || 
-                         info.properties.id || 
+                noteId = info.properties.note_id ||
+                         info.properties.id ||
                          info.properties.noteId;
             }
 
@@ -486,8 +486,8 @@ async function handleMapClick(e, map, layerName) {
         const data = await response.json();
         if (data.features && data.features.length > 0) {
             const feature = data.features[0];
-            const noteId = feature.properties?.note_id || 
-                          feature.properties?.id || 
+            const noteId = feature.properties?.note_id ||
+                          feature.properties?.id ||
                           feature.properties?.noteId ||
                           feature.id;
 
@@ -566,7 +566,7 @@ function switchBaseLayer(layerType) {
             newLayer.addTo(map);
         }
     });
-    
+
     // Update select options text
     const baseLayerSelect = document.getElementById('baseLayerSelect');
     if (baseLayerSelect) {
@@ -648,7 +648,7 @@ function setupWMSDocumentation() {
             }
         });
     });
-    
+
     // Apply i18n to newly added elements
     i18n.updatePageContent();
 }

@@ -24,7 +24,7 @@ let marker = null;
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize i18n
     await i18n.init();
-    
+
     // Listen for language changes
     window.addEventListener('languageChanged', () => {
         // Re-render dynamic content with new translations
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderInteractions();
         }
     });
-    
+
     if (!noteId) {
         showError(document.getElementById('noteError'), 'No note ID provided');
         document.getElementById('noteLoading').style.display = 'none';
@@ -207,7 +207,7 @@ function renderNoteInfo() {
     }
 
     // Comments count
-    const commentsText = noteData.comments.length === 1 
+    const commentsText = noteData.comments.length === 1
         ? i18n.t('common.comment')
         : i18n.t('common.comments');
     document.getElementById('noteCommentsCount').textContent = `${noteData.comments.length} ${commentsText}`;

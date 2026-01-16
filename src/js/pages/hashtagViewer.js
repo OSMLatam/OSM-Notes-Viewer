@@ -29,7 +29,7 @@ let paginationData = null;
 document.addEventListener('DOMContentLoaded', async () => {
     // Initialize i18n
     await i18n.init();
-    
+
     // Listen for language changes
     window.addEventListener('languageChanged', async () => {
         // Re-render content with new translations
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     });
-    
+
     if (!hashtagParam) {
         showError(document.getElementById('hashtagError'), 'No hashtag provided');
         document.getElementById('hashtagLoading').style.display = 'none';
@@ -263,7 +263,7 @@ async function renderNotesList(notes) {
         }
 
         return `
-            <article class="note-card-item" role="listitem" tabindex="0" 
+            <article class="note-card-item" role="listitem" tabindex="0"
                      onclick="window.location.href='note.html?id=${note.note_id}'"
                      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='note.html?id=${note.note_id}'}"
                      aria-label="Note ${note.note_id}, status: ${note.status}">
@@ -419,7 +419,7 @@ function setupFilters() {
         dateToFilter.value = urlDateTo;
         currentFilters.date_to = urlDateTo;
     }
-    
+
     // Translate select options dynamically
     if (statusFilter) {
         const options = statusFilter.querySelectorAll('option');
