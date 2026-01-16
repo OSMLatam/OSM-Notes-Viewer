@@ -77,7 +77,23 @@ Current coverage includes:
   - Different latitude scenarios (equator, mid-latitudes, high latitudes)
   - Integration tests for 500km bbox
 
-**Total: 77 tests passing** ✅
+- ✅ **Note Viewer Integration Tests** (11 tests)
+  - Note loading flow from OSM API
+  - Error handling (404, network errors)
+  - Interactions panel rendering
+  - Hashtag extraction from interactions
+  - Action buttons display logic
+  - Comment form integration
+
+- ✅ **Map Viewer Integration Tests** (10 tests)
+  - Geolocation functionality
+  - WMS layer loading and configuration
+  - Map tab switching
+  - Base layer switching
+  - Map initialization
+  - WMS GetFeatureInfo requests
+
+**Total: 127 tests passing** ✅
 
 ## Writing New Tests
 
