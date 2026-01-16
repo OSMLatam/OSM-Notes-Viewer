@@ -1,5 +1,7 @@
 // Search component with autocomplete
 
+import { debounce } from '../utils/debounce.js';
+
 export class SearchComponent {
     constructor(inputElement, resultsElement, onSelect) {
         this.input = inputElement;
@@ -8,19 +10,15 @@ export class SearchComponent {
         this.data = [];
         this.selectedIndex = -1;
 
+        // Create debounced input handler
+        this.debouncedHandleInput = debounce(() => this.handleInput(), 300);
+
         this.setupEventListeners();
     }
 
     setupEventListeners() {
-        // Import debounce dynamically to avoid circular dependencies
-        import('../utils/debounce.js').then(({ debounce }) => {
-            // Debounce input handler to reduce unnecessary filtering
-            this.debouncedHandleInput = debounce(() => this.handleInput(), 300);
-            this.input.addEventListener('input', () => this.debouncedHandleInput());
-        }).catch(() => {
-            // Fallback if debounce fails to load
-            this.input.addEventListener('input', () => this.handleInput());
-        });
+        // Use debounced handler to reduce unnecessary filtering
+        this.input.addEventListener('input', () => this.debouncedHandleInput());
 
         this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
 
