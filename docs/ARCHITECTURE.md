@@ -51,6 +51,32 @@ This viewer is part of a larger system for processing and visualizing OSM Notes:
 │  - User profiles                                               │
 │  - Country statistics                                          │
 │  - Interactive visualizations                                 │
+│  - Individual note viewer                                      │
+│  - Hashtag browsing                                            │
+│  - WMS map integration                                         │
+│  - ML recommendations integration                              │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              │ REST API Calls
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   OSM-Notes-API                                │
+│                    (REST API)                                  │
+│  - Individual note details                                     │
+│  - Hashtag statistics                                          │
+│  - Note search and filtering                                   │
+│  - ML recommendations                                          │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              │ WMS Requests
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   GeoServer WMS                                │
+│                    (Map Service)                                │
+│  - Open notes layer                                            │
+│  - Closed notes layer                                          │
+│  - Country boundaries                                          │
+│  - Disputed areas                                              │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -87,12 +113,17 @@ This viewer is part of a larger system for processing and visualizing OSM Notes:
 │   - main.js                            │
 │   - userProfile.js                     │
 │   - countryProfile.js                  │
+│   - noteViewer.js                       │
+│   - hashtagViewer.js                    │
+│   - mapViewer.js                        │
 └────────────────────────────────────────┘
               ▲
               │
 ┌────────────────────────────────────────┐
 │         Data Layer                     │
-│   - apiClient.js (API wrapper)         │
+│   - apiClient.js (Static JSON API)     │
+│   - REST API calls (OSM-Notes-API)     │
+│   - WMS layer integration (GeoServer)  │
 │   - cache.js (LocalStorage)            │
 │   - formatter.js (Utilities)           │
 └────────────────────────────────────────┘
@@ -100,7 +131,9 @@ This viewer is part of a larger system for processing and visualizing OSM Notes:
               │
 ┌────────────────────────────────────────┐
 │      Configuration                     │
-│   - api-config.js                      │
+│   - api-config.js (Static JSON)        │
+│   - REST API endpoints (OSM-Notes-API)  │
+│   - WMS configuration (GeoServer)      │
 └────────────────────────────────────────┘
 ```
 
@@ -171,12 +204,92 @@ Check cache
         └─ Working hours
 ```
 
+### 4. Note Viewer Flow
+
+```
+Note viewer page loads
+    ↓
+Extract note ID from URL params
+    ↓
+Fetch note from OSM-Notes-API
+    GET /api/v1/notes/{noteId}
+    ↓
+Parse note data (GeoJSON format)
+    ↓
+Render note information
+    ├─ Status badge
+    ├─ Map with location
+    ├─ Note content and hashtags
+    ├─ Activity timeline
+    └─ Comment form
+    ↓
+Fetch country info from OSM-Notes-API
+    GET /api/v1/notes/{noteId} (includes country)
+    ↓
+Fetch ML recommendation (if note is open)
+    GET /api/v1/notes/{noteId}/recommendation
+    ↓
+Render ML recommendation
+    ├─ Recommended action
+    ├─ Confidence score
+    └─ JOSM tags (if action is "map")
+```
+
+### 5. Hashtag Viewer Flow
+
+```
+Hashtag viewer page loads
+    ↓
+Extract hashtag from URL params
+    ↓
+Fetch hashtag details from OSM-Notes-API
+    GET /api/v1/hashtags/{hashtag}
+    ↓
+Fetch notes with hashtag
+    GET /api/v1/notes?text=#{hashtag}&page={page}&limit={limit}
+    ↓
+Apply filters (status, date_from, date_to)
+    ↓
+Render hashtag header with stats
+    ↓
+Render notes list with pagination
+```
+
+### 6. Map Viewer Flow
+
+```
+Map viewer page loads
+    ↓
+Request user geolocation
+    navigator.geolocation.getCurrentPosition()
+    ↓
+Calculate 500km bounding box
+    calculateBbox(lat, lon, 500)
+    ↓
+Initialize Leaflet maps (3 maps)
+    ├─ Open Notes map
+    ├─ Closed Notes map
+    └─ Boundaries map
+    ↓
+Add base layers (OSM, Satellite)
+    ↓
+Add WMS layers from GeoServer
+    ├─ osm_notes:notesopen
+    ├─ osm_notes:notesclosed
+    ├─ osm_notes:countries
+    └─ osm_notes:disputedareas
+    ↓
+Set initial view (500km bbox for notes maps)
+    ↓
+Setup GetFeatureInfo for note popups
+```
+
 ## Component Architecture
 
 ### API Client (apiClient.js)
 
 **Responsibilities:**
-- Fetch JSON files
+- Fetch static JSON files
 - Manage cache
 - Handle errors
 - Provide typed methods for each endpoint
@@ -187,6 +300,25 @@ Check cache
 - `getCountryIndex()` - All countries list
 - `getUser(id)` - User profile
 - `getCountry(id)` - Country profile
+
+### REST API Integration
+
+**Note Viewer (`noteViewer.js`):**
+- Fetches individual note details from `OSM-Notes-API`
+- Endpoint: `GET /api/v1/notes/{noteId}`
+- Fetches ML recommendations: `GET /api/v1/notes/{noteId}/recommendation`
+- Base URL: `https://notes-api.osm.lat` (production)
+
+**Hashtag Viewer (`hashtagViewer.js`):**
+- Fetches hashtag statistics: `GET /api/v1/hashtags/{hashtag}`
+- Fetches notes with hashtag: `GET /api/v1/notes?text=#{hashtag}`
+- Supports pagination and filtering (status, date_from, date_to)
+
+**WMS Integration (`mapViewer.js`):**
+- Consumes WMS layers from GeoServer
+- Base URL: `https://geoserver.osm.lat/geoserver/osm_notes/wms`
+- Layers: `osm_notes:notesopen`, `osm_notes:notesclosed`, `osm_notes:countries`, `osm_notes:disputedareas`
+- Uses `leaflet.wms` plugin with native Leaflet fallback
 
 ### Cache System (cache.js)
 
@@ -330,16 +462,71 @@ This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs
 - Enhanced with JS modules
 - Graceful degradation for older browsers
 
+## Data Sources
+
+### Static JSON Files (Historical Data)
+- **Base URL:** `https://notes.osm.lat/data`
+- **Format:** Pre-generated JSON files
+- **Update Frequency:** Every 15 minutes
+- **Caching:** 15 minutes TTL
+- **Endpoints:**
+  - `/metadata.json`
+  - `/indexes/users.json`
+  - `/indexes/countries.json`
+  - `/users/{hex_path}/{user_id}.json`
+  - `/countries/{country_id}.json`
+
+### REST API (Recent Data & Features)
+- **Base URL:** `https://notes-api.osm.lat`
+- **Format:** REST API with JSON responses
+- **Update Frequency:** Real-time (updated every 15 minutes)
+- **Authentication:** User-Agent header required
+- **Endpoints:**
+  - `GET /api/v1/notes/{noteId}` - Individual note details
+  - `GET /api/v1/notes?text={query}` - Search notes
+  - `GET /api/v1/hashtags/{hashtag}` - Hashtag statistics
+  - `GET /api/v1/notes/{noteId}/recommendation` - ML recommendations
+
+### WMS Service (Map Layers)
+- **Base URL:** `https://geoserver.osm.lat/geoserver/osm_notes/wms`
+- **Format:** OGC WMS 1.1.0
+- **Layers:**
+  - `osm_notes:notesopen` - Open notes
+  - `osm_notes:notesclosed` - Closed notes
+  - `osm_notes:countries` - Country boundaries
+  - `osm_notes:disputedareas` - Disputed areas
+- **Features:** GetFeatureInfo for note popups
+
+## ML Integration
+
+### ML Recommendations API
+- **Endpoint:** `GET /api/v1/notes/{noteId}/recommendation`
+- **Response Format:**
+  ```json
+  {
+    "action": "close|comment|map",
+    "confidence": 0.0-1.0,
+    "reason": "Explanation text",
+    "tags": {
+      "amenity": "restaurant",
+      "name": "Example"
+    }
+  }
+  ```
+- **Usage:** Only shown for open notes
+- **JOSM Tags:** If action is "map", tags are formatted for JOSM editor
+
 ## Future Architecture
 
 ### Potential Enhancements:
 
-1. **Service Worker** for offline mode
+1. **Service Worker** for offline mode (PWA support)
 2. **IndexedDB** for larger cache
 3. **WebSocket** for real-time updates
 4. **GraphQL** layer for flexible queries
 5. **Server-Side Rendering** for better SEO
 6. **Web Components** for better encapsulation
+7. **OAuth Integration** for note actions (comment, close, reopen)
 
 ### Migration Path:
 
