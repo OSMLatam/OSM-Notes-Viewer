@@ -43,22 +43,22 @@
 
             <section id="manifesto" style="margin: 2rem 0; padding: 2rem; background: var(--bg-secondary, #f5f5f5); border-radius: 8px;" aria-labelledby="manifesto-title">
                 <h2 id="manifesto-title" style="margin-top: 0;">Manifesto: Our Perspective on OSM Notes</h2>
-                
+
                 <h3>The Importance of Notes in OpenStreetMap</h3>
                 <p>
-                    OpenStreetMap Notes are a fundamental mechanism for community collaboration and quality improvement. 
-                    They serve as a bridge between mappers and the real world, allowing anyone to report issues, 
+                    OpenStreetMap Notes are a fundamental mechanism for community collaboration and quality improvement.
+                    They serve as a bridge between mappers and the real world, allowing anyone to report issues,
                     suggest improvements, or request new features directly on the map.
                 </p>
                 <p>
-                    Notes represent the collective effort of thousands of contributors working together to improve 
-                    the map's accuracy and completeness. Each note tells a story—a missing road, an incorrect name, 
+                    Notes represent the collective effort of thousands of contributors working together to improve
+                    the map's accuracy and completeness. Each note tells a story—a missing road, an incorrect name,
                     a new business, or a mapping error that needs correction.
                 </p>
 
                 <h3>Our Mission</h3>
                 <p>
-                    Our mission is to make OSM Notes more accessible, understandable, and actionable. We believe that 
+                    Our mission is to make OSM Notes more accessible, understandable, and actionable. We believe that
                     by providing better tools and insights, we can:
                 </p>
                 <ul>
@@ -71,7 +71,7 @@
 
                 <h3>The Latin American Community</h3>
                 <p>
-                    There is a dedicated community in Latin America focused on resolving OSM Notes. This community 
+                    There is a dedicated community in Latin America focused on resolving OSM Notes. This community
                     works tirelessly to improve the map quality across the region, addressing notes related to:
                 </p>
                 <ul>
@@ -87,7 +87,7 @@
 
                 <h3>Project History</h3>
                 <p>
-                    This project began as an initiative to better understand and visualize OSM Notes activity. 
+                    This project began as an initiative to better understand and visualize OSM Notes activity.
                     Over time, it has evolved into a comprehensive ecosystem of tools and services:
                 </p>
                 <ul>
@@ -98,7 +98,7 @@
                     <li><strong>2024-2025:</strong> Enhanced viewer with individual note support, hashtag browsing, and WMS integration</li>
                 </ul>
                 <p>
-                    Throughout this journey, the project has been driven by the needs of the mapping community 
+                    Throughout this journey, the project has been driven by the needs of the mapping community
                     and the desire to make OSM Notes more accessible and useful.
                 </p>
 
@@ -122,7 +122,7 @@
             <section id="ecosystem-architecture" style="margin: 2rem 0;" aria-labelledby="ecosystem-title">
                 <h3 id="ecosystem-title">Ecosystem Architecture</h3>
                 <p>
-                    This viewer is part of a comprehensive ecosystem of 8 repositories and 2 databases working together 
+                    This viewer is part of a comprehensive ecosystem of 8 repositories and 2 databases working together
                     to process, analyze, and visualize OSM Notes:
                 </p>
 
@@ -138,7 +138,7 @@
                     </li>
                     <li>
                         <strong><a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>:</strong>
-                        Data warehouse and ETL system that processes the ingested data and generates statistics. Creates datamarts and exports JSON/CSV files. 
+                        Data warehouse and ETL system that processes the ingested data and generates statistics. Creates datamarts and exports JSON/CSV files.
                         Includes ML-powered recommendations for note actions (close, comment, map).
                     </li>
                     <li>
@@ -167,13 +167,13 @@
                 <ol>
                     <li>
                         <strong>PostgreSQL (Ingestion Database):</strong>
-                        Stores raw notes data from OSM Planet dumps and API. Contains tables for notes, note_comments, users, and countries. 
+                        Stores raw notes data from OSM Planet dumps and API. Contains tables for notes, note_comments, users, and countries.
                         Used by OSM-Notes-Ingestion for data storage and incremental updates.
                     </li>
                     <li>
                         <strong>PostgreSQL (Analytics Data Warehouse):</strong>
-                        Data warehouse with star schema design. Contains fact and dimension tables for analytics processing. 
-                        Used by OSM-Notes-Analytics for ETL processes and generating statistics. Includes datamarts for 
+                        Data warehouse with star schema design. Contains fact and dimension tables for analytics processing.
+                        Used by OSM-Notes-Analytics for ETL processes and generating statistics. Includes datamarts for
                         user profiles, country statistics, and temporal analysis.
                     </li>
                 </ol>
@@ -325,15 +325,15 @@
                 </p>
                 <ul>
                     <li>
-                        <strong>Email:</strong> 
+                        <strong>Email:</strong>
                         <a href="mailto:notes@osm.lat">notes@osm.lat</a>
                     </li>
                     <li>
-                        <strong>GitHub:</strong> 
+                        <strong>GitHub:</strong>
                         <a href="https://github.com/OSMLatam" target="_blank">github.com/OSMLatam</a>
                     </li>
                     <li>
-                        <strong>Community:</strong> 
+                        <strong>Community:</strong>
                         Join the OSM Latam community dedicated to resolving notes and improving map quality
                     </li>
                 </ul>
@@ -345,14 +345,14 @@
                     Monitor system health, performance metrics, and data processing status:
                 </p>
                 <p>
-                    <a href="https://notes_mon.osm.lat" target="_blank" rel="noopener noreferrer" 
-                       style="display: inline-block; padding: 0.75rem 1.5rem; background: #0066cc; color: white; 
+                    <a href="https://notes_mon.osm.lat" target="_blank" rel="noopener noreferrer"
+                       style="display: inline-block; padding: 0.75rem 1.5rem; background: #0066cc; color: white;
                               text-decoration: none; border-radius: 4px; font-weight: bold;">
                         📊 View Monitoring Dashboard (Grafana)
                     </a>
                 </p>
                 <p style="font-size: 0.9em; color: #666; margin-top: 0.5rem;">
-                    The dashboard provides real-time metrics on data processing, API performance, 
+                    The dashboard provides real-time metrics on data processing, API performance,
                     database status, and system health. Powered by Grafana and Prometheus.
                 </p>
             </section>
@@ -403,13 +403,13 @@
     <script type="module" src="../js/analytics-init.js"></script>
     <script type="module">
         import { i18n } from '../js/utils/i18n.js';
-        
+
         // Initialize i18n
         document.addEventListener('DOMContentLoaded', async () => {
             await i18n.init();
             i18n.updatePageContent();
         });
-        
+
         // Listen for language changes
         window.addEventListener('languageChanged', () => {
             i18n.updatePageContent();
