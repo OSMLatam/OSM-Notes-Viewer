@@ -61,10 +61,10 @@ async function loadHashtagData() {
         content.style.display = 'none';
 
         // Get hashtag details from API
-        const apiBaseUrl = import.meta.env.PROD 
-            ? 'https://notes-api.osm.lat' 
+        const apiBaseUrl = import.meta.env.PROD
+            ? 'https://notes-api.osm.lat'
             : 'http://localhost:3000';
-        
+
         const hashtagUrl = `${apiBaseUrl}/api/v1/hashtags/${encodeURIComponent(currentHashtag)}`;
         const response = await fetch(hashtagUrl, {
             headers: {
@@ -87,7 +87,7 @@ async function loadHashtagData() {
 
         // Render hashtag header
         renderHashtagHeader(data);
-        
+
         // Update page title
         const pageTitle = document.getElementById('pageTitle');
         if (pageTitle) {
@@ -145,10 +145,10 @@ async function loadHashtagNotes() {
         showLoading(notesList, 'Loading notes...');
 
         // Build search query - use text parameter to search for hashtag in comments
-        const apiBaseUrl = import.meta.env.PROD 
-            ? 'https://notes-api.osm.lat' 
+        const apiBaseUrl = import.meta.env.PROD
+            ? 'https://notes-api.osm.lat'
             : 'http://localhost:3000';
-        
+
         const searchParams = new URLSearchParams({
             text: `#${currentHashtag}`,  // Search for hashtag in comments
             page: currentPage.toString(),
@@ -222,7 +222,7 @@ async function renderNotesList(notes) {
     const notesHtml = notes.map(note => {
         const createdDate = note.created_at ? new Date(note.created_at) : null;
         const closedDate = note.closed_at ? new Date(note.closed_at) : null;
-        
+
         // Find country name
         let countryName = null;
         let countryLink = '';
@@ -235,12 +235,15 @@ async function renderNotesList(notes) {
         }
 
         return `
-            <div class="note-card-item" onclick="window.location.href='note.html?id=${note.note_id}'">
+            <article class="note-card-item" role="listitem" tabindex="0" 
+                     onclick="window.location.href='note.html?id=${note.note_id}'"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='note.html?id=${note.note_id}'}"
+                     aria-label="Note ${note.note_id}, status: ${note.status}">
                 <div class="note-card-header">
-                    <a href="note.html?id=${note.note_id}" class="note-card-id" onclick="event.stopPropagation()">
+                    <a href="note.html?id=${note.note_id}" class="note-card-id" onclick="event.stopPropagation()" aria-label="View note ${note.note_id}">
                         Note #${note.note_id}
                     </a>
-                    <span class="note-card-status ${note.status}">${note.status}</span>
+                    <span class="note-card-status ${note.status}" role="status" aria-label="Note status: ${note.status}">${note.status}</span>
                 </div>
                 <div class="note-card-meta">
                     ${createdDate ? `
@@ -423,19 +426,19 @@ function setupFilters() {
 function updateUrl() {
     const newUrl = new URL(window.location);
     newUrl.searchParams.set('tag', currentHashtag);
-    
+
     if (currentFilters.status) {
         newUrl.searchParams.set('status', currentFilters.status);
     } else {
         newUrl.searchParams.delete('status');
     }
-    
+
     if (currentFilters.date_from) {
         newUrl.searchParams.set('date_from', currentFilters.date_from);
     } else {
         newUrl.searchParams.delete('date_from');
     }
-    
+
     if (currentFilters.date_to) {
         newUrl.searchParams.set('date_to', currentFilters.date_to);
     } else {

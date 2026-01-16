@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Map - OSM Notes Viewer</title>
+    <meta name="description" content="Interactive maps showing OpenStreetMap notes, boundaries, and disputed areas using WMS layers">
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="../css/main.css">
@@ -11,39 +12,42 @@
     <link rel="stylesheet" href="../css/leaflet-overrides.css">
 </head>
 <body>
-    <header class="header">
+    <!-- Skip link for screen readers -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header class="header" role="banner">
         <div class="container">
             <h1 class="logo">
-                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;" aria-label="OSM Notes Viewer - Home">
                     <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
                 </a>
             </h1>
-            <nav class="nav">
+            <nav class="nav" role="navigation" aria-label="Main navigation">
                 <a href="../index.html" class="nav-link">Home</a>
                 <a href="explore.html" class="nav-link">Explore</a>
                 <a href="stats.html" class="nav-link">Stats</a>
-                <a href="map.html" class="nav-link active">Map</a>
+                <a href="map.html" class="nav-link active" aria-current="page">Map</a>
                 <a href="about.html" class="nav-link">About</a>
             </nav>
         </div>
     </header>
 
-    <main class="main">
+    <main class="main" id="main-content" role="main">
         <div class="container" style="padding: 2rem 20px;">
             <h1 style="margin-bottom: 2rem;">OSM Notes Maps</h1>
 
             <!-- Map Tabs -->
-            <div class="map-tabs">
-                <button class="map-tab active" data-tab="open-notes">
-                    <span class="tab-icon">📍</span>
+            <div class="map-tabs" role="tablist" aria-label="Map type selection">
+                <button class="map-tab active" data-tab="open-notes" role="tab" aria-selected="true" aria-controls="open-notes-map" id="tab-open-notes">
+                    <span class="tab-icon" aria-hidden="true">📍</span>
                     <span class="tab-label">Open Notes</span>
                 </button>
-                <button class="map-tab" data-tab="closed-notes">
-                    <span class="tab-icon">🔒</span>
+                <button class="map-tab" data-tab="closed-notes" role="tab" aria-selected="false" aria-controls="closed-notes-map" id="tab-closed-notes">
+                    <span class="tab-icon" aria-hidden="true">🔒</span>
                     <span class="tab-label">Closed Notes</span>
                 </button>
-                <button class="map-tab" data-tab="boundaries">
-                    <span class="tab-icon">🌍</span>
+                <button class="map-tab" data-tab="boundaries" role="tab" aria-selected="false" aria-controls="boundaries-map" id="tab-boundaries">
+                    <span class="tab-icon" aria-hidden="true">🌍</span>
                     <span class="tab-label">Boundaries</span>
                 </button>
             </div>
@@ -51,68 +55,68 @@
             <!-- Map Container -->
             <div class="map-container-wrapper">
                 <!-- Map 1: Open Notes -->
-                <div id="open-notes-map" class="map-container active"></div>
+                <div id="open-notes-map" class="map-container active" role="tabpanel" aria-labelledby="tab-open-notes" tabindex="0"></div>
 
                 <!-- Map 2: Closed Notes -->
-                <div id="closed-notes-map" class="map-container"></div>
+                <div id="closed-notes-map" class="map-container" role="tabpanel" aria-labelledby="tab-closed-notes" tabindex="0"></div>
 
                 <!-- Map 3: Boundaries -->
-                <div id="boundaries-map" class="map-container"></div>
+                <div id="boundaries-map" class="map-container" role="tabpanel" aria-labelledby="tab-boundaries" tabindex="0"></div>
 
                 <!-- Map Controls -->
-                <div class="map-controls">
+                <div class="map-controls" role="group" aria-label="Map controls">
                     <div class="control-group">
                         <label for="baseLayerSelect">Base Layer:</label>
-                        <select id="baseLayerSelect" class="control-select">
+                        <select id="baseLayerSelect" class="control-select" aria-label="Select base map layer">
                             <option value="osm">OpenStreetMap</option>
                             <option value="satellite">Satellite</option>
                         </select>
                     </div>
-                    <button id="centerUserBtn" class="control-btn" title="Center on your location">
-                        <span>📍</span> My Location
+                    <button id="centerUserBtn" class="control-btn" aria-label="Center map on your current location">
+                        <span aria-hidden="true">📍</span> My Location
                     </button>
-                    <button id="resetViewBtn" class="control-btn" title="Reset to initial view">
-                        <span>🔄</span> Reset View
+                    <button id="resetViewBtn" class="control-btn" aria-label="Reset map to initial view">
+                        <span aria-hidden="true">🔄</span> Reset View
                     </button>
                 </div>
 
                 <!-- Loading Indicator -->
-                <div id="mapLoading" class="map-loading" style="display: none;">
-                    <div class="loading-spinner"></div>
+                <div id="mapLoading" class="map-loading" style="display: none;" role="status" aria-live="polite">
+                    <div class="loading-spinner" aria-hidden="true"></div>
                     <p>Loading map...</p>
                 </div>
 
                 <!-- Error Message -->
-                <div id="mapError" class="map-error" style="display: none;"></div>
+                <div id="mapError" class="map-error" style="display: none;" role="alert" aria-live="assertive"></div>
             </div>
 
             <!-- WMS Documentation Section -->
-            <section class="wms-documentation">
-                <h2>WMS Service Documentation</h2>
+            <section class="wms-documentation" aria-labelledby="wms-doc-title">
+                <h2 id="wms-doc-title">WMS Service Documentation</h2>
                 <div class="wms-info">
                     <p>This map uses Web Map Service (WMS) layers to display OSM notes. You can consume these layers in GIS software like QGIS, ArcGIS, or other WMS-compatible tools.</p>
 
                     <h3>WMS Endpoints</h3>
-                    <div class="wms-endpoints">
-                        <div class="wms-endpoint">
+                    <div class="wms-endpoints" role="list">
+                        <div class="wms-endpoint" role="listitem">
                             <h4>Open Notes</h4>
-                            <code id="wmsOpenUrl" class="wms-url">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsOpenUrl">Copy</button>
+                            <code id="wmsOpenUrl" class="wms-url" aria-label="WMS URL for open notes">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsOpenUrl" aria-label="Copy open notes WMS URL">Copy</button>
                         </div>
-                        <div class="wms-endpoint">
+                        <div class="wms-endpoint" role="listitem">
                             <h4>Closed Notes</h4>
-                            <code id="wmsClosedUrl" class="wms-url">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsClosedUrl">Copy</button>
+                            <code id="wmsClosedUrl" class="wms-url" aria-label="WMS URL for closed notes">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsClosedUrl" aria-label="Copy closed notes WMS URL">Copy</button>
                         </div>
-                        <div class="wms-endpoint">
+                        <div class="wms-endpoint" role="listitem">
                             <h4>Boundaries (Countries)</h4>
-                            <code id="wmsCountriesUrl" class="wms-url">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsCountriesUrl">Copy</button>
+                            <code id="wmsCountriesUrl" class="wms-url" aria-label="WMS URL for country boundaries">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsCountriesUrl" aria-label="Copy country boundaries WMS URL">Copy</button>
                         </div>
-                        <div class="wms-endpoint">
+                        <div class="wms-endpoint" role="listitem">
                             <h4>Boundaries (Disputed Areas)</h4>
-                            <code id="wmsDisputedUrl" class="wms-url">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsDisputedUrl">Copy</button>
+                            <code id="wmsDisputedUrl" class="wms-url" aria-label="WMS URL for disputed areas">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsDisputedUrl" aria-label="Copy disputed areas WMS URL">Copy</button>
                         </div>
                     </div>
 

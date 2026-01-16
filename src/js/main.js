@@ -274,7 +274,7 @@ function switchTab(tab) {
 
 async function updateSearchData() {
     if (!searchComponent || isUpdatingSearchData) return;
-    
+
     // Don't load data for notes tab (it's a direct ID search)
     if (currentSearchType === 'notes') {
         return;
@@ -351,7 +351,7 @@ async function searchNoteById(query) {
         // Optionally verify note exists by fetching from OSM API
         // For now, we'll just redirect - if note doesn't exist, the note viewer will handle it
         // This avoids an extra API call and improves UX
-        
+
         // Redirect to note viewer page
         window.location.href = `pages/note.html?id=${noteId}`;
     } catch (error) {

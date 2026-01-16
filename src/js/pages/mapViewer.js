@@ -74,21 +74,27 @@ function setupTabs() {
  */
 function switchMap(mapName) {
     // Update tabs
-    document.querySelectorAll('.map-tab').forEach(tab => {
+    document.querySelectorAll('.map-tab').forEach((tab, index) => {
         tab.classList.remove('active');
+        tab.setAttribute('aria-selected', 'false');
+        tab.setAttribute('tabindex', '-1');
     });
     const activeTab = document.querySelector(`[data-tab="${mapName}"]`);
     if (activeTab) {
         activeTab.classList.add('active');
+        activeTab.setAttribute('aria-selected', 'true');
+        activeTab.setAttribute('tabindex', '0');
     }
 
     // Update map containers
     document.querySelectorAll('.map-container').forEach(container => {
         container.classList.remove('active');
+        container.setAttribute('aria-hidden', 'true');
     });
     const activeMapContainer = document.getElementById(`${mapName}-map`);
     if (activeMapContainer) {
         activeMapContainer.classList.add('active');
+        activeMapContainer.setAttribute('aria-hidden', 'false');
     }
 
     currentMap = mapName;

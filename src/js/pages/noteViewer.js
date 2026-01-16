@@ -53,7 +53,7 @@ async function loadNote(noteId) {
 
         // Fetch note from OSM API
         const response = await fetch(`https://api.openstreetmap.org/api/0.6/notes/${noteId}.json`);
-        
+
         if (!response.ok) {
             if (response.status === 404) {
                 throw new Error('Note not found');
@@ -106,11 +106,11 @@ function parseNoteData(data, noteId) {
         const [lon, lat] = data.geometry.coordinates;
         const properties = data.properties || {};
         const comments = properties.comments || [];
-        
+
         // Get note text from first comment (creation comment)
         const firstComment = comments.length > 0 ? comments[0] : null;
         const noteText = firstComment?.text || '';
-        
+
         return {
             id: parseInt(properties.id || noteId, 10),
             lat: lat,
@@ -137,7 +137,7 @@ function parseNoteData(data, noteId) {
         const note = data.elements[0];
         const comments = note.comments || [];
         const firstComment = comments.length > 0 ? comments[0] : null;
-        
+
         return {
             id: parseInt(note.id || noteId, 10),
             lat: parseFloat(note.lat),
@@ -229,17 +229,17 @@ async function loadCountryInfo(noteId) {
         // Get country information from OSM Notes API (REST API)
         // API endpoint: /api/v1/notes/{note_id}
         // Returns: { data: { id_country: number | null, ... } }
-        const apiBaseUrl = import.meta.env.PROD 
-            ? 'https://notes-api.osm.lat' 
+        const apiBaseUrl = import.meta.env.PROD
+            ? 'https://notes-api.osm.lat'
             : 'http://localhost:3000';
-        
+
         const noteInfoUrl = `${apiBaseUrl}/api/v1/notes/${noteId}`;
         const response = await fetch(noteInfoUrl, {
             headers: {
                 'User-Agent': 'OSM-Notes-Viewer/1.0 (https://notes.osm.lat)'
             }
         });
-        
+
         if (!response.ok) {
             // If API endpoint doesn't exist or fails, silently return
             // This is optional information
@@ -247,10 +247,10 @@ async function loadCountryInfo(noteId) {
         }
 
         const apiResponse = await response.json();
-        
+
         // Extract id_country from API response (wrapped in 'data' property)
         const countryId = apiResponse.data?.id_country;
-        
+
         if (countryId) {
             try {
                 // Get country details from index
@@ -261,7 +261,7 @@ async function loadCountryInfo(noteId) {
                     const countryLinkContainer = document.getElementById('countryLinkContainer');
                     const countryLink = document.getElementById('countryLink');
                     const countryNameDisplay = country.country_name_en || country.country_name;
-                    
+
                     countryLink.href = `country.html?id=${country.country_id}`;
                     countryLink.textContent = countryNameDisplay;
                     countryLinkContainer.style.display = 'flex';
@@ -318,7 +318,7 @@ function renderHashtags() {
         return;
     }
 
-    hashtagsContainer.innerHTML = Array.from(hashtags).map(tag => 
+    hashtagsContainer.innerHTML = Array.from(hashtags).map(tag =>
         `<a href="hashtag.html?tag=${encodeURIComponent(tag)}" class="hashtag">${tag}</a>`
     ).join('');
 }
@@ -341,7 +341,7 @@ function renderInteractions() {
     if (!noteData) return;
 
     const interactionsContainer = document.getElementById('noteInteractions');
-    
+
     if (!noteData.comments || noteData.comments.length === 0) {
         interactionsContainer.innerHTML = '<p>No interactions yet.</p>';
         return;
@@ -352,7 +352,7 @@ function renderInteractions() {
         const date = comment.date ? new Date(comment.date) : null;
         let actionType = 'commented';
         let actionLabel = 'Comment';
-        
+
         // Determine action type
         if (index === 0) {
             actionType = 'created';
@@ -364,7 +364,7 @@ function renderInteractions() {
             actionType = 'reopened';
             actionLabel = 'Note Reopened';
         }
-        
+
         return `
             <div class="interaction-item ${actionType}">
                 <div class="interaction-header">
@@ -443,17 +443,17 @@ function setupCommentForm() {
 function showHashtagSuggestions(text) {
     const suggestionsContainer = document.getElementById('hashtagSuggestions');
     const commonHashtags = ['#surveyme', '#invalid'];
-    
+
     // Check if text already contains these hashtags
     const textLower = text.toLowerCase();
     const availableHashtags = commonHashtags.filter(tag => !textLower.includes(tag));
-    
+
     if (availableHashtags.length === 0) {
         suggestionsContainer.innerHTML = '';
         return;
     }
 
-    suggestionsContainer.innerHTML = availableHashtags.map(tag => 
+    suggestionsContainer.innerHTML = availableHashtags.map(tag =>
         `<span class="hashtag-suggestion" data-hashtag="${tag}">${tag}</span>`
     ).join('');
 
@@ -539,7 +539,7 @@ function setupXmlLink() {
 async function loadMLRecommendation(noteId) {
     const mlSection = document.getElementById('mlRecommendationSection');
     const mlRecommendation = document.getElementById('mlRecommendation');
-    
+
     if (!mlSection || !mlRecommendation) return;
 
     try {
@@ -551,17 +551,17 @@ async function loadMLRecommendation(noteId) {
 
         // Get ML recommendation from Analytics API
         // Endpoint: /api/v1/notes/{noteId}/recommendation
-        const apiBaseUrl = import.meta.env.PROD 
-            ? 'https://notes-api.osm.lat' 
+        const apiBaseUrl = import.meta.env.PROD
+            ? 'https://notes-api.osm.lat'
             : 'http://localhost:3000';
-        
+
         const recommendationUrl = `${apiBaseUrl}/api/v1/notes/${noteId}/recommendation`;
         const response = await fetch(recommendationUrl, {
             headers: {
                 'User-Agent': 'OSM-Notes-Viewer/1.0 (https://notes.osm.lat)'
             }
         });
-        
+
         if (!response.ok) {
             // If endpoint doesn't exist or ML is not available, hide section
             if (response.status === 404) {
@@ -593,7 +593,7 @@ function renderMLRecommendation(recommendation) {
     const mlRecommendation = document.getElementById('mlRecommendation');
     const josmTagsContainer = document.getElementById('josmTagsContainer');
     const josmTagsInput = document.getElementById('josmTags');
-    
+
     if (!mlRecommendation) return;
 
     const action = recommendation.action || recommendation.recommended_action || 'comment';
@@ -675,7 +675,7 @@ function renderMLRecommendation(recommendation) {
 function renderJosmTags(tags) {
     const josmTagsContainer = document.getElementById('josmTagsContainer');
     const josmTagsInput = document.getElementById('josmTags');
-    
+
     if (!josmTagsContainer || !josmTagsInput) return;
 
     let josmFormat = '';
@@ -705,7 +705,7 @@ function renderJosmTags(tags) {
     if (josmFormat) {
         josmTagsInput.value = displayFormat;
         josmTagsContainer.style.display = 'block';
-        
+
         // Setup copy button
         setupCopyJosmTagsButton(josmFormat);
     } else {
@@ -728,7 +728,7 @@ function setupCopyJosmTagsButton(josmFormat) {
     newCopyBtn.addEventListener('click', async () => {
         try {
             await navigator.clipboard.writeText(josmFormat);
-            
+
             // Show feedback
             const originalText = newCopyBtn.textContent;
             let copiedText = 'Copied!';
@@ -743,7 +743,7 @@ function setupCopyJosmTagsButton(josmFormat) {
             newCopyBtn.textContent = '✓ ' + copiedText;
             newCopyBtn.style.backgroundColor = '#4caf50';
             newCopyBtn.style.color = 'white';
-            
+
             setTimeout(() => {
                 newCopyBtn.textContent = originalText;
                 newCopyBtn.style.backgroundColor = '';

@@ -22,6 +22,7 @@
     color: var(--text-light);
     transition: var(--transition);
     font-family: inherit;
+    outline: none;
 }
 
 .map-tab:hover {
@@ -29,10 +30,20 @@
     background: var(--bg-light);
 }
 
+.map-tab:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+    border-radius: var(--radius);
+}
+
 .map-tab.active {
     color: var(--primary-color);
     border-bottom-color: var(--primary-color);
     font-weight: 600;
+}
+
+.map-tab.active:focus {
+    outline-color: var(--primary-dark);
 }
 
 .tab-icon {

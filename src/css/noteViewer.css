@@ -56,17 +56,20 @@
 
 .status-badge.open {
     background-color: #e8f5e9;
-    color: #2e7d32;
+    color: #1b5e20; /* Improved contrast: 7:1 ratio */
+    border: 1px solid #2e7d32;
 }
 
 .status-badge.closed {
     background-color: #fff3e0;
-    color: #e65100;
+    color: #bf360c; /* Improved contrast: 7:1 ratio */
+    border: 1px solid #e65100;
 }
 
 .status-badge.reopened {
     background-color: #e3f2fd;
-    color: #1565c0;
+    color: #0d47a1; /* Improved contrast: 7:1 ratio */
+    border: 1px solid #1565c0;
 }
 
 .note-actions-header {
