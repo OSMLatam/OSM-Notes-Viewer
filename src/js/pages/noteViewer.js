@@ -12,6 +12,7 @@ import { getUserAvatarSync } from '../utils/userAvatar.js';
 import { i18n } from '../utils/i18n.js';
 import { parseNoteId, validateCoordinates } from '../utils/validation.js';
 import { fetchWithRetry } from '../utils/retry.js';
+import { prefetchNoteRelatedData, prefetchMLRecommendation, prefetchCountryInfo } from '../utils/prefetch.js';
 import {
     isAuthenticated,
     getCurrentUser,
@@ -104,6 +105,15 @@ async function loadNote(noteId) {
         setupCommentForm();
         setupShareButton();
         setupXmlLink();
+
+        // Prefetch related data in parallel (non-blocking)
+        prefetchNoteRelatedData(noteData);
+
+        // Prefetch country info and ML recommendation (low priority)
+        prefetchCountryInfo(noteId, 2);
+        if (noteData.status === 'open') {
+            prefetchMLRecommendation(noteId, 1);
+        }
 
         // Load country info from Analytics API
         await loadCountryInfo(noteId);

@@ -8,6 +8,7 @@ import { showError, showLoading, showEmpty } from '../components/errorHandler.js
 import { renderPagination } from '../components/pagination.js';
 import { apiClient } from '../api/apiClient.js';
 import { i18n } from '../utils/i18n.js';
+import { prefetchNote, prefetchNextPage } from '../utils/prefetch.js';
 
 // Get hashtag from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -220,6 +221,25 @@ async function loadHashtagNotes() {
         // Render notes
         renderNotesList(notes);
 
+        // Prefetch next page if available
+        if (paginationData && paginationData.page < paginationData.total_pages) {
+            const nextPage = paginationData.page + 1;
+            const searchParams = new URLSearchParams({
+                text: `#${currentHashtag}`,
+                page: nextPage.toString(),
+                limit: currentLimit.toString()
+            });
+            if (currentFilters.status) searchParams.append('status', currentFilters.status);
+            if (currentFilters.date_from) searchParams.append('date_from', currentFilters.date_from);
+            if (currentFilters.date_to) searchParams.append('date_to', currentFilters.date_to);
+
+            const apiBaseUrl = import.meta.env.PROD
+                ? 'https://notes-api.osm.lat'
+                : 'http://localhost:3000';
+            const nextPageUrl = `${apiBaseUrl}/api/v1/notes?${searchParams.toString()}`;
+            prefetchNextPage(nextPageUrl, 2);
+        }
+
         // Render pagination
         if (paginationContainer && paginationData) {
             renderNotesPagination();
@@ -304,6 +324,13 @@ async function renderNotesList(notes) {
     }).join('');
 
     notesList.innerHTML = notesHtml;
+
+    // Prefetch notes in the list (low priority, non-blocking)
+    notes.slice(0, 5).forEach(note => {
+        if (note.note_id) {
+            prefetchNote(note.note_id, 1);
+        }
+    });
 }
 
 /**

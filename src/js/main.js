@@ -13,6 +13,7 @@ import { keyboardShortcuts } from './components/keyboardShortcuts.js';
 import { getCountryFlagFromObject } from './utils/countryFlags.js';
 import { getUserAvatarSync, loadOSMAvatarInBackground } from './utils/userAvatar.js';
 import { createSimpleNoteCard } from './utils/noteMap.js';
+import { initPrefetch } from './utils/prefetch.js';
 
 // Helper function to format username with special styling
 function formatUsernameWithStyle(username) {
@@ -107,6 +108,9 @@ const ITEMS_PER_PAGE = 50;
 // Initialize application
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 App initializing...');
+
+    // Initialize prefetch early
+    initPrefetch();
 
     // Initialize i18n first
     await i18n.init();
