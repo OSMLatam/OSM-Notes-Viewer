@@ -10,6 +10,16 @@ import { showError, showLoading } from '../components/errorHandler.js';
 import { shareComponent } from '../components/share.js';
 import { getUserAvatarSync } from '../utils/userAvatar.js';
 import { i18n } from '../utils/i18n.js';
+import {
+    isAuthenticated,
+    getCurrentUser,
+    initiateLogin,
+    logout,
+    commentOnNote,
+    closeNote,
+    reopenNote,
+    hasPermission
+} from '../auth/osmAuth.js';
 
 // Get note ID from URL
 const urlParams = new URLSearchParams(window.location.search);
@@ -430,27 +440,87 @@ function renderActionButtons() {
  * Setup comment form
  */
 function setupCommentForm() {
+    const commentForm = document.getElementById('commentForm');
     const commentTextarea = document.getElementById('commentText');
     const commentBtn = document.getElementById('commentBtn');
     const closeBtn = document.getElementById('closeBtn');
     const reopenBtn = document.getElementById('reopenBtn');
     const reportBtn = document.getElementById('reportBtn');
 
+    if (!commentForm || !commentTextarea) return;
+
     // Enable/disable comment button based on input
     commentTextarea.addEventListener('input', () => {
         commentBtn.disabled = !commentTextarea.value.trim();
-    });
-
-    // Hashtag suggestions
-    commentTextarea.addEventListener('input', () => {
         showHashtagSuggestions(commentTextarea.value);
     });
 
-    // Button handlers (will require OAuth for actual submission)
+    // Form submission
+    commentForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleComment();
+    });
+
+    // Button handlers
     commentBtn.addEventListener('click', () => handleComment());
     closeBtn.addEventListener('click', () => handleClose());
     reopenBtn.addEventListener('click', () => handleReopen());
     reportBtn.addEventListener('click', () => handleReport());
+
+    // Update UI based on authentication status
+    updateAuthUI();
+
+    // Check for auth success callback
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('auth') === 'success') {
+        updateAuthUI();
+        // Reload note to show updated data
+        if (noteId) {
+            loadNote(noteId);
+        }
+    }
+}
+
+/**
+ * Update UI based on authentication status
+ */
+function updateAuthUI() {
+    const user = getCurrentUser();
+    const authenticated = isAuthenticated();
+
+    // Show/hide login prompt
+    const actionButtons = document.querySelectorAll('#commentBtn, #closeBtn, #reopenBtn, #reportBtn');
+    const authStatus = document.getElementById('authStatus');
+
+    if (!authenticated) {
+        // Add login prompt or disable buttons with tooltip
+        actionButtons.forEach(btn => {
+            if (btn) {
+                btn.setAttribute('title', i18n.t('note.auth.required') || 'Login required');
+                btn.style.opacity = '0.6';
+            }
+        });
+
+        if (authStatus) {
+            authStatus.style.display = 'block';
+            authStatus.innerHTML = `<p style="color: #666; font-size: 0.9em;">${i18n.t('note.auth.loginPrompt') || 'Log in with OpenStreetMap to comment, close, or reopen notes.'}</p>`;
+        }
+    } else {
+        // Show user info if available
+        actionButtons.forEach(btn => {
+            if (btn) {
+                btn.removeAttribute('title');
+                btn.style.opacity = '1';
+            }
+        });
+
+        if (authStatus && user) {
+            authStatus.style.display = 'block';
+            authStatus.innerHTML = `<p style="color: #4caf50; font-size: 0.9em;">${i18n.t('note.auth.loggedIn') || 'Logged in as'} ${user.username}</p>`;
+        } else if (authStatus) {
+            authStatus.style.display = 'none';
+        }
+    }
 }
 
 /**
@@ -494,32 +564,216 @@ async function handleComment() {
     const commentText = document.getElementById('commentText').value.trim();
     if (!commentText) return;
 
-    // TODO: Implement OAuth and actual API call
-    alert('Comment functionality requires OAuth authentication. This will be implemented in a future update.');
+    // Check authentication
+    if (!isAuthenticated()) {
+        if (confirm(i18n.t('note.auth.loginRequired') || 'You need to log in with OpenStreetMap to comment on notes. Would you like to log in now?')) {
+            // Save current URL to return after auth
+            sessionStorage.setItem('oauth_return_url', window.location.href);
+            initiateLogin();
+        }
+        return;
+    }
+
+    // Check permissions
+    if (!hasPermission('write_notes')) {
+        alert(i18n.t('note.auth.insufficientPermissions') || 'Your account does not have permission to comment on notes.');
+        return;
+    }
+
+    try {
+        const commentBtn = document.getElementById('commentBtn');
+        const originalText = commentBtn.textContent;
+        commentBtn.disabled = true;
+        commentBtn.textContent = i18n.t('note.comment.submitting') || 'Submitting...';
+
+        await commentOnNote(noteData.id, commentText);
+
+        // Clear comment field
+        document.getElementById('commentText').value = '';
+        commentBtn.disabled = true;
+
+        // Show success message
+        const successMsg = i18n.t('note.comment.success') || 'Comment submitted successfully!';
+        alert(successMsg);
+
+        // Reload note to show new comment
+        await loadNote(noteData.id);
+
+    } catch (error) {
+        console.error('Error commenting on note:', error);
+
+        let errorMessage = i18n.t('note.comment.error') || 'Failed to submit comment.';
+
+        if (error.message.includes('Authentication expired')) {
+            errorMessage = i18n.t('note.auth.expired') || 'Your session has expired. Please log in again.';
+            logout();
+            updateAuthUI();
+        } else if (error.message.includes('permission')) {
+            errorMessage = i18n.t('note.auth.insufficientPermissions') || 'You do not have permission to perform this action.';
+        } else {
+            errorMessage += ` ${error.message}`;
+        }
+
+        alert(errorMessage);
+
+        const commentBtn = document.getElementById('commentBtn');
+        commentBtn.disabled = false;
+        commentBtn.textContent = i18n.t('note.comment.button') || 'Comment';
+    }
 }
 
 /**
  * Handle note closure
  */
 async function handleClose() {
-    // TODO: Implement OAuth and actual API call
-    alert('Close note functionality requires OAuth authentication. This will be implemented in a future update.');
+    if (!noteData) return;
+
+    // Check authentication
+    if (!isAuthenticated()) {
+        if (confirm(i18n.t('note.auth.loginRequired') || 'You need to log in with OpenStreetMap to close notes. Would you like to log in now?')) {
+            sessionStorage.setItem('oauth_return_url', window.location.href);
+            initiateLogin();
+        }
+        return;
+    }
+
+    // Check permissions
+    if (!hasPermission('write_notes')) {
+        alert(i18n.t('note.auth.insufficientPermissions') || 'Your account does not have permission to close notes.');
+        return;
+    }
+
+    const commentText = document.getElementById('commentText').value.trim();
+    const closeWithComment = commentText.length > 0 &&
+        confirm(i18n.t('note.close.confirmWithComment') || `Close note #${noteData.id}${commentText ? ' with your comment' : ''}?`);
+
+    if (!closeWithComment && !confirm(i18n.t('note.close.confirm') || `Are you sure you want to close note #${noteData.id}?`)) {
+        return;
+    }
+
+    try {
+        const closeBtn = document.getElementById('closeBtn');
+        const originalText = closeBtn.textContent;
+        closeBtn.disabled = true;
+        closeBtn.textContent = i18n.t('note.close.submitting') || 'Closing...';
+
+        await closeNote(noteData.id, commentText || '');
+
+        // Clear comment field
+        document.getElementById('commentText').value = '';
+
+        // Show success message
+        const successMsg = i18n.t('note.close.success') || 'Note closed successfully!';
+        alert(successMsg);
+
+        // Reload note to show updated status
+        await loadNote(noteData.id);
+
+    } catch (error) {
+        console.error('Error closing note:', error);
+
+        let errorMessage = i18n.t('note.close.error') || 'Failed to close note.';
+
+        if (error.message.includes('Authentication expired')) {
+            errorMessage = i18n.t('note.auth.expired') || 'Your session has expired. Please log in again.';
+            logout();
+            updateAuthUI();
+        } else if (error.message.includes('permission')) {
+            errorMessage = i18n.t('note.auth.insufficientPermissions') || 'You do not have permission to perform this action.';
+        } else {
+            errorMessage += ` ${error.message}`;
+        }
+
+        alert(errorMessage);
+
+        const closeBtn = document.getElementById('closeBtn');
+        closeBtn.disabled = false;
+        closeBtn.textContent = i18n.t('note.comment.close') || 'Close Note';
+    }
 }
 
 /**
  * Handle note reopening
  */
 async function handleReopen() {
-    // TODO: Implement OAuth and actual API call
-    alert('Reopen note functionality requires OAuth authentication. This will be implemented in a future update.');
+    if (!noteData) return;
+
+    // Check authentication
+    if (!isAuthenticated()) {
+        if (confirm(i18n.t('note.auth.loginRequired') || 'You need to log in with OpenStreetMap to reopen notes. Would you like to log in now?')) {
+            sessionStorage.setItem('oauth_return_url', window.location.href);
+            initiateLogin();
+        }
+        return;
+    }
+
+    // Check permissions
+    if (!hasPermission('write_notes')) {
+        alert(i18n.t('note.auth.insufficientPermissions') || 'Your account does not have permission to reopen notes.');
+        return;
+    }
+
+    const commentText = document.getElementById('commentText').value.trim();
+    const reopenWithComment = commentText.length > 0 &&
+        confirm(i18n.t('note.reopen.confirmWithComment') || `Reopen note #${noteData.id}${commentText ? ' with your comment' : ''}?`);
+
+    if (!reopenWithComment && !confirm(i18n.t('note.reopen.confirm') || `Are you sure you want to reopen note #${noteData.id}?`)) {
+        return;
+    }
+
+    try {
+        const reopenBtn = document.getElementById('reopenBtn');
+        const originalText = reopenBtn.textContent;
+        reopenBtn.disabled = true;
+        reopenBtn.textContent = i18n.t('note.reopen.submitting') || 'Reopening...';
+
+        await reopenNote(noteData.id, commentText || '');
+
+        // Clear comment field
+        document.getElementById('commentText').value = '';
+
+        // Show success message
+        const successMsg = i18n.t('note.reopen.success') || 'Note reopened successfully!';
+        alert(successMsg);
+
+        // Reload note to show updated status
+        await loadNote(noteData.id);
+
+    } catch (error) {
+        console.error('Error reopening note:', error);
+
+        let errorMessage = i18n.t('note.reopen.error') || 'Failed to reopen note.';
+
+        if (error.message.includes('Authentication expired')) {
+            errorMessage = i18n.t('note.auth.expired') || 'Your session has expired. Please log in again.';
+            logout();
+            updateAuthUI();
+        } else if (error.message.includes('permission')) {
+            errorMessage = i18n.t('note.auth.insufficientPermissions') || 'You do not have permission to perform this action.';
+        } else {
+            errorMessage += ` ${error.message}`;
+        }
+
+        alert(errorMessage);
+
+        const reopenBtn = document.getElementById('reopenBtn');
+        reopenBtn.disabled = false;
+        reopenBtn.textContent = i18n.t('note.comment.reopen') || 'Reopen Note';
+    }
 }
 
 /**
  * Handle note reporting
  */
 async function handleReport() {
-    // TODO: Implement reporting functionality
-    alert('Report functionality will be implemented in a future update.');
+    // Note: Reporting is typically done through OSM's abuse reporting system
+    // This could redirect to OSM's report page or use their API if available
+    const noteUrl = `https://www.openstreetmap.org/note/${noteData.id}`;
+    const reportUrl = `https://www.openstreetmap.org/reports/new?item=note&item_id=${noteData.id}`;
+
+    if (confirm(i18n.t('note.report.confirm') || `Report note #${noteData.id}? This will open OpenStreetMap's reporting page.`)) {
+        window.open(reportUrl, '_blank');
+    }
 }
 
 /**
