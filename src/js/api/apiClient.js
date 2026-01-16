@@ -74,7 +74,7 @@ class APIClient {
             return data;
         } catch (error) {
             console.error(`Error fetching ${endpoint}:`, error);
-            
+
             // Provide more descriptive error messages
             if (error.status === 404) {
                 throw new Error(`Resource not found: ${endpoint}`);
@@ -85,7 +85,7 @@ class APIClient {
             } else if (error.message && error.message.includes('Failed to fetch')) {
                 throw new Error('Network error. Please check your connection and try again.');
             }
-            
+
             throw error;
         }
     }

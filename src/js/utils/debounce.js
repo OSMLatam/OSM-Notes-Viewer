@@ -15,7 +15,7 @@
  * const debouncedSearch = debounce((query) => {
  *   console.log('Searching:', query);
  * }, 300);
- * 
+ *
  * input.addEventListener('input', (e) => {
  *   debouncedSearch(e.target.value);
  * });
@@ -78,7 +78,7 @@ export function debounce(fn, delay, options = {}) {
  * const throttledScroll = throttle(() => {
  *   console.log('Scrolled');
  * }, 100);
- * 
+ *
  * window.addEventListener('scroll', throttledScroll);
  */
 export function throttle(fn, delay, options = {}) {

@@ -14,14 +14,14 @@ let retryCount = 0;
 
 export function showError(container, message, options = {}) {
     const { retryFn = null, type = 'generic', suggestion = null } = options;
-    
+
     if (!container) {
         console.error('Error container not found');
         return;
     }
 
     retryCount++;
-    
+
     // Determine suggestion based on error type if not provided
     let errorSuggestion = suggestion;
     if (!errorSuggestion) {
@@ -59,7 +59,7 @@ export function showError(container, message, options = {}) {
             ${retryCount > 2 ? '<small class="retry-hint">Tip: Check your internet connection</small>' : ''}
         </div>
     `;
-    
+
     container.style.display = 'block';
 }
 
@@ -104,7 +104,7 @@ export function showLoading(container, messageOrOptions = 'Loading...') {
             ${progressBar}
         </div>
     `;
-    
+
     container.style.display = 'block';
 }
 
@@ -143,7 +143,7 @@ function escapeHtml(text) {
  */
 export function handleApiError(error, container, options = {}) {
     const { retryFn = null, fallbackMessage = 'An error occurred while loading data.' } = options;
-    
+
     console.error('API Error:', error);
 
     let message = fallbackMessage;
