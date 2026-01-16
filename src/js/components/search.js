@@ -12,7 +12,16 @@ export class SearchComponent {
     }
 
     setupEventListeners() {
-        this.input.addEventListener('input', () => this.handleInput());
+        // Import debounce dynamically to avoid circular dependencies
+        import('../utils/debounce.js').then(({ debounce }) => {
+            // Debounce input handler to reduce unnecessary filtering
+            this.debouncedHandleInput = debounce(() => this.handleInput(), 300);
+            this.input.addEventListener('input', () => this.debouncedHandleInput());
+        }).catch(() => {
+            // Fallback if debounce fails to load
+            this.input.addEventListener('input', () => this.handleInput());
+        });
+
         this.input.addEventListener('keydown', (e) => this.handleKeydown(e));
 
         // Click outside to close

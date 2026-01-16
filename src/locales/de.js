@@ -111,6 +111,14 @@ export default {
     'note.mlRecommendation.confidence': 'Vertrauen',
     'note.mlRecommendation.copied': 'Kopiert!',
     'note.noInteractions': 'Noch keine Interaktionen.',
+    'note.error.noId': 'Keine Notiz-ID angegeben',
+    'note.error.invalidId': 'Ungültige Notiz-ID. Die ID muss eine positive Zahl sein.',
+    'note.error.loadFailed': 'Fehler beim Laden der Notiz',
+    'note.error.notFound': 'Notiz nicht gefunden',
+    'note.error.invalidCoordinates': 'Ungültige Notiz-Koordinaten',
+    'note.error.networkError': 'Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
+    'note.error.serverError': 'Serverfehler. Bitte versuchen Sie es später erneut.',
+    'note.error.rateLimit': 'Rate-Limit überschritten. Bitte versuchen Sie es später erneut.',
 
     // Country profile
     'country.profile.title': 'Länderprofil',

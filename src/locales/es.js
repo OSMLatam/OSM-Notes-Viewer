@@ -111,6 +111,14 @@ export default {
     'note.mlRecommendation.confidence': 'Confianza',
     'note.mlRecommendation.copied': '¡Copiado!',
     'note.noInteractions': 'Aún no hay interacciones.',
+    'note.error.noId': 'No se proporcionó ID de nota',
+    'note.error.invalidId': 'ID de nota inválido. El ID debe ser un número positivo.',
+    'note.error.loadFailed': 'Error al cargar la nota',
+    'note.error.notFound': 'Nota no encontrada',
+    'note.error.invalidCoordinates': 'Coordenadas de nota inválidas',
+    'note.error.networkError': 'Error de red. Por favor verifica tu conexión e intenta de nuevo.',
+    'note.error.serverError': 'Error del servidor. Por favor intenta más tarde.',
+    'note.error.rateLimit': 'Límite de solicitudes excedido. Por favor intenta más tarde.',
 
     // Country profile
     'country.profile.title': 'Perfil de País',

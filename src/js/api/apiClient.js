@@ -4,6 +4,7 @@
  */
 
 import { API_CONFIG, getApiUrl } from '../../config/api-config.js';
+import { fetchWithRetry, isRetryableError } from '../utils/retry.js';
 
 /**
  * API Client class for handling HTTP requests with caching
@@ -22,14 +23,19 @@ class APIClient {
     }
 
     /**
-     * Fetch JSON data with caching support
+     * Fetch JSON data with caching support and retry logic
      * @param {string} endpoint - API endpoint path
+     * @param {Object} options - Fetch options
+     * @param {boolean} options.useRetry - Enable retry logic (default: true)
+     * @param {number} options.maxRetries - Maximum retries (default: 3)
      * @returns {Promise<any>} Response data
      * @throws {Error} If fetch fails or response is not OK
      * @example
      * const data = await apiClient.fetch('/api/users/123.json');
      */
-    async fetch(endpoint) {
+    async fetch(endpoint, options = {}) {
+        const { useRetry = true, maxRetries = 3 } = options;
+
         // Check cache if enabled
         if (API_CONFIG.FEATURES.enableCache && this.isCacheValid(endpoint)) {
             console.log(`Cache hit for: ${endpoint}`);
@@ -40,10 +46,21 @@ class APIClient {
             const url = getApiUrl(endpoint);
             console.log(`Fetching: ${url}`);
 
-            const response = await fetch(url);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            let response;
+            if (useRetry) {
+                // Use retry logic for network errors and 5xx status codes
+                response = await fetchWithRetry(url, {}, {
+                    maxRetries,
+                    initialDelay: 1000,
+                    maxDelay: 10000
+                });
+            } else {
+                response = await fetch(url);
+                if (!response.ok) {
+                    const error = new Error(`HTTP error! status: ${response.status}`);
+                    error.status = response.status;
+                    throw error;
+                }
             }
 
             const data = await response.json();
@@ -57,6 +74,18 @@ class APIClient {
             return data;
         } catch (error) {
             console.error(`Error fetching ${endpoint}:`, error);
+            
+            // Provide more descriptive error messages
+            if (error.status === 404) {
+                throw new Error(`Resource not found: ${endpoint}`);
+            } else if (error.status === 429) {
+                throw new Error('Rate limit exceeded. Please try again later.');
+            } else if (error.status >= 500) {
+                throw new Error('Server error. Please try again later.');
+            } else if (error.message && error.message.includes('Failed to fetch')) {
+                throw new Error('Network error. Please check your connection and try again.');
+            }
+            
             throw error;
         }
     }

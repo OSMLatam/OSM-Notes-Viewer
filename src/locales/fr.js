@@ -111,6 +111,14 @@ export default {
     'note.mlRecommendation.confidence': 'Confiance',
     'note.mlRecommendation.copied': 'Copié!',
     'note.noInteractions': 'Aucune interaction pour le moment.',
+    'note.error.noId': 'Aucun ID de note fourni',
+    'note.error.invalidId': 'ID de note invalide. L\'ID doit être un nombre positif.',
+    'note.error.loadFailed': 'Échec du chargement de la note',
+    'note.error.notFound': 'Note introuvable',
+    'note.error.invalidCoordinates': 'Coordonnées de note invalides',
+    'note.error.networkError': 'Erreur réseau. Veuillez vérifier votre connexion et réessayer.',
+    'note.error.serverError': 'Erreur serveur. Veuillez réessayer plus tard.',
+    'note.error.rateLimit': 'Limite de débit dépassée. Veuillez réessayer plus tard.',
 
     // Country profile
     'country.profile.title': 'Profil Pays',

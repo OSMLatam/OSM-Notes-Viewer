@@ -111,6 +111,14 @@ export default {
     'note.mlRecommendation.confidence': 'Confidence',
     'note.mlRecommendation.copied': 'Copied!',
     'note.noInteractions': 'No interactions yet.',
+    'note.error.noId': 'No note ID provided',
+    'note.error.invalidId': 'Invalid note ID. Note ID must be a positive number.',
+    'note.error.loadFailed': 'Failed to load note',
+    'note.error.notFound': 'Note not found',
+    'note.error.invalidCoordinates': 'Invalid note coordinates',
+    'note.error.networkError': 'Network error. Please check your connection and try again.',
+    'note.error.serverError': 'Server error. Please try again later.',
+    'note.error.rateLimit': 'Rate limit exceeded. Please try again later.',
 
     // Country profile
     'country.profile.title': 'Country Profile',

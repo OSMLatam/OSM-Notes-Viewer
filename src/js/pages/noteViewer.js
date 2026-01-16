@@ -10,6 +10,8 @@ import { showError, showLoading } from '../components/errorHandler.js';
 import { shareComponent } from '../components/share.js';
 import { getUserAvatarSync } from '../utils/userAvatar.js';
 import { i18n } from '../utils/i18n.js';
+import { parseNoteId, validateCoordinates } from '../utils/validation.js';
+import { fetchWithRetry } from '../utils/retry.js';
 import {
     isAuthenticated,
     getCurrentUser,
@@ -73,18 +75,20 @@ async function loadNote(noteId) {
         error.style.display = 'none';
         content.style.display = 'none';
 
-        // Fetch note from OSM API
-        const response = await fetch(`https://api.openstreetmap.org/api/0.6/notes/${noteId}.json`);
-
-        if (!response.ok) {
-            if (response.status === 404) {
-                throw new Error('Note not found');
-            }
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        // Fetch note from OSM API with retry logic
+        const response = await fetchWithRetry(
+            `https://api.openstreetmap.org/api/0.6/notes/${noteId}.json`,
+            {},
+            { maxRetries: 3, initialDelay: 1000 }
+        );
 
         const data = await response.json();
         noteData = parseNoteData(data, noteId);
+
+        // Validate note coordinates
+        if (!validateCoordinates(noteData.lat, noteData.lon)) {
+            throw new Error('Invalid note coordinates');
+        }
 
         // Hide loading, show content
         loading.style.display = 'none';
