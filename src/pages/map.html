@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map - OSM Notes Viewer</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/mapViewer.css">
+    <link rel="stylesheet" href="../css/leaflet-overrides.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                    <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
+                </a>
+            </h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="stats.html" class="nav-link">Stats</a>
+                <a href="map.html" class="nav-link active">Map</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container" style="padding: 2rem 20px;">
+            <h1 style="margin-bottom: 2rem;">OSM Notes Maps</h1>
+
+            <!-- Map Tabs -->
+            <div class="map-tabs">
+                <button class="map-tab active" data-tab="open-notes">
+                    <span class="tab-icon">📍</span>
+                    <span class="tab-label">Open Notes</span>
+                </button>
+                <button class="map-tab" data-tab="closed-notes">
+                    <span class="tab-icon">🔒</span>
+                    <span class="tab-label">Closed Notes</span>
+                </button>
+                <button class="map-tab" data-tab="boundaries">
+                    <span class="tab-icon">🌍</span>
+                    <span class="tab-label">Boundaries</span>
+                </button>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-container-wrapper">
+                <!-- Map 1: Open Notes -->
+                <div id="open-notes-map" class="map-container active"></div>
+
+                <!-- Map 2: Closed Notes -->
+                <div id="closed-notes-map" class="map-container"></div>
+
+                <!-- Map 3: Boundaries -->
+                <div id="boundaries-map" class="map-container"></div>
+
+                <!-- Map Controls -->
+                <div class="map-controls">
+                    <div class="control-group">
+                        <label for="baseLayerSelect">Base Layer:</label>
+                        <select id="baseLayerSelect" class="control-select">
+                            <option value="osm">OpenStreetMap</option>
+                            <option value="satellite">Satellite</option>
+                        </select>
+                    </div>
+                    <button id="centerUserBtn" class="control-btn" title="Center on your location">
+                        <span>📍</span> My Location
+                    </button>
+                    <button id="resetViewBtn" class="control-btn" title="Reset to initial view">
+                        <span>🔄</span> Reset View
+                    </button>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="mapLoading" class="map-loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Loading map...</p>
+                </div>
+
+                <!-- Error Message -->
+                <div id="mapError" class="map-error" style="display: none;"></div>
+            </div>
+
+            <!-- WMS Documentation Section -->
+            <section class="wms-documentation">
+                <h2>WMS Service Documentation</h2>
+                <div class="wms-info">
+                    <p>This map uses Web Map Service (WMS) layers to display OSM notes. You can consume these layers in GIS software like QGIS, ArcGIS, or other WMS-compatible tools.</p>
+
+                    <h3>WMS Endpoints</h3>
+                    <div class="wms-endpoints">
+                        <div class="wms-endpoint">
+                            <h4>Open Notes</h4>
+                            <code id="wmsOpenUrl" class="wms-url">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsOpenUrl">Copy</button>
+                        </div>
+                        <div class="wms-endpoint">
+                            <h4>Closed Notes</h4>
+                            <code id="wmsClosedUrl" class="wms-url">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsClosedUrl">Copy</button>
+                        </div>
+                        <div class="wms-endpoint">
+                            <h4>Boundaries (Countries)</h4>
+                            <code id="wmsCountriesUrl" class="wms-url">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsCountriesUrl">Copy</button>
+                        </div>
+                        <div class="wms-endpoint">
+                            <h4>Boundaries (Disputed Areas)</h4>
+                            <code id="wmsDisputedUrl" class="wms-url">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsDisputedUrl">Copy</button>
+                        </div>
+                    </div>
+
+                    <h3>Usage Examples</h3>
+                    <div class="wms-examples">
+                        <h4>QGIS</h4>
+                        <ol>
+                            <li>Open QGIS</li>
+                            <li>Go to <code>Layer → Add Layer → Add WMS/WMTS Layer</code></li>
+                            <li>Click "New" and enter a name</li>
+                            <li>Paste the WMS URL above</li>
+                            <li>Click "Connect" and select the layer</li>
+                            <li>Click "Add"</li>
+                        </ol>
+
+                        <h4>ArcGIS</h4>
+                        <ol>
+                            <li>Open ArcGIS</li>
+                            <li>Go to <code>Insert → Connections → New WMS Server</code></li>
+                            <li>Enter the WMS URL</li>
+                            <li>Add the layer to your map</li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <span>Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+                    <br>
+                    <span>Processed by</span>
+                    <a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
+                    & <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
+                </div>
+                <div class="footer-section">
+                    <a href="https://github.com/OSMLatam/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                </div>
+                <div class="footer-section">
+                    <span>Made by</span> <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.wms@0.2.0/dist/leaflet.wms.js"></script>
+    <script type="module" src="../js/pages/mapViewer.js"></script>
+</body>
+</html>
