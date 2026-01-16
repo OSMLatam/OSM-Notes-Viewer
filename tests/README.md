@@ -33,9 +33,12 @@ tests/
 │   └── formatter.test.js
 ├── api/               # Tests for API client
 │   └── apiClient.test.js
-└── components/        # Tests for UI components
-    ├── darkMode.test.js
-    └── pagination.test.js
+├── components/        # Tests for UI components
+│   ├── darkMode.test.js
+│   └── pagination.test.js
+└── pages/             # Tests for page-specific functionality
+    ├── noteViewer.test.js
+    └── mapViewer.test.js
 ```
 
 ## Test Coverage
@@ -63,7 +66,18 @@ Current coverage includes:
   - Pagination calculations
   - Edge cases
 
-**Total: 40 tests passing** ✅
+- ✅ **Note Viewer Page** (21 tests)
+  - Hashtag extraction from text
+  - JOSM tags formatting (object, array, string formats)
+  - Edge cases and error handling
+
+- ✅ **Map Viewer Page** (16 tests)
+  - Bounding box calculation for 500km radius
+  - Zoom level calculation for bounding boxes
+  - Different latitude scenarios (equator, mid-latitudes, high latitudes)
+  - Integration tests for 500km bbox
+
+**Total: 77 tests passing** ✅
 
 ## Writing New Tests
 
