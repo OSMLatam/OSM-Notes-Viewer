@@ -31,6 +31,12 @@ export const SUPPORTED_LANGUAGES = {
         name: 'German',
         nativeName: 'Deutsch',
         flag: '🇩🇪'
+    },
+    pt: {
+        code: 'pt',
+        name: 'Portuguese',
+        nativeName: 'Português',
+        flag: '🇵🇹'
     }
 };
 
@@ -42,7 +48,7 @@ export const DEFAULT_LANGUAGE = 'en';
 
 /**
  * Detect user's preferred language from browser settings or localStorage
- * @returns {string} Language code (en, es, de, fr)
+ * @returns {string} Language code (en, es, de, fr, pt)
  * @example
  * const lang = detectLanguage(); // Returns 'es' if browser is Spanish
  */
@@ -73,7 +79,7 @@ export function detectLanguage() {
 
 /**
  * Set the application language
- * @param {string} langCode - Language code to set (en, es, de, fr)
+ * @param {string} langCode - Language code to set (en, es, de, fr, pt)
  * @returns {boolean} True if language was set successfully, false otherwise
  * @example
  * setLanguage('es'); // Switch to Spanish
@@ -153,6 +159,9 @@ export const i18n = {
                     break;
                 case 'fr':
                     translations = await import('../../locales/fr.js');
+                    break;
+                case 'pt':
+                    translations = await import('../../locales/pt.js');
                     break;
                 case 'en':
                 default:

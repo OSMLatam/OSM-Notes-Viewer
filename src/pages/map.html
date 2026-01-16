@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Map - OSM Notes Viewer</title>
+    <title data-i18n="title.map">Map - OSM Notes Viewer</title>
     <meta name="description" content="Interactive maps showing OpenStreetMap notes, boundaries, and disputed areas using WMS layers">
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -34,21 +34,21 @@
 
     <main class="main" id="main-content" role="main">
         <div class="container" style="padding: 2rem 20px;">
-            <h1 style="margin-bottom: 2rem;">OSM Notes Maps</h1>
+            <h1 style="margin-bottom: 2rem;" data-i18n="map.title">OSM Notes Maps</h1>
 
             <!-- Map Tabs -->
             <div class="map-tabs" role="tablist" aria-label="Map type selection">
                 <button class="map-tab active" data-tab="open-notes" role="tab" aria-selected="true" aria-controls="open-notes-map" id="tab-open-notes">
                     <span class="tab-icon" aria-hidden="true">📍</span>
-                    <span class="tab-label">Open Notes</span>
+                    <span class="tab-label" data-i18n="map.tabs.openNotes">Open Notes</span>
                 </button>
                 <button class="map-tab" data-tab="closed-notes" role="tab" aria-selected="false" aria-controls="closed-notes-map" id="tab-closed-notes">
                     <span class="tab-icon" aria-hidden="true">🔒</span>
-                    <span class="tab-label">Closed Notes</span>
+                    <span class="tab-label" data-i18n="map.tabs.closedNotes">Closed Notes</span>
                 </button>
                 <button class="map-tab" data-tab="boundaries" role="tab" aria-selected="false" aria-controls="boundaries-map" id="tab-boundaries">
                     <span class="tab-icon" aria-hidden="true">🌍</span>
-                    <span class="tab-label">Boundaries</span>
+                    <span class="tab-label" data-i18n="map.tabs.boundaries">Boundaries</span>
                 </button>
             </div>
 
@@ -66,24 +66,24 @@
                 <!-- Map Controls -->
                 <div class="map-controls" role="group" aria-label="Map controls">
                     <div class="control-group">
-                        <label for="baseLayerSelect">Base Layer:</label>
-                        <select id="baseLayerSelect" class="control-select" aria-label="Select base map layer">
-                            <option value="osm">OpenStreetMap</option>
-                            <option value="satellite">Satellite</option>
+                        <label for="baseLayerSelect" data-i18n="map.controls.baseLayer">Base Layer:</label>
+                        <select id="baseLayerSelect" class="control-select" data-i18n-aria-label="map.controls.baseLayer" aria-label="Select base map layer">
+                            <option value="osm" data-i18n="map.controls.baseLayerOsm">OpenStreetMap</option>
+                            <option value="satellite" data-i18n="map.controls.baseLayerSatellite">Satellite</option>
                         </select>
                     </div>
-                    <button id="centerUserBtn" class="control-btn" aria-label="Center map on your current location">
-                        <span aria-hidden="true">📍</span> My Location
+                    <button id="centerUserBtn" class="control-btn" data-i18n-aria-label="map.controls.myLocation" aria-label="Center map on your current location">
+                        <span aria-hidden="true">📍</span> <span data-i18n="map.controls.myLocation">My Location</span>
                     </button>
-                    <button id="resetViewBtn" class="control-btn" aria-label="Reset map to initial view">
-                        <span aria-hidden="true">🔄</span> Reset View
+                    <button id="resetViewBtn" class="control-btn" data-i18n-aria-label="map.controls.resetView" aria-label="Reset map to initial view">
+                        <span aria-hidden="true">🔄</span> <span data-i18n="map.controls.resetView">Reset View</span>
                     </button>
                 </div>
 
                 <!-- Loading Indicator -->
                 <div id="mapLoading" class="map-loading" style="display: none;" role="status" aria-live="polite">
                     <div class="loading-spinner" aria-hidden="true"></div>
-                    <p>Loading map...</p>
+                    <p data-i18n="map.loading">Loading map...</p>
                 </div>
 
                 <!-- Error Message -->
@@ -92,37 +92,37 @@
 
             <!-- WMS Documentation Section -->
             <section class="wms-documentation" aria-labelledby="wms-doc-title">
-                <h2 id="wms-doc-title">WMS Service Documentation</h2>
+                <h2 id="wms-doc-title" data-i18n="map.wms.title">WMS Service Documentation</h2>
                 <div class="wms-info">
-                    <p>This map uses Web Map Service (WMS) layers to display OSM notes. You can consume these layers in GIS software like QGIS, ArcGIS, or other WMS-compatible tools.</p>
+                    <p data-i18n="map.wms.description">This map uses Web Map Service (WMS) layers to display OSM notes. You can consume these layers in GIS software like QGIS, ArcGIS, or other WMS-compatible tools.</p>
 
-                    <h3>WMS Endpoints</h3>
+                    <h3 data-i18n="map.wms.endpoints">WMS Endpoints</h3>
                     <div class="wms-endpoints" role="list">
                         <div class="wms-endpoint" role="listitem">
-                            <h4>Open Notes</h4>
-                            <code id="wmsOpenUrl" class="wms-url" aria-label="WMS URL for open notes">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsOpenUrl" aria-label="Copy open notes WMS URL">Copy</button>
+                            <h4 data-i18n="map.wms.openNotes">Open Notes</h4>
+                            <code id="wmsOpenUrl" class="wms-url" data-i18n-aria-label="map.wms.openNotes" aria-label="WMS URL for open notes">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsOpenUrl" data-i18n-aria-label="map.wms.copy" aria-label="Copy open notes WMS URL" data-i18n="map.wms.copy">Copy</button>
                         </div>
                         <div class="wms-endpoint" role="listitem">
-                            <h4>Closed Notes</h4>
-                            <code id="wmsClosedUrl" class="wms-url" aria-label="WMS URL for closed notes">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsClosedUrl" aria-label="Copy closed notes WMS URL">Copy</button>
+                            <h4 data-i18n="map.wms.closedNotes">Closed Notes</h4>
+                            <code id="wmsClosedUrl" class="wms-url" data-i18n-aria-label="map.wms.closedNotes" aria-label="WMS URL for closed notes">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsClosedUrl" data-i18n-aria-label="map.wms.copy" aria-label="Copy closed notes WMS URL" data-i18n="map.wms.copy">Copy</button>
                         </div>
                         <div class="wms-endpoint" role="listitem">
-                            <h4>Boundaries (Countries)</h4>
-                            <code id="wmsCountriesUrl" class="wms-url" aria-label="WMS URL for country boundaries">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsCountriesUrl" aria-label="Copy country boundaries WMS URL">Copy</button>
+                            <h4 data-i18n="map.wms.boundariesCountries">Boundaries (Countries)</h4>
+                            <code id="wmsCountriesUrl" class="wms-url" data-i18n-aria-label="map.wms.boundariesCountries" aria-label="WMS URL for country boundaries">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsCountriesUrl" data-i18n-aria-label="map.wms.copy" aria-label="Copy country boundaries WMS URL" data-i18n="map.wms.copy">Copy</button>
                         </div>
                         <div class="wms-endpoint" role="listitem">
-                            <h4>Boundaries (Disputed Areas)</h4>
-                            <code id="wmsDisputedUrl" class="wms-url" aria-label="WMS URL for disputed areas">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsDisputedUrl" aria-label="Copy disputed areas WMS URL">Copy</button>
+                            <h4 data-i18n="map.wms.boundariesDisputed">Boundaries (Disputed Areas)</h4>
+                            <code id="wmsDisputedUrl" class="wms-url" data-i18n-aria-label="map.wms.boundariesDisputed" aria-label="WMS URL for disputed areas">Loading...</code>
+                            <button class="copy-btn" data-copy="wmsDisputedUrl" data-i18n-aria-label="map.wms.copy" aria-label="Copy disputed areas WMS URL" data-i18n="map.wms.copy">Copy</button>
                         </div>
                     </div>
 
-                    <h3>Usage Examples</h3>
+                    <h3 data-i18n="map.wms.usage">Usage Examples</h3>
                     <div class="wms-examples">
-                        <h4>QGIS</h4>
+                        <h4 data-i18n="map.wms.qgis">QGIS</h4>
                         <ol>
                             <li>Open QGIS</li>
                             <li>Go to <code>Layer → Add Layer → Add WMS/WMTS Layer</code></li>
@@ -132,7 +132,7 @@
                             <li>Click "Add"</li>
                         </ol>
 
-                        <h4>ArcGIS</h4>
+                        <h4 data-i18n="map.wms.arcgis">ArcGIS</h4>
                         <ol>
                             <li>Open ArcGIS</li>
                             <li>Go to <code>Insert → Connections → New WMS Server</code></li>

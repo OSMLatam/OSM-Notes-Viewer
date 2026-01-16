@@ -22,6 +22,18 @@ let marker = null;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize i18n
+    await i18n.init();
+    
+    // Listen for language changes
+    window.addEventListener('languageChanged', () => {
+        // Re-render dynamic content with new translations
+        if (noteData) {
+            renderNoteInfo();
+            renderInteractions();
+        }
+    });
+    
     if (!noteId) {
         showError(document.getElementById('noteError'), 'No note ID provided');
         document.getElementById('noteLoading').style.display = 'none';
@@ -169,11 +181,12 @@ function renderNoteInfo() {
     if (!noteData) return;
 
     // Note ID
-    document.getElementById('noteIdDisplay').textContent = `Note #${noteData.id}`;
+    document.getElementById('noteIdDisplay').textContent = `${i18n.t('common.note')} #${noteData.id}`;
 
     // Status badge
     const statusBadge = document.getElementById('noteStatusBadge');
-    statusBadge.textContent = noteData.status;
+    const statusKey = `note.status.${noteData.status}`;
+    statusBadge.textContent = i18n.t(statusKey) || noteData.status;
     statusBadge.className = `status-badge ${noteData.status}`;
 
     // Dates
@@ -194,7 +207,10 @@ function renderNoteInfo() {
     }
 
     // Comments count
-    document.getElementById('noteCommentsCount').textContent = `${noteData.comments.length} comment${noteData.comments.length !== 1 ? 's' : ''}`;
+    const commentsText = noteData.comments.length === 1 
+        ? i18n.t('common.comment')
+        : i18n.t('common.comments');
+    document.getElementById('noteCommentsCount').textContent = `${noteData.comments.length} ${commentsText}`;
 }
 
 /**
@@ -217,7 +233,8 @@ function renderMap() {
 
     // Add marker
     marker = L.marker([noteData.lat, noteData.lon]).addTo(map);
-    marker.bindPopup(`<b>Note #${noteData.id}</b><br>Status: ${noteData.status}`).openPopup();
+    const statusText = i18n.t(`note.status.${noteData.status}`) || noteData.status;
+    marker.bindPopup(`<b>${i18n.t('common.note')} #${noteData.id}</b><br>${i18n.t('hashtag.filters.status')} ${statusText}`).openPopup();
 }
 
 /**
@@ -343,7 +360,7 @@ function renderInteractions() {
     const interactionsContainer = document.getElementById('noteInteractions');
 
     if (!noteData.comments || noteData.comments.length === 0) {
-        interactionsContainer.innerHTML = '<p>No interactions yet.</p>';
+        interactionsContainer.innerHTML = `<p>${i18n.t('note.noInteractions')}</p>`;
         return;
     }
 
@@ -351,18 +368,18 @@ function renderInteractions() {
     const interactions = noteData.comments.map((comment, index) => {
         const date = comment.date ? new Date(comment.date) : null;
         let actionType = 'commented';
-        let actionLabel = 'Comment';
+        let actionLabel = i18n.t('note.action.commented');
 
         // Determine action type
         if (index === 0) {
             actionType = 'created';
-            actionLabel = 'Note Created';
+            actionLabel = i18n.t('note.action.created');
         } else if (comment.action === 'closed' || (noteData.status === 'closed' && index === noteData.comments.length - 1 && !comment.text)) {
             actionType = 'closed';
-            actionLabel = 'Note Closed';
+            actionLabel = i18n.t('note.action.closed');
         } else if (comment.action === 'reopened') {
             actionType = 'reopened';
-            actionLabel = 'Note Reopened';
+            actionLabel = i18n.t('note.action.reopened');
         }
 
         return `

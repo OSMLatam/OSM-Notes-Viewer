@@ -4,6 +4,8 @@
  * Uses WMS layers and geolocation for initial view
  */
 
+import { i18n } from '../utils/i18n.js';
+
 // Configuration
 const WMS_BASE_URL = 'https://geoserver.osm.lat/geoserver/osm_notes/wms';
 
@@ -44,6 +46,27 @@ let wmsLayers = {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        // Initialize i18n
+        await i18n.init();
+        
+        // Listen for language changes
+        window.addEventListener('languageChanged', () => {
+            // Update base layer select options
+            const baseLayerSelect = document.getElementById('baseLayerSelect');
+            if (baseLayerSelect) {
+                const options = baseLayerSelect.querySelectorAll('option');
+                options.forEach(option => {
+                    if (option.value === 'osm') {
+                        option.textContent = i18n.t('map.controls.baseLayerOsm');
+                    } else if (option.value === 'satellite') {
+                        option.textContent = i18n.t('map.controls.baseLayerSatellite');
+                    }
+                });
+            }
+            // Update page content
+            i18n.updatePageContent();
+        });
+        
         setupTabs();
         await initializeMaps();
         setupControls();
@@ -486,9 +509,9 @@ async function handleMapClick(e, map, layerName) {
 function showNotePopup(latlng, noteId, map) {
     const popupContent = `
         <div class="note-popup">
-            <div class="note-popup-title">Note #${noteId}</div>
+            <div class="note-popup-title">${i18n.t('common.note')} #${noteId}</div>
             <a href="note.html?id=${noteId}" class="note-popup-link" target="_blank">
-                View Note →
+                ${i18n.t('common.view')} ${i18n.t('common.note')} →
             </a>
         </div>
     `;
@@ -543,6 +566,19 @@ function switchBaseLayer(layerType) {
             newLayer.addTo(map);
         }
     });
+    
+    // Update select options text
+    const baseLayerSelect = document.getElementById('baseLayerSelect');
+    if (baseLayerSelect) {
+        const options = baseLayerSelect.querySelectorAll('option');
+        options.forEach(option => {
+            if (option.value === 'osm') {
+                option.textContent = i18n.t('map.controls.baseLayerOsm');
+            } else if (option.value === 'satellite') {
+                option.textContent = i18n.t('map.controls.baseLayerSatellite');
+            }
+        });
+    }
 }
 
 /**
@@ -550,7 +586,7 @@ function switchBaseLayer(layerType) {
  */
 function centerOnUser() {
     if (!userLocation) {
-        alert('User location not available. Please allow geolocation access.');
+        alert(i18n.t('map.error.location'));
         return;
     }
 
@@ -602,15 +638,19 @@ function setupWMSDocumentation() {
             const targetEl = document.getElementById(targetId);
             if (targetEl) {
                 copyToClipboard(targetEl.textContent);
-                btn.textContent = 'Copied!';
+                const originalText = btn.textContent;
+                btn.textContent = i18n.t('map.wms.copied');
                 btn.classList.add('copied');
                 setTimeout(() => {
-                    btn.textContent = 'Copy';
+                    btn.textContent = originalText;
                     btn.classList.remove('copied');
                 }, 2000);
             }
         });
     });
+    
+    // Apply i18n to newly added elements
+    i18n.updatePageContent();
 }
 
 /**

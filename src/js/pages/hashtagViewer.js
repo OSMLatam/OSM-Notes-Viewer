@@ -27,6 +27,32 @@ let paginationData = null;
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
+    // Initialize i18n
+    await i18n.init();
+    
+    // Listen for language changes
+    window.addEventListener('languageChanged', async () => {
+        // Re-render content with new translations
+        const hashtagStats = document.getElementById('hashtagStats');
+        if (hashtagStats && hashtagStats.innerHTML) {
+            i18n.updatePageContent();
+            // Re-translate filter options
+            const statusFilter = document.getElementById('statusFilter');
+            if (statusFilter) {
+                const options = statusFilter.querySelectorAll('option');
+                options.forEach(option => {
+                    const value = option.value;
+                    if (value === '') {
+                        option.textContent = i18n.t('hashtag.filters.statusAll');
+                    } else {
+                        const statusKey = `hashtag.filters.status${value.charAt(0).toUpperCase() + value.slice(1)}`;
+                        option.textContent = i18n.t(statusKey) || option.textContent;
+                    }
+                });
+            }
+        }
+    });
+    
     if (!hashtagParam) {
         showError(document.getElementById('hashtagError'), 'No hashtag provided');
         document.getElementById('hashtagLoading').style.display = 'none';
@@ -91,7 +117,7 @@ async function loadHashtagData() {
         // Update page title
         const pageTitle = document.getElementById('pageTitle');
         if (pageTitle) {
-            pageTitle.textContent = `#${currentHashtag} - OSM Notes Viewer`;
+            pageTitle.textContent = `#${currentHashtag} - ${i18n.t('title.hashtag')}`;
         }
 
     } catch (error) {
@@ -121,14 +147,16 @@ function renderHashtagHeader(hashtagData) {
 
         hashtagStats.innerHTML = `
             <div class="hashtag-stat-item">
-                <span class="hashtag-stat-label">Users:</span>
+                <span class="hashtag-stat-label" data-i18n="hashtag.stats.users">Users:</span>
                 <span class="hashtag-stat-value">${usersCount}</span>
             </div>
             <div class="hashtag-stat-item">
-                <span class="hashtag-stat-label">Countries:</span>
+                <span class="hashtag-stat-label" data-i18n="hashtag.stats.countries">Countries:</span>
                 <span class="hashtag-stat-value">${countriesCount}</span>
             </div>
         `;
+        // Apply i18n to newly added elements
+        i18n.updatePageContent();
     }
 }
 
@@ -182,7 +210,7 @@ async function loadHashtagNotes() {
         paginationData = apiResponse.pagination || null;
 
         if (notes.length === 0) {
-            showEmpty(notesList, 'No notes found with this hashtag');
+            showEmpty(notesList, i18n.t('hashtag.notes.empty'));
             if (paginationContainer) {
                 paginationContainer.innerHTML = '';
             }
@@ -241,27 +269,27 @@ async function renderNotesList(notes) {
                      aria-label="Note ${note.note_id}, status: ${note.status}">
                 <div class="note-card-header">
                     <a href="note.html?id=${note.note_id}" class="note-card-id" onclick="event.stopPropagation()" aria-label="View note ${note.note_id}">
-                        Note #${note.note_id}
+                        ${i18n.t('common.note')} #${note.note_id}
                     </a>
-                    <span class="note-card-status ${note.status}" role="status" aria-label="Note status: ${note.status}">${note.status}</span>
+                    <span class="note-card-status ${note.status}" role="status" aria-label="Note status: ${note.status}">${i18n.t(`note.status.${note.status}`) || note.status}</span>
                 </div>
                 <div class="note-card-meta">
                     ${createdDate ? `
                         <div class="note-card-meta-item">
                             <span>📅</span>
-                            <span>Created: ${formatDate(createdDate)}</span>
+                            <span>${i18n.t('note.action.created')}: ${formatDate(createdDate)}</span>
                         </div>
                     ` : ''}
                     ${closedDate ? `
                         <div class="note-card-meta-item">
                             <span>🔒</span>
-                            <span>Closed: ${formatDate(closedDate)}</span>
+                            <span>${i18n.t('note.action.closed')}: ${formatDate(closedDate)}</span>
                         </div>
                     ` : ''}
                     ${note.comments_count ? `
                         <div class="note-card-meta-item">
                             <span>💬</span>
-                            <span>${note.comments_count} comment${note.comments_count !== 1 ? 's' : ''}</span>
+                            <span>${note.comments_count} ${note.comments_count === 1 ? i18n.t('common.comment') : i18n.t('common.comments')}</span>
                         </div>
                     ` : ''}
                     ${countryLink ? `
@@ -297,7 +325,7 @@ function renderNotesPagination() {
     // Previous button
     html += `
         <button class="pagination-btn" ${page === 1 ? 'disabled' : ''} data-page="${page - 1}">
-            ← Previous
+            ← ${i18n.t('hashtag.pagination.previous')}
         </button>
     `;
 
@@ -335,14 +363,16 @@ function renderNotesPagination() {
     // Next button
     html += `
         <button class="pagination-btn" ${page === total_pages ? 'disabled' : ''} data-page="${page + 1}">
-            Next →
+            ${i18n.t('hashtag.pagination.next')} →
         </button>
     `;
 
     // Pagination info
+    const start = ((page - 1) * currentLimit) + 1;
+    const end = Math.min(page * currentLimit, total);
     html += `
         <div class="pagination-info">
-            Showing ${((page - 1) * currentLimit) + 1}-${Math.min(page * currentLimit, total)} of ${total}
+            ${i18n.t('hashtag.pagination.showing', { start, end, total })}
         </div>
     `;
 
@@ -388,6 +418,20 @@ function setupFilters() {
     if (urlDateTo && dateToFilter) {
         dateToFilter.value = urlDateTo;
         currentFilters.date_to = urlDateTo;
+    }
+    
+    // Translate select options dynamically
+    if (statusFilter) {
+        const options = statusFilter.querySelectorAll('option');
+        options.forEach(option => {
+            const value = option.value;
+            if (value === '') {
+                option.textContent = i18n.t('hashtag.filters.statusAll');
+            } else {
+                const statusKey = `hashtag.filters.status${value.charAt(0).toUpperCase() + value.slice(1)}`;
+                option.textContent = i18n.t(statusKey) || option.textContent;
+            }
+        });
     }
 
     // Apply filters button
