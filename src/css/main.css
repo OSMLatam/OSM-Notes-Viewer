@@ -104,6 +104,16 @@ section {
     margin-bottom: 1rem;
 }
 
+/* Override for about page sections to ensure proper spacing */
+main .container section {
+    margin-bottom: 2rem;
+    margin-top: 0;
+}
+
+main .container section + section {
+    margin-top: 2rem;
+}
+
 /* Main Layout with Sidebars */
 .main-layout {
     display: flex;
@@ -284,6 +294,7 @@ section {
     padding: 1rem 20px;
     position: relative;
     max-width: 100%;
+    overflow: visible;
 }
 
 /* Ensure header stretches full width on large screens */
@@ -301,6 +312,7 @@ section {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-shrink: 0;
 }
 
 .logo-icon {
@@ -310,6 +322,8 @@ section {
 .nav {
     display: flex;
     gap: 2rem;
+    flex-wrap: nowrap;
+    align-items: center;
 }
 
 .nav-link {
@@ -322,6 +336,8 @@ section {
     min-height: 44px; /* Touch target size */
     display: flex;
     align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .nav-link:hover,
@@ -1676,4 +1692,101 @@ section {
 [data-theme="dark"] .bot-username:hover {
     background: linear-gradient(135deg, rgba(255, 193, 7, 0.25), rgba(255, 152, 0, 0.25));
     border-color: rgba(255, 193, 7, 0.6);
+}
+
+/* === About Page Specific Styles === */
+/* Ensure proper spacing between sections */
+main .container > section {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+main .container > section:first-of-type {
+    margin-top: 0;
+}
+
+/* Spacing for main headings (h2, h3) */
+main .container h2,
+main .container h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+main .container h2:first-child,
+main .container > section:first-child h2,
+main .container > section:first-child h3 {
+    margin-top: 0;
+}
+
+/* Spacing for h4 subheadings */
+main .container h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+main .container p {
+    margin-bottom: 1rem;
+    margin-top: 0;
+}
+
+/* List alignment and spacing */
+main .container ul,
+main .container ol {
+    margin-top: 0.75rem;
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    list-style-position: outside;
+    margin-left: 0;
+}
+
+/* Ensure consistent alignment for all lists */
+main .container section ul,
+main .container section ol {
+    padding-left: 1.5rem;
+    margin-left: 0;
+}
+
+main .container li {
+    margin-bottom: 0.5rem;
+    padding-left: 0;
+    margin-left: 0;
+    text-indent: 0;
+    list-style-position: outside;
+}
+
+main .container p + ul,
+main .container p + ol {
+    margin-top: 0.75rem;
+    margin-left: 0;
+}
+
+main .container h3 + p,
+main .container h2 + p {
+    margin-top: 0.75rem;
+}
+
+main .container h3 + ul,
+main .container h3 + ol,
+main .container h2 + ul,
+main .container h2 + ol {
+    margin-top: 0.75rem;
+    margin-left: 0;
+}
+
+main .container h4 + ul,
+main .container h4 + ol {
+    margin-top: 0.5rem;
+    margin-left: 0;
+}
+
+/* Ensure proper alignment for lists within sections */
+main .container section ul,
+main .container section ol {
+    padding-left: 1.5rem;
+}
+
+/* Fix alignment for lists to match paragraph text */
+main .container section p {
+    padding-left: 0;
+    margin-left: 0;
 }

@@ -226,7 +226,13 @@ export const i18n = {
             } else if (element.tagName === 'INPUT' && element.type === 'submit') {
                 element.value = translation;
             } else {
-                element.textContent = translation;
+                // If translation contains HTML tags, use innerHTML
+                // Otherwise use textContent for safety
+                if (translation.includes('<') && translation.includes('>')) {
+                    element.innerHTML = translation;
+                } else {
+                    element.textContent = translation;
+                }
             }
         });
 

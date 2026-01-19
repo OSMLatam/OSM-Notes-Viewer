@@ -1,6 +1,6 @@
 // Service Worker for OSM Notes Viewer PWA
 
-const CACHE_NAME = 'osm-notes-viewer-v2';
+const CACHE_NAME = 'osm-notes-viewer-v3';
 const STATIC_ASSETS = [
   '/index.html',
   '/pages/user.html',
@@ -139,6 +139,46 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Network-first strategy for HTML pages to ensure fresh content
+  if (request.destination === 'document' || url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          // Don't cache if not successful
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          // Clone response and cache it for offline use
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME)
+            .then((cache) => {
+              cache.put(request, responseToCache);
+            });
+
+          console.log('[SW] Serving from network (HTML):', request.url);
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if network fails (offline)
+          console.log('[SW] Network failed, serving from cache:', request.url);
+          return caches.match(request)
+            .then((cachedResponse) => {
+              if (cachedResponse) {
+                return cachedResponse;
+              }
+              // Return index.html as fallback
+              if (request.destination === 'document') {
+                return caches.match('/index.html');
+              }
+              return new Response('Offline', { status: 503 });
+            });
+        })
+    );
+    return;
+  }
+
+  // Cache-first strategy for static assets (CSS, JS, images)
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
