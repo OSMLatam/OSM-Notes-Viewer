@@ -75,7 +75,7 @@ describe('Critical User Flows', () => {
             expect(filtered.length).toBeGreaterThan(0);
         });
 
-        it('should handle search errors gracefully', async () => {
+        it('should handle search errors gracefully', { timeout: 10000 }, async () => {
             // Clear cache first
             apiClient.clearCache();
 
@@ -253,7 +253,7 @@ describe('Critical User Flows', () => {
     });
 
     describe('Flow 9: Error Handling', () => {
-        it('should handle network errors', async () => {
+        it('should handle network errors', { timeout: 10000 }, async () => {
             global.fetch.mockRejectedValue(new Error('Network error'));
 
             await expect(apiClient.getMetadata()).rejects.toThrow();

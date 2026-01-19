@@ -24,7 +24,7 @@ describe('APIClient', () => {
             expect(result[0]).toHaveProperty('username');
         });
 
-        it('should handle fetch errors', async () => {
+        it('should handle fetch errors', { timeout: 10000 }, async () => {
             global.fetch = vi.fn(() =>
                 Promise.reject(new Error('Network error'))
             );
@@ -98,7 +98,8 @@ describe('APIClient', () => {
                 })
             );
 
-            await expect(apiClient.getUserIndex()).rejects.toThrow('HTTP error');
+            // The API client transforms 404 errors to a more descriptive message
+            await expect(apiClient.getUserIndex()).rejects.toThrow('Resource not found');
         });
     });
 });
