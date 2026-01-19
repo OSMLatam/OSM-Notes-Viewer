@@ -408,10 +408,20 @@
         import { i18n } from '../js/utils/i18n.js';
 
         // Initialize i18n
-        document.addEventListener('DOMContentLoaded', async () => {
+        // Use a function that works both when loading directly and when navigating between pages
+        async function initI18n() {
             await i18n.init();
             i18n.updatePageContent();
-        });
+        }
+
+        // Check if DOM is already ready (when navigating between pages)
+        if (document.readyState === 'loading') {
+            // DOM is still loading, wait for DOMContentLoaded
+            document.addEventListener('DOMContentLoaded', initI18n);
+        } else {
+            // DOM is already ready, initialize immediately
+            initI18n();
+        }
 
         // Listen for language changes
         window.addEventListener('languageChanged', () => {

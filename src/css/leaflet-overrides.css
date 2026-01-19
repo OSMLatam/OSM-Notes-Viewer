@@ -1,26 +1,42 @@
-/* Suppress Leaflet CSS compatibility warnings */
+/* Suppress Leaflet CSS compatibility warnings and fix CSS errors */
 
-/* Override image-rendering for better compatibility */
-.leaflet-container img {
+/* Fix image-rendering error - override invalid values from leaflet.css:34 */
+.leaflet-container img,
+.leaflet-container img.leaflet-tile,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container .leaflet-image-layer img {
     image-rendering: auto !important;
+    image-rendering: -webkit-optimize-contrast !important;
+    image-rendering: crisp-edges !important;
 }
 
-/* Remove IE-specific behavior property */
+/* Fix behavior property error - remove IE-specific behavior from leaflet.css:124 */
 .leaflet-pane,
 .leaflet-map-pane,
 .leaflet-tile-pane,
-.leaflet-overlay-pane {
-    behavior: none !important;
+.leaflet-overlay-pane,
+.leaflet-shadow-pane,
+.leaflet-marker-pane,
+.leaflet-tooltip-pane,
+.leaflet-popup-pane {
+    /* Remove behavior property completely - it's not needed for modern browsers */
 }
 
-/* Use modern filter syntax */
-.leaflet-opacity-enabled img {
+/* Fix filter: progid error - override IE-specific filters from leaflet.css:556 */
+.leaflet-opacity-enabled img,
+.leaflet-control-zoom,
+.leaflet-popup-tip,
+.leaflet-container * {
     filter: none !important;
+    -ms-filter: none !important;
 }
 
-/* Standard zoom control */
-.leaflet-control-zoom {
+/* Additional overrides to ensure no legacy filters are applied */
+.leaflet-tile,
+.leaflet-tile-container,
+.leaflet-tile-pane img {
     filter: none !important;
+    -ms-filter: none !important;
 }
 
 
