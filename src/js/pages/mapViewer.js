@@ -2338,7 +2338,7 @@ function restoreMapStateFromUrl() {
     
     const lat = parseFloat(getUrlParam('lat'));
     const lon = parseFloat(getUrlParam('lon'));
-    const zoom = parseInt(getUrlParam('zoom'), 10);
+    const zoom = parseFloat(getUrlParam('zoom'));
     const tab = getUrlParam('tab');
     const baseLayer = getUrlParam('baseLayer');
     
