@@ -1,10 +1,12 @@
 # OAuth Setup Guide
 
-This guide explains how to set up OAuth 2.0 authentication with OpenStreetMap for the OSM Notes Viewer.
+This guide explains how to set up OAuth 2.0 authentication with OpenStreetMap for the OSM Notes
+Viewer.
 
 ## Overview
 
 OAuth is required for users to perform actions on notes:
+
 - Comment on notes
 - Close notes
 - Reopen notes
@@ -17,13 +19,13 @@ OAuth is required for users to perform actions on notes:
 ## Step 1: Register OAuth Application
 
 1. **Log in to OpenStreetMap**: https://www.openstreetmap.org
-2. **Navigate to OAuth Applications**: 
+2. **Navigate to OAuth Applications**:
    - Go to: https://www.openstreetmap.org/user/{your_username}/oauth_clients/new
    - Or: Settings → OAuth 2 Applications → New Application
 
 3. **Fill in Application Details**:
    - **Name**: `OSM Notes Viewer` (or your preferred name)
-   - **Redirect URI**: 
+   - **Redirect URI**:
      - Production: `https://notes.osm.lat/pages/auth/callback.html`
      - Development: `http://localhost:5173/pages/auth/callback.html` (adjust port if needed)
    - **Permissions**: Select `write_notes` (required for note actions: comment, close, reopen)
@@ -39,14 +41,17 @@ OAuth is required for users to perform actions on notes:
 
 **The Client Secret should NEVER be committed to git or stored in documentation!**
 
-For the current implementation (public client flow), the Client Secret is **NOT needed** in the frontend. However, if you need to store it for future use or server-side implementation:
+For the current implementation (public client flow), the Client Secret is **NOT needed** in the
+frontend. However, if you need to store it for future use or server-side implementation:
 
 1. **Create a `.env` file** (copy from `.env.example`):
+
    ```bash
    cp .env.example .env
    ```
 
 2. **Add your credentials** to `.env`:
+
    ```bash
    # .env (this file is NOT tracked by git)
    # Get your credentials from: https://www.openstreetmap.org/user/{username}/oauth_clients
@@ -63,31 +68,38 @@ For the current implementation (public client flow), the Client Secret is **NOT 
 ### Current Configuration
 
 The Client ID is already configured in `src/js/auth/osmAuth.js` as a fallback. The code will use:
+
 1. `VITE_OSM_CLIENT_ID` from environment variables (if set)
 2. Fallback to the hardcoded Client ID
 
-**Note**: Credentials should be obtained from your OSM OAuth application settings, not from documentation.
+**Note**: Credentials should be obtained from your OSM OAuth application settings, not from
+documentation.
 
-**For production**: Set `VITE_OSM_CLIENT_ID` as an environment variable in your hosting platform (Netlify, Vercel, etc.) instead of committing it to the code.
+**For production**: Set `VITE_OSM_CLIENT_ID` as an environment variable in your hosting platform
+(Netlify, Vercel, etc.) instead of committing it to the code.
 
 ### Why Client Secret is Not Needed
 
-The current implementation uses **OAuth 2.0 Public Client Flow** (Authorization Code without client_secret). This is safe for frontend applications because:
+The current implementation uses **OAuth 2.0 Public Client Flow** (Authorization Code without
+client_secret). This is safe for frontend applications because:
+
 - The token exchange happens in the browser
 - No server-side component is needed
 - The Client Secret is not required
 
-If you later implement a server-side token exchange, you would need the Client Secret, but it should be stored securely on the server, never in frontend code.
+If you later implement a server-side token exchange, you would need the Client Secret, but it should
+be stored securely on the server, never in frontend code.
 
 ## Step 3: Update Redirect URI
 
 Ensure the `redirectUri` in `src/js/auth/osmAuth.js` matches your registered redirect URI:
 
 ```javascript
-redirectUri: `${window.location.origin}/pages/auth/callback.html`
+redirectUri: `${window.location.origin}/pages/auth/callback.html`;
 ```
 
 **Important**: The redirect URI must **exactly match** what you registered in OSM, including:
+
 - Protocol (http/https)
 - Domain
 - Path
@@ -96,6 +108,7 @@ redirectUri: `${window.location.origin}/pages/auth/callback.html`
 ## Step 4: Test OAuth Flow
 
 1. **Start the development server**:
+
    ```bash
    npm run dev
    ```
@@ -118,7 +131,8 @@ redirectUri: `${window.location.origin}/pages/auth/callback.html`
 
 **Problem**: The redirect URI doesn't match what's registered in OSM.
 
-**Solution**: 
+**Solution**:
+
 - Check the redirect URI in `osmAuth.js`
 - Verify it matches exactly in OSM OAuth app settings
 - Ensure protocol (http/https) matches
@@ -128,6 +142,7 @@ redirectUri: `${window.location.origin}/pages/auth/callback.html`
 **Problem**: Client ID is not set or incorrect.
 
 **Solution**:
+
 - Verify `.env` file exists and has `VITE_OSM_CLIENT_ID`
 - Check that the client ID is correct in OSM
 - Restart development server after changing `.env`
@@ -137,6 +152,7 @@ redirectUri: `${window.location.origin}/pages/auth/callback.html`
 **Problem**: Browser blocking cross-origin requests.
 
 **Solution**:
+
 - OSM OAuth endpoints should support CORS
 - Check browser console for specific error
 - Ensure you're using HTTPS in production (required for OAuth)
@@ -146,6 +162,7 @@ redirectUri: `${window.location.origin}/pages/auth/callback.html`
 **Problem**: Token expired or invalid.
 
 **Solution**:
+
 - User needs to log in again
 - Tokens are stored in localStorage
 - Clear localStorage if tokens are corrupted
@@ -194,7 +211,9 @@ User can now perform actions
 
 ## Testing Without OAuth
 
-For development/testing, you can temporarily disable OAuth checks by modifying `handleComment`, `handleClose`, and `handleReopen` functions. However, **actual API calls will fail** without valid authentication.
+For development/testing, you can temporarily disable OAuth checks by modifying `handleComment`,
+`handleClose`, and `handleReopen` functions. However, **actual API calls will fail** without valid
+authentication.
 
 ## Production Deployment
 

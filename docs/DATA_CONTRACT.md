@@ -2,11 +2,13 @@
 
 ## Overview
 
-This document defines the contract between the **OSM-Notes-Analytics** (producer) and **OSM-Notes-Viewer** (consumer) repositories to ensure data structure compatibility.
+This document defines the contract between the **OSM-Notes-Analytics** (producer) and
+**OSM-Notes-Viewer** (consumer) repositories to ensure data structure compatibility.
 
 ## Problem Statement
 
 When two separate repositories exchange data via JSON files:
+
 - **Producer** (Analytics) generates JSON files
 - **Consumer** (Viewer) reads and displays those files
 
@@ -14,7 +16,8 @@ Both must agree on the exact structure of the JSON files to avoid runtime errors
 
 ## Solution: JSON Schema
 
-JSON Schema is the industry-standard way to define the structure, data types, and constraints of JSON data.
+JSON Schema is the industry-standard way to define the structure, data types, and constraints of
+JSON data.
 
 ### Benefits
 
@@ -23,7 +26,7 @@ JSON Schema is the industry-standard way to define the structure, data types, an
 ✅ **Documentation** - Self-documenting data structure  
 ✅ **Versioning** - Track schema changes over time  
 ✅ **IDE support** - Autocomplete and validation in editors  
-✅ **Testing** - Automated validation in CI/CD  
+✅ **Testing** - Automated validation in CI/CD
 
 ## Implementation Strategy
 
@@ -48,21 +51,25 @@ OSM-Notes-Viewer/
 ### 2. Share Schemas Repository
 
 **Option A: In Common Repository (Implemented)**
+
 - Schemas stored in `OSM-Notes-Common` repository
 - Both Analytics and Viewer import via git submodule
 - Ensures consistency across all projects
 
 **Option B: In Viewer Repository**
+
 - Viewer defines what it expects
 - Analytics validates against viewer's schemas
 
 **Option C: In Analytics Repository**
+
 - Analytics defines what it produces
 - Viewer validates against analytics schemas
 
 ### 3. Validation Points
 
 #### Producer Side (Analytics)
+
 ```bash
 # Before exporting JSON files
 ./scripts/validate-schemas.sh
@@ -77,6 +84,7 @@ fi
 ```
 
 #### Consumer Side (Viewer)
+
 ```javascript
 // During development
 import { validateUserProfile } from './lib/OSM-Notes-Common/schemas/validator.js';
@@ -85,11 +93,12 @@ import { validateUserProfile } from './lib/OSM-Notes-Common/schemas/validator.js
 const user = await apiClient.getUser(id);
 const errors = validateUserProfile(user);
 if (errors.length > 0) {
-    console.error('Data contract violation:', errors);
+  console.error('Data contract violation:', errors);
 }
 ```
 
 #### CI/CD Pipeline
+
 ```yaml
 # .github/workflows/validate-data.yml
 - name: Validate JSON Schema
@@ -221,7 +230,7 @@ const user: UserProfile = await apiClient.getUser(id);
 ### 2. C# Data Classes (if using C#)
 
 ```csharp
-public class UserProfile 
+public class UserProfile
 {
     public int UserId { get; set; }
     public string Username { get; set; }
@@ -297,6 +306,7 @@ json-schema-generator data/users/260756.json > lib/OSM-Notes-Common/schemas/user
 ### Step 2: Refine Schemas
 
 Manually edit to add:
+
 - Descriptions
 - Minimum/maximum values
 - Required fields
@@ -379,19 +389,23 @@ ajv -s lib/OSM-Notes-Common/schemas/user-profile.schema.json -d tests/sample-use
 ## Tools and Libraries
 
 ### JavaScript/Node.js
+
 - **AJV** - JSON Schema validator
 - **ajv-cli** - Command-line tool
 - **ajv-formats** - Extended format support
 
 ### Python
+
 - **jsonschema** - JSON Schema validator
 - **cerberus** - Data validation
 
 ### Java
+
 - **json-schema-validator** - GitHub validator
 - **everit-json-schema** - Alt implementation
 
 ### C#
+
 - **Newtonsoft.Json.Schema** - JSON Schema support
 - **NJsonSchema** - Schema generation
 
@@ -413,4 +427,3 @@ JSON Schema is the **best approach** for defining contracts between repositories
 6. ✅ Version control friendly
 
 Start with schemas in the Viewer repository, then add validation to the Analytics export process.
-

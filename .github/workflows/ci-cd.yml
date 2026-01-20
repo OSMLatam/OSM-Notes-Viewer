@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   workflow_dispatch:
 
 env:
@@ -30,6 +30,21 @@ jobs:
 
       - name: Check code formatting
         run: npm run lint || echo "No lint script found"
+
+      - name: Check Prettier formatting
+        run: |
+          if command -v prettier &> /dev/null || npm list -g prettier &> /dev/null; then
+            npx prettier --check "**/*.{js,md,json,yaml,yml,css,html}" --ignore-path .prettierignore || {
+              echo "⚠️  Prettier formatting issues found"
+              exit 1
+            }
+          else
+            npm install -g prettier
+            prettier --check "**/*.{js,md,json,yaml,yml,css,html}" --ignore-path .prettierignore || {
+              echo "⚠️  Prettier formatting issues found"
+              exit 1
+            }
+          fi
 
       - name: Validate package.json
         run: npm run validate || echo "Package validation skipped"

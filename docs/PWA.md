@@ -67,12 +67,13 @@ The PWA implements a **double-layer caching**:
    - Automatic refresh after TTL expires
 
 **Cache Flow:**
+
 ```
 User Request
     ↓
 [1] Check API Client Cache (< 15 min?) → Serve
     ↓ No
-[2] Check Service Worker Cache (< 15 min?) → Serve  
+[2] Check Service Worker Cache (< 15 min?) → Serve
     ↓ No
 [3] Fetch from Network → Cache Both Layers
     ↓ Offline?
@@ -84,6 +85,7 @@ User Request
 ### 1. Web App Manifest (`public/manifest.json`)
 
 Defines app metadata:
+
 - Name, description, icons
 - Display mode (standalone)
 - Theme colors
@@ -92,6 +94,7 @@ Defines app metadata:
 ### 2. Service Worker (`public/sw.js`)
 
 Handles:
+
 - **Installation** - Caches static assets on first visit
 - **Fetch Interception** - Serves cached content when offline
 - **Cache Management** - Updates cache when new version available
@@ -121,6 +124,7 @@ Registers service worker on page load and handles updates.
 ### Check Installation Status
 
 Open DevTools → Application tab:
+
 - **Manifest** - Shows app details
 - **Service Workers** - Shows SW status
 - **Cache Storage** - Shows cached assets
@@ -135,6 +139,7 @@ Open DevTools → Application tab:
 ### Lighthouse Test
 
 Run Lighthouse audit to test PWA:
+
 - Should score 90+ on PWA category
 - Checks installability, offline functionality
 
@@ -202,4 +207,3 @@ This forces cache refresh on next visit.
 - [MDN PWA Guide](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
 - [Web.dev PWA](https://web.dev/progressive-web-apps/)
 - [Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)
-

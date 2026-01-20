@@ -1,12 +1,14 @@
 # Contributing to OSM Notes Viewer
 
-Thank you for your interest in contributing! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing! This document provides guidelines for contributing to
+the project.
 
 ## How to Contribute
 
 ### Reporting Bugs
 
-1. Check if the issue already exists in [GitHub Issues](https://github.com/OSM-Notes/OSM-Notes-Viewer/issues)
+1. Check if the issue already exists in
+   [GitHub Issues](https://github.com/OSM-Notes/OSM-Notes-Viewer/issues)
 2. If not, create a new issue with:
    - Clear, descriptive title
    - Steps to reproduce
@@ -56,6 +58,7 @@ open http://localhost:8000/src/index.html
 - Keep functions small and focused
 
 Example:
+
 ```javascript
 /**
  * Formats a number with thousands separator
@@ -63,7 +66,7 @@ Example:
  * @returns {string} Formatted number
  */
 export function formatNumber(num) {
-    return new Intl.NumberFormat('en-US').format(num);
+  return new Intl.NumberFormat('en-US').format(num);
 }
 ```
 
@@ -75,13 +78,14 @@ export function formatNumber(num) {
 - Keep selectors specific but not overly complex
 
 Example:
+
 ```css
 .profile-header {
-    padding: 2rem;
+  padding: 2rem;
 }
 
 .profile-header__title {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 ```
 
@@ -139,6 +143,7 @@ footer (optional)
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation
@@ -148,6 +153,7 @@ footer (optional)
 - `chore`: Maintenance
 
 **Examples:**
+
 ```
 feat(search): add autocomplete to search input
 
@@ -174,5 +180,3 @@ docs(api): update API documentation for new fields
 By contributing, you agree that your contributions will be licensed under the MIT License.
 
 Thank you for contributing! 🎉
-
-

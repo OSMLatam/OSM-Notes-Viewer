@@ -1,4 +1,5 @@
 ## ✅ Completado
+
 - Montar la página bajo notes.osm.lat ✅
 - Actualizar estructura de archivos de usuarios con hash hexadecimal ✅
 
@@ -37,7 +38,8 @@ Ver el TODO detallado en: [NOTES_VIEWER_TODO.md](./NOTES_VIEWER_TODO.md)
 
 ## ✅ Completado Adicional
 
-- Tener una sección de manifiesto que explique la perspectiva de las notas, la historia del trabajo en notas, con links a todo lo hecho, y la historia de este proyecto ✅
+- Tener una sección de manifiesto que explique la perspectiva de las notas, la historia del trabajo
+  en notas, con links a todo lo hecho, y la historia de este proyecto ✅
 - Mencionar que hay una comunidad en Latam dedicada a resolver notas ✅
 - Indicar correo de contacto ✅
 - Mostrar la arquitectura de los 8 repositorios y 2 bases de datos ✅

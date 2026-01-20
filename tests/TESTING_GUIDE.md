@@ -104,17 +104,18 @@ npm test -- --reporter=verbose
 
 ### Supported Browsers
 
-| Browser | Version | Status |
-|---------|---------|--------|
-| Chrome | Latest 2 | ✅ Tested |
-| Firefox | Latest 2 | ✅ Tested |
-| Safari | Latest 2 | ✅ Tested |
-| Edge | Latest 2 | ✅ Tested |
-| Opera | Latest | ⚠️ Should work |
+| Browser | Version  | Status         |
+| ------- | -------- | -------------- |
+| Chrome  | Latest 2 | ✅ Tested      |
+| Firefox | Latest 2 | ✅ Tested      |
+| Safari  | Latest 2 | ✅ Tested      |
+| Edge    | Latest 2 | ✅ Tested      |
+| Opera   | Latest   | ⚠️ Should work |
 
 ### Manual Testing Checklist
 
 #### Chrome
+
 - [ ] Home page loads correctly
 - [ ] Search works
 - [ ] User profile displays
@@ -126,18 +127,21 @@ npm test -- --reporter=verbose
 - [ ] Mobile responsive
 
 #### Firefox
+
 - [ ] All features functional
 - [ ] CSS renders correctly
 - [ ] Animations work
 - [ ] Storage works (localStorage)
 
 #### Safari
+
 - [ ] All features functional
 - [ ] CSS animations work
 - [ ] Date formatting correct
 - [ ] localStorage works
 
 #### Edge
+
 - [ ] All features functional
 - [ ] Chromium compatibility verified
 
@@ -161,12 +165,14 @@ Create a `test-results.md` file to track manual testing:
 # Test Results
 
 ## Chrome 120.x - [Date]
+
 - ✅ Home page loads
 - ✅ Search works
 - ✅ Theme toggle
 - ⚠️ Minor layout issue on mobile
 
 ## Firefox 121.x - [Date]
+
 - ✅ All features pass
 ```
 
@@ -174,17 +180,18 @@ Create a `test-results.md` file to track manual testing:
 
 ### Supported Devices
 
-| Device | OS | Browser | Status |
-|--------|----|---------|--------|
-| iPhone 13+ | iOS 15+ | Safari | ✅ Tested |
-| iPhone 13+ | iOS 15+ | Chrome | ✅ Tested |
-| Samsung Galaxy S21+ | Android 12+ | Chrome | ✅ Tested |
+| Device              | OS          | Browser | Status    |
+| ------------------- | ----------- | ------- | --------- |
+| iPhone 13+          | iOS 15+     | Safari  | ✅ Tested |
+| iPhone 13+          | iOS 15+     | Chrome  | ✅ Tested |
+| Samsung Galaxy S21+ | Android 12+ | Chrome  | ✅ Tested |
 | Samsung Galaxy S21+ | Android 12+ | Firefox | ✅ Tested |
-| iPad | iOS 15+ | Safari | ✅ Tested |
+| iPad                | iOS 15+     | Safari  | ✅ Tested |
 
 ### Mobile Testing Checklist
 
 #### iOS Safari
+
 - [ ] Viewport renders correctly
 - [ ] Touch interactions work
 - [ ] Keyboard pops up for search
@@ -195,6 +202,7 @@ Create a `test-results.md` file to track manual testing:
 - [ ] Offline mode works
 
 #### Android Chrome
+
 - [ ] All iOS features plus:
 - [ ] Edge-to-edge display
 - [ ] Back button behavior
@@ -206,6 +214,7 @@ Create a `test-results.md` file to track manual testing:
 #### Browser DevTools
 
 1. **Chrome DevTools**
+
    ```
    - Open DevTools (F12)
    - Toggle device toolbar (Ctrl+Shift+M)
@@ -247,21 +256,21 @@ lighthouse http://localhost:8080 --view
 
 ### Target Metrics
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| Performance | 90+ | ⏳ Pending |
-| Accessibility | 95+ | ⏳ Pending |
-| Best Practices | 90+ | ⏳ Pending |
-| SEO | 90+ | ⏳ Pending |
+| Metric         | Target | Current    |
+| -------------- | ------ | ---------- |
+| Performance    | 90+    | ⏳ Pending |
+| Accessibility  | 95+    | ⏳ Pending |
+| Best Practices | 90+    | ⏳ Pending |
+| SEO            | 90+    | ⏳ Pending |
 
 ### Performance Budget
 
-| Resource | Budget | Current |
-|----------|--------|---------|
+| Resource   | Budget  | Current    |
+| ---------- | ------- | ---------- |
 | Total Size | < 200KB | ⏳ Pending |
 | JavaScript | < 100KB | ⏳ Pending |
-| CSS | < 50KB | ⏳ Pending |
-| Images | < 50KB | ⏳ Pending |
+| CSS        | < 50KB  | ⏳ Pending |
+| Images     | < 50KB  | ⏳ Pending |
 
 ### Core Web Vitals
 
@@ -289,12 +298,14 @@ lighthouse http://localhost:4173 --view
 Checklist for accessibility:
 
 #### Perceivable
+
 - [ ] Text alternatives for images
 - [ ] Captions for media
 - [ ] Sufficient color contrast (4.5:1)
 - [ ] Text can be resized to 200%
 
 #### Operable
+
 - [ ] Keyboard accessible
 - [ ] No keyboard traps
 - [ ] Time limits adjustable
@@ -302,12 +313,14 @@ Checklist for accessibility:
 - [ ] Navigable with keyboard
 
 #### Understandable
+
 - [ ] Language declared
 - [ ] Consistent navigation
 - [ ] Error identification
 - [ ] Labels and instructions clear
 
 #### Robust
+
 - [ ] Valid HTML
 - [ ] Proper ARIA labels
 - [ ] Screen reader compatible
@@ -382,6 +395,7 @@ npm test -- formatter.test.js
 ### CI/CD Testing
 
 Tests run automatically on:
+
 - Push to main/develop
 - Pull requests
 - Manual trigger
@@ -392,12 +406,12 @@ See `.github/workflows/test.yml` for details.
 
 ### Coverage Goals
 
-| Type | Target | Current |
-|------|--------|---------|
-| Statements | 80% | ⏳ Pending |
-| Branches | 75% | ⏳ Pending |
-| Functions | 80% | ⏳ Pending |
-| Lines | 80% | ⏳ Pending |
+| Type       | Target | Current    |
+| ---------- | ------ | ---------- |
+| Statements | 80%    | ⏳ Pending |
+| Branches   | 75%    | ⏳ Pending |
+| Functions  | 80%    | ⏳ Pending |
+| Lines      | 80%    | ⏳ Pending |
 
 ### Generating Coverage Report
 

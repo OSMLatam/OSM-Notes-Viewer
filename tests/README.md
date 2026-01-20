@@ -7,21 +7,27 @@ This project uses **Vitest** for unit and integration testing.
 ## Running Tests
 
 ### Watch Mode (Development)
+
 ```bash
 npm test
 ```
+
 Runs tests in watch mode - automatically re-runs tests when files change.
 
 ### Single Run
+
 ```bash
 npm run test:run
 ```
+
 Runs all tests once and exits.
 
 ### UI Mode
+
 ```bash
 npm run test:ui
 ```
+
 Opens Vitest UI in browser for interactive test exploration.
 
 ## Test Structure
@@ -44,6 +50,7 @@ tests/
 ## Test Coverage
 
 Current coverage includes:
+
 - ✅ **Formatter utilities** (20 tests)
   - formatNumber
   - formatDate
@@ -104,46 +111,52 @@ import { describe, it, expect } from 'vitest';
 import { myFunction } from '../../src/js/utils/myModule.js';
 
 describe('MyModule', () => {
-    describe('myFunction', () => {
-        it('should do something', () => {
-            const result = myFunction('input');
-            expect(result).toBe('expected output');
-        });
+  describe('myFunction', () => {
+    it('should do something', () => {
+      const result = myFunction('input');
+      expect(result).toBe('expected output');
     });
+  });
 });
 ```
 
 ## Mocking
 
 ### localStorage
+
 Already mocked in `tests/setup.js` - stores data in memory.
 
 ### window.matchMedia
+
 Already mocked in `tests/setup.js` - use in tests like:
+
 ```javascript
 Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: vi.fn(() => ({
-        matches: true,
-        addEventListener: () => {}
-    }))
+  writable: true,
+  value: vi.fn(() => ({
+    matches: true,
+    addEventListener: () => {},
+  })),
 });
 ```
 
 ### fetch
+
 Mock fetch for API tests:
+
 ```javascript
 global.fetch = vi.fn(() =>
-    Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ data: 'test' })
-    })
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ data: 'test' }),
+  })
 );
 ```
 
 ## CI/CD
 
 Tests run automatically on:
+
 - Push to `main` or `develop` branches
 - Pull requests to `main` or `develop`
 
@@ -160,20 +173,24 @@ See `.github/workflows/test.yml` for configuration.
 ## Debugging Failed Tests
 
 ### Run specific test file
+
 ```bash
 npm test tests/utils/formatter.test.js
 ```
 
 ### Run tests matching pattern
+
 ```bash
 npm test -- -t "formatNumber"
 ```
 
 ### Run in debug mode
+
 Add `.only` to a test:
+
 ```javascript
 it.only('should test this', () => {
-    // Only this test will run
+  // Only this test will run
 });
 ```
 
@@ -182,4 +199,3 @@ it.only('should test this', () => {
 - [Vitest Documentation](https://vitest.dev/)
 - [Testing Library](https://testing-library.com/)
 - [Jest Matchers](https://jestjs.io/docs/expect)
-

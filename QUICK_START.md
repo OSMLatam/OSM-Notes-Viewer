@@ -22,6 +22,7 @@ This creates minimal JSON files in the `data/` directory for local testing.
 Choose one option:
 
 ### Option A: Python (if installed)
+
 ```bash
 npm run serve
 # or
@@ -29,6 +30,7 @@ python3 -m http.server 8000 --directory src
 ```
 
 ### Option B: Node.js
+
 ```bash
 npm run dev
 # or
@@ -36,6 +38,7 @@ npx http-server src -p 8000
 ```
 
 ### Option C: PHP (if installed)
+
 ```bash
 cd src
 php -S localhost:8000
@@ -74,8 +77,8 @@ Edit `config/api-config.js`:
 
 ```javascript
 export const API_CONFIG = {
-    BASE_URL: 'https://your-server.com/api',
-    // ... rest of config
+  BASE_URL: 'https://your-server.com/api',
+  // ... rest of config
 };
 ```
 
@@ -92,6 +95,7 @@ export const API_CONFIG = {
 **Problem**: Sample data not created or wrong API endpoint.
 
 **Solutions**:
+
 1. Run `./scripts/create-sample-data.sh`
 2. Check `config/api-config.js` has correct BASE_URL
 3. Verify data files exist in `data/` directory
@@ -119,8 +123,11 @@ export const API_CONFIG = {
 
 This viewer is part of a larger ecosystem for processing OSM Notes:
 
-- **[OSM-Notes-Ingestion](https://github.com/OSM-Notes/OSM-Notes-Ingestion)** - Downloads and maintains OSM notes data from Planet dumps and API
-- **[OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common)** - Shared libraries and utilities used across all projects
-- **[OSM-Notes-Analytics](https://github.com/OSM-Notes/OSM-Notes-Analytics)** - Data warehouse and ETL processes that generate the JSON files
+- **[OSM-Notes-Ingestion](https://github.com/OSM-Notes/OSM-Notes-Ingestion)** - Downloads and
+  maintains OSM notes data from Planet dumps and API
+- **[OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common)** - Shared libraries and
+  utilities used across all projects
+- **[OSM-Notes-Analytics](https://github.com/OSM-Notes/OSM-Notes-Analytics)** - Data warehouse and
+  ETL processes that generate the JSON files
 
 Enjoy exploring OSM Notes data! 🗺️

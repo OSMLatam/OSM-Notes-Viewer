@@ -1,104 +1,197 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title id="pageTitle" data-i18n="title.hashtag">Hashtag - OSM Notes Viewer</title>
-    <meta name="description" content="View all OpenStreetMap notes with a specific hashtag">
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/hashtagViewer.css">
-</head>
-<body>
+    <meta name="description" content="View all OpenStreetMap notes with a specific hashtag" />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/hashtagViewer.css" />
+  </head>
+  <body>
     <!-- Skip link for screen readers -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <header class="header" role="banner">
-        <div class="container">
-            <h1 class="logo">
-                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;" aria-label="OSM Notes Viewer - Home">
-                    <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
-                </a>
-            </h1>
-            <nav class="nav" role="navigation" aria-label="Main navigation">
-                <a href="../index.html" class="nav-link">Home</a>
-                <a href="explore.html" class="nav-link">Explore</a>
-                <a href="stats.html" class="nav-link">Stats</a>
-                <a href="map.html" class="nav-link">Map</a>
-                <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
-                <a href="about.html" class="nav-link">About</a>
-            </nav>
-        </div>
+      <div class="container">
+        <h1 class="logo">
+          <a
+            href="../index.html"
+            style="
+              text-decoration: none;
+              color: inherit;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            "
+            aria-label="OSM Notes Viewer - Home"
+          >
+            <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem" />
+          </a>
+        </h1>
+        <nav class="nav" role="navigation" aria-label="Main navigation">
+          <a href="../index.html" class="nav-link">Home</a>
+          <a href="explore.html" class="nav-link">Explore</a>
+          <a href="stats.html" class="nav-link">Stats</a>
+          <a href="map.html" class="nav-link">Map</a>
+          <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
+          <a href="about.html" class="nav-link">About</a>
+        </nav>
+      </div>
     </header>
 
     <main class="main" id="main-content" role="main">
-        <div class="container" style="padding: 3rem 20px;">
-            <div id="hashtagLoading" class="loading" role="status" aria-live="polite" data-i18n="hashtag.loading">Loading hashtag data...</div>
-            <div id="hashtagError" class="error" style="display: none;" role="alert" aria-live="assertive"></div>
-
-            <div id="hashtagContent" style="display: none;">
-                <!-- Hashtag Header -->
-                <section class="hashtag-header" aria-labelledby="hashtagBadge">
-                    <h1 class="hashtag-title">
-                        <span class="hashtag-badge" id="hashtagBadge" aria-live="polite">#hashtag</span>
-                    </h1>
-                    <div class="hashtag-stats" id="hashtagStats" role="group" aria-label="Hashtag statistics"></div>
-                </section>
-
-                <!-- Filters -->
-                <section class="hashtag-filters" aria-labelledby="filters-title">
-                    <h2 id="filters-title" class="sr-only" data-i18n="hashtag.filters.title">Filter notes</h2>
-                    <div class="filter-group">
-                        <label for="statusFilter" data-i18n="hashtag.filters.status">Status:</label>
-                        <select id="statusFilter" class="filter-select" aria-label="Filter by note status">
-                            <option value="" data-i18n="hashtag.filters.statusAll">All</option>
-                            <option value="open" data-i18n="hashtag.filters.statusOpen">Open</option>
-                            <option value="closed" data-i18n="hashtag.filters.statusClosed">Closed</option>
-                            <option value="reopened" data-i18n="hashtag.filters.statusReopened">Reopened</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="dateFromFilter" data-i18n="hashtag.filters.from">From:</label>
-                        <input type="date" id="dateFromFilter" class="filter-input" data-i18n-aria-label="hashtag.filters.from" aria-label="Filter notes from date">
-                    </div>
-                    <div class="filter-group">
-                        <label for="dateToFilter" data-i18n="hashtag.filters.to">To:</label>
-                        <input type="date" id="dateToFilter" class="filter-input" data-i18n-aria-label="hashtag.filters.to" aria-label="Filter notes to date">
-                    </div>
-                    <button id="applyFiltersBtn" class="btn btn-primary" data-i18n-aria-label="hashtag.filters.apply" aria-label="Apply selected filters" data-i18n="hashtag.filters.apply">Apply Filters</button>
-                    <button id="clearFiltersBtn" class="btn btn-secondary" data-i18n-aria-label="hashtag.filters.clear" aria-label="Clear all filters" data-i18n="hashtag.filters.clear">Clear</button>
-                </section>
-
-                <!-- Notes List -->
-                <section class="hashtag-notes" aria-labelledby="notes-list-title">
-                    <h2 id="notes-list-title" class="sr-only" data-i18n="hashtag.notes.title">Notes list</h2>
-                    <div id="notesList" class="notes-list" role="list" aria-label="List of notes with this hashtag"></div>
-                    <nav id="notesPagination" class="pagination" role="navigation" aria-label="Notes pagination"></nav>
-                </section>
-            </div>
+      <div class="container" style="padding: 3rem 20px">
+        <div
+          id="hashtagLoading"
+          class="loading"
+          role="status"
+          aria-live="polite"
+          data-i18n="hashtag.loading"
+        >
+          Loading hashtag data...
         </div>
+        <div
+          id="hashtagError"
+          class="error"
+          style="display: none"
+          role="alert"
+          aria-live="assertive"
+        ></div>
+
+        <div id="hashtagContent" style="display: none">
+          <!-- Hashtag Header -->
+          <section class="hashtag-header" aria-labelledby="hashtagBadge">
+            <h1 class="hashtag-title">
+              <span class="hashtag-badge" id="hashtagBadge" aria-live="polite">#hashtag</span>
+            </h1>
+            <div
+              class="hashtag-stats"
+              id="hashtagStats"
+              role="group"
+              aria-label="Hashtag statistics"
+            ></div>
+          </section>
+
+          <!-- Filters -->
+          <section class="hashtag-filters" aria-labelledby="filters-title">
+            <h2 id="filters-title" class="sr-only" data-i18n="hashtag.filters.title">
+              Filter notes
+            </h2>
+            <div class="filter-group">
+              <label for="statusFilter" data-i18n="hashtag.filters.status">Status:</label>
+              <select id="statusFilter" class="filter-select" aria-label="Filter by note status">
+                <option value="" data-i18n="hashtag.filters.statusAll">All</option>
+                <option value="open" data-i18n="hashtag.filters.statusOpen">Open</option>
+                <option value="closed" data-i18n="hashtag.filters.statusClosed">Closed</option>
+                <option value="reopened" data-i18n="hashtag.filters.statusReopened">
+                  Reopened
+                </option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="dateFromFilter" data-i18n="hashtag.filters.from">From:</label>
+              <input
+                type="date"
+                id="dateFromFilter"
+                class="filter-input"
+                data-i18n-aria-label="hashtag.filters.from"
+                aria-label="Filter notes from date"
+              />
+            </div>
+            <div class="filter-group">
+              <label for="dateToFilter" data-i18n="hashtag.filters.to">To:</label>
+              <input
+                type="date"
+                id="dateToFilter"
+                class="filter-input"
+                data-i18n-aria-label="hashtag.filters.to"
+                aria-label="Filter notes to date"
+              />
+            </div>
+            <button
+              id="applyFiltersBtn"
+              class="btn btn-primary"
+              data-i18n-aria-label="hashtag.filters.apply"
+              aria-label="Apply selected filters"
+              data-i18n="hashtag.filters.apply"
+            >
+              Apply Filters
+            </button>
+            <button
+              id="clearFiltersBtn"
+              class="btn btn-secondary"
+              data-i18n-aria-label="hashtag.filters.clear"
+              aria-label="Clear all filters"
+              data-i18n="hashtag.filters.clear"
+            >
+              Clear
+            </button>
+          </section>
+
+          <!-- Notes List -->
+          <section class="hashtag-notes" aria-labelledby="notes-list-title">
+            <h2 id="notes-list-title" class="sr-only" data-i18n="hashtag.notes.title">
+              Notes list
+            </h2>
+            <div
+              id="notesList"
+              class="notes-list"
+              role="list"
+              aria-label="List of notes with this hashtag"
+            ></div>
+            <nav
+              id="notesPagination"
+              class="pagination"
+              role="navigation"
+              aria-label="Notes pagination"
+            ></nav>
+          </section>
+        </div>
+      </div>
     </main>
 
     <footer class="footer" role="contentinfo">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <span>Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
-                    <br>
-                    <span>Processed by</span>
-                    <a href="https://github.com/OSM-Notes/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
-                    & <a href="https://github.com/OSM-Notes/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
-                </div>
-                <div class="footer-section">
-                    <a href="https://github.com/OSM-Notes/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-                </div>
-                <div class="footer-section">
-                    <span>Made by</span> <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
-                </div>
-            </div>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <span>Data from</span>
+            <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer"
+              >OpenStreetMap</a
+            >
+            <br />
+            <span>Processed by</span>
+            <a
+              href="https://github.com/OSM-Notes/OSM-Notes-Ingestion"
+              target="_blank"
+              rel="noopener noreferrer"
+              >OSM-Notes-Ingestion</a
+            >
+            &
+            <a
+              href="https://github.com/OSM-Notes/OSM-Notes-Analytics"
+              target="_blank"
+              rel="noopener noreferrer"
+              >OSM-Notes-Analytics</a
+            >
+          </div>
+          <div class="footer-section">
+            <a
+              href="https://github.com/OSM-Notes/OSM-Notes-Viewer"
+              target="_blank"
+              rel="noopener noreferrer"
+              >View on GitHub</a
+            >
+          </div>
+          <div class="footer-section">
+            <span>Made by</span>
+            <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
+          </div>
         </div>
+      </div>
     </footer>
 
     <script type="module" src="../js/pages/hashtagViewer.js"></script>
-</body>
+  </body>
 </html>

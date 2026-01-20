@@ -2,732 +2,769 @@
 
 /* === Animation Variables === */
 :root {
-    --animation-duration-fast: 0.15s;
-    --animation-duration-normal: 0.3s;
-    --animation-duration-slow: 0.5s;
-    --animation-easing-ease: cubic-bezier(0.4, 0, 0.2, 1);
-    --animation-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    --animation-easing-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --animation-duration-fast: 0.15s;
+  --animation-duration-normal: 0.3s;
+  --animation-duration-slow: 0.5s;
+  --animation-easing-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --animation-easing-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 /* === Keyframe Animations === */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes scaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 @keyframes bounce {
-    0%, 20%, 53%, 80%, 100% {
-        transform: translateY(0);
-    }
-    40%, 43% {
-        transform: translateY(-10px);
-    }
-    70% {
-        transform: translateY(-5px);
-    }
-    90% {
-        transform: translateY(-2px);
-    }
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40%,
+  43% {
+    transform: translateY(-10px);
+  }
+  70% {
+    transform: translateY(-5px);
+  }
+  90% {
+    transform: translateY(-2px);
+  }
 }
 
 @keyframes shimmer {
-    0% {
-        background-position: -200px 0;
-    }
-    100% {
-        background-position: calc(200px + 100%) 0;
-    }
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
 }
 
 @keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes wiggle {
-    0%, 7% {
-        transform: rotateZ(0);
-    }
-    15% {
-        transform: rotateZ(-15deg);
-    }
-    20% {
-        transform: rotateZ(10deg);
-    }
-    25% {
-        transform: rotateZ(-10deg);
-    }
-    30% {
-        transform: rotateZ(6deg);
-    }
-    35% {
-        transform: rotateZ(-4deg);
-    }
-    40%, 100% {
-        transform: rotateZ(0);
-    }
+  0%,
+  7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-15deg);
+  }
+  20% {
+    transform: rotateZ(10deg);
+  }
+  25% {
+    transform: rotateZ(-10deg);
+  }
+  30% {
+    transform: rotateZ(6deg);
+  }
+  35% {
+    transform: rotateZ(-4deg);
+  }
+  40%,
+  100% {
+    transform: rotateZ(0);
+  }
 }
 
 /* === Loading Animations === */
 .loading-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid var(--border-color);
-    border-top: 4px solid var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 .loading-spinner-small {
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--border-color);
-    border-top: 2px solid var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top: 2px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 .loading-dots {
-    display: inline-block;
+  display: inline-block;
 }
 
 .loading-dots::after {
-    content: '';
-    animation: dots 1.5s steps(4, end) infinite;
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
 }
 
 @keyframes dots {
-    0%, 20% {
-        content: '';
-    }
-    40% {
-        content: '.';
-    }
-    60% {
-        content: '..';
-    }
-    80%, 100% {
-        content: '...';
-    }
+  0%,
+  20% {
+    content: '';
+  }
+  40% {
+    content: '.';
+  }
+  60% {
+    content: '..';
+  }
+  80%,
+  100% {
+    content: '...';
+  }
 }
 
 /* === Skeleton Loading === */
 .skeleton {
-    background: linear-gradient(90deg, var(--bg-light) 25%, var(--border-color) 50%, var(--bg-light) 75%);
-    background-size: 200px 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: var(--radius);
+  background: linear-gradient(
+    90deg,
+    var(--bg-light) 25%,
+    var(--border-color) 50%,
+    var(--bg-light) 75%
+  );
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius);
 }
 
 .skeleton-text {
-    height: 1rem;
-    margin-bottom: 0.5rem;
+  height: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .skeleton-text:last-child {
-    width: 60%;
+  width: 60%;
 }
 
 .skeleton-card {
-    height: 200px;
-    border-radius: var(--radius);
+  height: 200px;
+  border-radius: var(--radius);
 }
 
 /* === Page Transitions === */
 .page-enter {
-    animation: fadeInUp var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: fadeInUp var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .page-exit {
-    animation: fadeInDown var(--animation-duration-fast) var(--animation-easing-ease) reverse;
+  animation: fadeInDown var(--animation-duration-fast) var(--animation-easing-ease) reverse;
 }
 
 /* === Card Animations === */
 .card {
-    transition: all var(--animation-duration-normal) var(--animation-easing-ease);
-    animation: fadeIn var(--animation-duration-normal) var(--animation-easing-ease);
+  transition: all var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: fadeIn var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
 }
 
 .card:active {
-    transform: translateY(-2px);
-    transition: transform var(--animation-duration-fast) var(--animation-easing-ease);
+  transform: translateY(-2px);
+  transition: transform var(--animation-duration-fast) var(--animation-easing-ease);
 }
 
 /* === Button Animations === */
 .btn {
-    transition: all var(--animation-duration-normal) var(--animation-easing-ease);
-    position: relative;
-    overflow: hidden;
+  transition: all var(--animation-duration-normal) var(--animation-easing-ease);
+  position: relative;
+  overflow: hidden;
 }
 
 .btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width var(--animation-duration-normal) var(--animation-easing-ease),
-                height var(--animation-duration-normal) var(--animation-easing-ease);
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition:
+    width var(--animation-duration-normal) var(--animation-easing-ease),
+    height var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .btn:hover::before {
-    width: 300px;
-    height: 300px;
+  width: 300px;
+  height: 300px;
 }
 
 .btn:active {
-    transform: scale(0.98);
+  transform: scale(0.98);
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(126, 188, 111, 0.3);
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(126, 188, 111, 0.3);
 }
 
 .btn-secondary:hover {
-    background-color: var(--secondary-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
 }
 
 /* === Form Animations === */
 .form-input {
-    transition: all var(--animation-duration-normal) var(--animation-easing-ease);
+  transition: all var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .form-input:focus {
-    transform: scale(1.02);
-    box-shadow: 0 0 0 3px rgba(126, 188, 111, 0.2);
+  transform: scale(1.02);
+  box-shadow: 0 0 0 3px rgba(126, 188, 111, 0.2);
 }
 
 .form-input:invalid {
-    animation: wiggle var(--animation-duration-slow) var(--animation-easing-ease);
+  animation: wiggle var(--animation-duration-slow) var(--animation-easing-ease);
 }
 
 /* === Navigation Animations === */
 .nav-link {
-    transition: all var(--animation-duration-normal) var(--animation-easing-ease);
-    position: relative;
+  transition: all var(--animation-duration-normal) var(--animation-easing-ease);
+  position: relative;
 }
 
 .nav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--primary-color);
-    transition: width var(--animation-duration-normal) var(--animation-easing-ease);
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary-color);
+  transition: width var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .nav-link:hover::after,
 .nav-link.active::after {
-    width: 100%;
+  width: 100%;
 }
 
 .nav-link:hover {
-    transform: translateY(-1px);
+  transform: translateY(-1px);
 }
 
 /* === Search Animations === */
 .search-input {
-    transition: all var(--animation-duration-normal) var(--animation-easing-ease);
+  transition: all var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .search-input:focus {
-    transform: scale(1.02);
-    box-shadow: 0 0 0 3px rgba(126, 188, 111, 0.2);
+  transform: scale(1.02);
+  box-shadow: 0 0 0 3px rgba(126, 188, 111, 0.2);
 }
 
 .search-results {
-    animation: fadeInDown var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: fadeInDown var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .search-result-item {
-    transition: all var(--animation-duration-normal) var(--animation-easing-ease);
-    animation: slideInLeft var(--animation-duration-normal) var(--animation-easing-ease);
+  transition: all var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: slideInLeft var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .search-result-item:hover {
-    transform: translateX(8px);
-    background-color: var(--bg-light);
+  transform: translateX(8px);
+  background-color: var(--bg-light);
 }
 
 /* === Chart Animations === */
 .chart-container {
-    animation: fadeIn var(--animation-duration-slow) var(--animation-easing-ease);
+  animation: fadeIn var(--animation-duration-slow) var(--animation-easing-ease);
 }
 
 .chart-bar {
-    transition: all var(--animation-duration-normal) var(--animation-easing-ease);
+  transition: all var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .chart-bar:hover {
-    transform: scaleY(1.05);
-    filter: brightness(1.1);
+  transform: scaleY(1.05);
+  filter: brightness(1.1);
 }
 
 /* === Heatmap Animations === */
 .heatmap-cell {
-    transition: all var(--animation-duration-normal) var(--animation-easing-ease);
+  transition: all var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .heatmap-cell:hover {
-    transform: scale(1.1);
-    z-index: 10;
+  transform: scale(1.1);
+  z-index: 10;
 }
 
 /* === Modal Animations === */
 .modal {
-    animation: scaleIn var(--animation-duration-normal) var(--animation-easing-bounce);
+  animation: scaleIn var(--animation-duration-normal) var(--animation-easing-bounce);
 }
 
 .modal-backdrop {
-    animation: fadeIn var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: fadeIn var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 /* === Toast Animations === */
 .toast {
-    animation: slideInRight var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: slideInRight var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .toast.exit {
-    animation: slideInRight var(--animation-duration-normal) var(--animation-easing-ease) reverse;
+  animation: slideInRight var(--animation-duration-normal) var(--animation-easing-ease) reverse;
 }
 
 /* === Staggered Animations === */
 .stagger-item {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp var(--animation-duration-normal) var(--animation-easing-ease) forwards;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp var(--animation-duration-normal) var(--animation-easing-ease) forwards;
 }
 
-.stagger-item:nth-child(1) { animation-delay: 0.1s; }
-.stagger-item:nth-child(2) { animation-delay: 0.2s; }
-.stagger-item:nth-child(3) { animation-delay: 0.3s; }
-.stagger-item:nth-child(4) { animation-delay: 0.4s; }
-.stagger-item:nth-child(5) { animation-delay: 0.5s; }
-.stagger-item:nth-child(6) { animation-delay: 0.6s; }
-.stagger-item:nth-child(7) { animation-delay: 0.7s; }
-.stagger-item:nth-child(8) { animation-delay: 0.8s; }
-.stagger-item:nth-child(9) { animation-delay: 0.9s; }
-.stagger-item:nth-child(10) { animation-delay: 1.0s; }
+.stagger-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.stagger-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.stagger-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.stagger-item:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.stagger-item:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.stagger-item:nth-child(6) {
+  animation-delay: 0.6s;
+}
+.stagger-item:nth-child(7) {
+  animation-delay: 0.7s;
+}
+.stagger-item:nth-child(8) {
+  animation-delay: 0.8s;
+}
+.stagger-item:nth-child(9) {
+  animation-delay: 0.9s;
+}
+.stagger-item:nth-child(10) {
+  animation-delay: 1s;
+}
 
 /* === Micro-interactions === */
 .clickable {
-    cursor: pointer;
-    transition: all var(--animation-duration-fast) var(--animation-easing-ease);
+  cursor: pointer;
+  transition: all var(--animation-duration-fast) var(--animation-easing-ease);
 }
 
 .clickable:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .clickable:active {
-    transform: scale(0.95);
+  transform: scale(0.95);
 }
 
 /* === Success/Error Animations === */
 .success-message {
-    animation: fadeInUp var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: fadeInUp var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .error-message {
-    animation: wiggle var(--animation-duration-slow) var(--animation-easing-ease);
+  animation: wiggle var(--animation-duration-slow) var(--animation-easing-ease);
 }
 
 /* === Theme Transition === */
 .theme-transition {
-    transition: background-color var(--animation-duration-normal) var(--animation-easing-ease),
-                color var(--animation-duration-normal) var(--animation-easing-ease),
-                border-color var(--animation-duration-normal) var(--animation-easing-ease);
+  transition:
+    background-color var(--animation-duration-normal) var(--animation-easing-ease),
+    color var(--animation-duration-normal) var(--animation-easing-ease),
+    border-color var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 /* === Responsive Animations === */
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* === Performance Optimizations === */
 .gpu-accelerated {
-    transform: translateZ(0);
-    will-change: transform;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* === Keyboard Shortcuts Help === */
 .keyboard-shortcuts-help {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(4px);
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 20px;
 }
 
 .keyboard-shortcuts-help.show {
-    opacity: 1;
+  opacity: 1;
 }
 
 .keyboard-shortcuts-help > div {
-    background: var(--bg-color);
-    border-radius: var(--radius);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
-    max-height: 80vh;
-    overflow-y: auto;
-    animation: scaleIn 0.3s var(--animation-easing-bounce);
+  background: var(--bg-color);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: scaleIn 0.3s var(--animation-easing-bounce);
 }
 
 .shortcuts-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .shortcuts-header h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: var(--text-color);
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--text-color);
 }
 
 .close-btn {
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: var(--text-light);
-    cursor: pointer;
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    transition: all 0.2s ease;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-light);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
 }
 
 .close-btn:hover {
-    background: var(--bg-light);
-    color: var(--text-color);
+  background: var(--bg-light);
+  color: var(--text-color);
 }
 
 .shortcuts-content {
-    padding: 1.5rem;
+  padding: 1.5rem;
 }
 
 .shortcuts-category {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .shortcuts-category:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .shortcuts-category h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1.1rem;
-    color: var(--primary-color);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .shortcuts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .shortcut-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem;
-    background: var(--bg-light);
-    border-radius: 4px;
-    transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-light);
+  border-radius: 4px;
+  transition: all 0.2s ease;
 }
 
 .shortcut-item:hover {
-    background: var(--primary-color);
-    color: white;
+  background: var(--primary-color);
+  color: white;
 }
 
 .shortcut-item:hover .shortcut-description {
-    color: white;
+  color: white;
 }
 
 .shortcut-keys {
-    display: flex;
-    gap: 0.25rem;
-    align-items: center;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
 }
 
 .shortcut-keys kbd {
-    background: var(--bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 0.25rem 0.5rem;
-    font-family: monospace;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-color);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  font-family: monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .shortcut-item:hover .shortcut-keys kbd {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
-    color: white;
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
 }
 
 .shortcut-description {
-    color: var(--text-color);
-    font-size: 0.9rem;
+  color: var(--text-color);
+  font-size: 0.9rem;
 }
 
 .shortcuts-footer {
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--border-color);
-    text-align: center;
-    background: var(--bg-light);
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+  background: var(--bg-light);
 }
 
 .shortcuts-footer p {
-    margin: 0;
-    color: var(--text-light);
-    font-size: 0.875rem;
+  margin: 0;
+  color: var(--text-light);
+  font-size: 0.875rem;
 }
 
 .shortcuts-footer kbd {
-    background: var(--bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 0.125rem 0.375rem;
-    font-family: monospace;
-    font-size: 0.75rem;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.125rem 0.375rem;
+  font-family: monospace;
+  font-size: 0.75rem;
 }
 
 /* Dark mode adjustments */
-[data-theme="dark"] .keyboard-shortcuts-help {
-    background: rgba(0, 0, 0, 0.85);
+[data-theme='dark'] .keyboard-shortcuts-help {
+  background: rgba(0, 0, 0, 0.85);
 }
 
-[data-theme="dark"] .shortcut-keys kbd {
-    background: var(--bg-light);
-    border-color: var(--border-color);
+[data-theme='dark'] .shortcut-keys kbd {
+  background: var(--bg-light);
+  border-color: var(--border-color);
 }
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
-    .keyboard-shortcuts-help > div {
-        max-width: 100%;
-        max-height: 90vh;
-    }
+  .keyboard-shortcuts-help > div {
+    max-width: 100%;
+    max-height: 90vh;
+  }
 
-    .shortcut-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
+  .shortcut-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 
-    .shortcut-description {
-        font-size: 0.85rem;
-    }
+  .shortcut-description {
+    font-size: 0.85rem;
+  }
 }
 
 /* === Custom Animation Classes === */
 .animate-fade-in {
-    animation: fadeIn var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: fadeIn var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .animate-fade-in-up {
-    animation: fadeInUp var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: fadeInUp var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .animate-fade-in-down {
-    animation: fadeInDown var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: fadeInDown var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .animate-slide-in-left {
-    animation: slideInLeft var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: slideInLeft var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .animate-slide-in-right {
-    animation: slideInRight var(--animation-duration-normal) var(--animation-easing-ease);
+  animation: slideInRight var(--animation-duration-normal) var(--animation-easing-ease);
 }
 
 .animate-scale-in {
-    animation: scaleIn var(--animation-duration-normal) var(--animation-easing-bounce);
+  animation: scaleIn var(--animation-duration-normal) var(--animation-easing-bounce);
 }
 
 .animate-pulse {
-    animation: pulse 2s infinite;
+  animation: pulse 2s infinite;
 }
 
 .animate-bounce {
-    animation: bounce 1s infinite;
+  animation: bounce 1s infinite;
 }
 
 .animate-wiggle {
-    animation: wiggle var(--animation-duration-slow) var(--animation-easing-ease);
+  animation: wiggle var(--animation-duration-slow) var(--animation-easing-ease);
 }
 
 /* === Hover Effects === */
 .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
 }
 
 .hover-scale:hover {
-    transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 .hover-glow:hover {
-    box-shadow: 0 0 20px rgba(126, 188, 111, 0.3);
+  box-shadow: 0 0 20px rgba(126, 188, 111, 0.3);
 }
 
 .hover-rotate:hover {
-    transform: rotate(5deg);
+  transform: rotate(5deg);
 }
 
 /* === Focus States === */
 .focus-ring:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(126, 188, 111, 0.3);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(126, 188, 111, 0.3);
 }
 
 /* === Loading States === */
 .loading {
-    position: relative;
-    pointer-events: none;
+  position: relative;
+  pointer-events: none;
 }
 
 .loading::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .loading::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--border-color);
-    border-top: 2px solid var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    transform: translate(-50%, -50%);
-    z-index: 1;
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-top: 2px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  transform: translate(-50%, -50%);
+  z-index: 1;
 }

@@ -1,291 +1,291 @@
 /* Hashtag Viewer Styles */
 
 .hashtag-header {
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 2px solid var(--border-color);
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .hashtag-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text-color);
-    margin: 0 0 1rem 0;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .hashtag-badge {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: var(--radius);
-    font-size: 1.5rem;
-    font-weight: 600;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: var(--radius);
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .hashtag-stats {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
-    color: var(--text-light);
-    font-size: 0.9rem;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  color: var(--text-light);
+  font-size: 0.9rem;
 }
 
 .hashtag-stat-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .hashtag-stat-value {
-    font-weight: 600;
-    color: var(--text-color);
+  font-weight: 600;
+  color: var(--text-color);
 }
 
 /* Filters */
 .hashtag-filters {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    padding: 1.5rem;
-    background: var(--bg-light);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  padding: 1.5rem;
+  background: var(--bg-light);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
 }
 
 .filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .filter-group label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--text-color);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-color);
 }
 
 .filter-select,
 .filter-input {
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    font-family: inherit;
-    font-size: 1rem;
-    background: var(--bg-color);
-    color: var(--text-color);
-    min-width: 150px;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 1rem;
+  background: var(--bg-color);
+  color: var(--text-color);
+  min-width: 150px;
 }
 
 .filter-select:focus,
 .filter-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
 }
 
 /* Notes List */
 .hashtag-notes {
-    margin-top: 2rem;
+  margin-top: 2rem;
 }
 
 .notes-list {
-    display: grid;
-    gap: 1rem;
-    margin-bottom: 2rem;
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .note-card-item {
-    background: var(--bg-light);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    cursor: pointer;
-    outline: none;
+  background: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  cursor: pointer;
+  outline: none;
 }
 
 .note-card-item:hover,
 .note-card-item:focus {
-    box-shadow: var(--shadow);
-    transform: translateY(-2px);
-    border-color: var(--primary-color);
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+  border-color: var(--primary-color);
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 .note-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    gap: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .note-card-id {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--primary-color);
-    text-decoration: none;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-decoration: none;
 }
 
 .note-card-id:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .note-card-status {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius);
-    font-size: 0.875rem;
-    font-weight: 600;
-    text-transform: uppercase;
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .note-card-status.open {
-    background-color: #e8f5e9;
-    color: #1b5e20; /* Improved contrast: 7:1 ratio */
-    border: 1px solid #2e7d32;
+  background-color: #e8f5e9;
+  color: #1b5e20; /* Improved contrast: 7:1 ratio */
+  border: 1px solid #2e7d32;
 }
 
 .note-card-status.closed {
-    background-color: #fff3e0;
-    color: #bf360c; /* Improved contrast: 7:1 ratio */
-    border: 1px solid #e65100;
+  background-color: #fff3e0;
+  color: #bf360c; /* Improved contrast: 7:1 ratio */
+  border: 1px solid #e65100;
 }
 
 .note-card-status.reopened {
-    background-color: #e3f2fd;
-    color: #0d47a1; /* Improved contrast: 7:1 ratio */
-    border: 1px solid #1565c0;
+  background-color: #e3f2fd;
+  color: #0d47a1; /* Improved contrast: 7:1 ratio */
+  border: 1px solid #1565c0;
 }
 
 .note-card-meta {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    color: var(--text-light);
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  color: var(--text-light);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
 }
 
 .note-card-meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .note-card-country {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 500;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 500;
 }
 
 .note-card-country:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 /* Pagination */
 .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 2rem;
-    flex-wrap: wrap;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
 }
 
 .pagination-info {
-    color: var(--text-light);
-    font-size: 0.875rem;
-    margin: 0 1rem;
+  color: var(--text-light);
+  font-size: 0.875rem;
+  margin: 0 1rem;
 }
 
 .pagination-btn {
-    padding: 0.5rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
-    background: var(--bg-color);
-    color: var(--text-color);
-    cursor: pointer;
-    transition: var(--transition);
-    font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: var(--bg-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.875rem;
 }
 
 .pagination-btn:hover:not(:disabled) {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
 }
 
 .pagination-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .pagination-btn.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
 }
 
 /* Loading and Error States */
 .loading {
-    text-align: center;
-    padding: 3rem;
-    color: var(--text-light);
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-light);
 }
 
 .error {
-    text-align: center;
-    padding: 2rem;
-    color: #d32f2f;
-    background: #ffebee;
-    border-radius: var(--radius);
-    margin: 2rem 0;
+  text-align: center;
+  padding: 2rem;
+  color: #d32f2f;
+  background: #ffebee;
+  border-radius: var(--radius);
+  margin: 2rem 0;
 }
 
 /* Empty State */
 .empty-state {
-    text-align: center;
-    padding: 3rem;
-    color: var(--text-light);
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-light);
 }
 
 .empty-state-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+  font-size: 3rem;
+  margin-bottom: 1rem;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .hashtag-title {
-        font-size: 1.5rem;
-    }
+  .hashtag-title {
+    font-size: 1.5rem;
+  }
 
-    .hashtag-badge {
-        font-size: 1.25rem;
-    }
+  .hashtag-badge {
+    font-size: 1.25rem;
+  }
 
-    .hashtag-filters {
-        flex-direction: column;
-        align-items: stretch;
-    }
+  .hashtag-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-    .filter-select,
-    .filter-input {
-        width: 100%;
-    }
+  .filter-select,
+  .filter-input {
+    width: 100%;
+  }
 
-    .note-card-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .note-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

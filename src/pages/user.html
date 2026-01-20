@@ -1,333 +1,506 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Profile - OSM Notes Viewer</title>
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/profile.css">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/profile.css" />
     <link rel="stylesheet" href="../css/leaflet.css" />
     <link rel="stylesheet" href="../css/leaflet-overrides.css" />
-</head>
-<body>
+  </head>
+  <body>
     <header class="header">
-        <div class="container">
-            <h1 class="logo">
-                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
-                    <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
-                </a>
-            </h1>
-            <nav class="nav">
-                <a href="../index.html" class="nav-link">Home</a>
-                <a href="explore.html" class="nav-link">Explore</a>
-                <a href="stats.html" class="nav-link">Stats</a>
-                <a href="map.html" class="nav-link">Map</a>
-                <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
-                <a href="about.html" class="nav-link">About</a>
-            </nav>
-        </div>
+      <div class="container">
+        <h1 class="logo">
+          <a
+            href="../index.html"
+            style="
+              text-decoration: none;
+              color: inherit;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            "
+          >
+            <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem" />
+          </a>
+        </h1>
+        <nav class="nav">
+          <a href="../index.html" class="nav-link">Home</a>
+          <a href="explore.html" class="nav-link">Explore</a>
+          <a href="stats.html" class="nav-link">Stats</a>
+          <a href="map.html" class="nav-link">Map</a>
+          <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
+          <a href="about.html" class="nav-link">About</a>
+        </nav>
+      </div>
     </header>
 
     <main class="main">
-        <div class="main-layout">
-            <!-- Left Sidebar - Recent Open Notes -->
-            <aside class="notes-sidebar notes-sidebar-left" id="recentOpenNotesSidebar">
-                <h3>Recent Open Notes</h3>
-                <div id="recentOpenNotesContainer" class="notes-grid">
-                    <!-- Will be populated by JavaScript -->
+      <div class="main-layout">
+        <!-- Left Sidebar - Recent Open Notes -->
+        <aside class="notes-sidebar notes-sidebar-left" id="recentOpenNotesSidebar">
+          <h3>Recent Open Notes</h3>
+          <div id="recentOpenNotesContainer" class="notes-grid">
+            <!-- Will be populated by JavaScript -->
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+          <div class="container">
+            <div id="profileLoading" class="loading">Loading user profile...</div>
+            <div id="profileError" class="error" style="display: none"></div>
+
+            <div id="profileContent" style="display: none">
+              <section class="profile-header">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    width: 100%;
+                  "
+                >
+                  <div style="display: flex; align-items: center; gap: 1.5rem">
+                    <div
+                      id="userAvatar"
+                      style="
+                        width: 80px;
+                        height: 80px;
+                        border-radius: 50%;
+                        overflow: hidden;
+                        background: var(--border-color);
+                        display: none;
+                      "
+                    >
+                      <img
+                        id="userAvatarImg"
+                        src=""
+                        alt="User avatar"
+                        style="width: 100%; height: 100%; object-fit: cover; display: none"
+                      />
+                    </div>
+                    <div>
+                      <h2 class="profile-title">
+                        <span class="profile-icon">👤</span>
+                        <span id="username">-</span>
+                      </h2>
+                      <p class="profile-subtitle">User ID: <span id="userId">-</span></p>
+                      <p class="profile-subtitle" id="contributorType" style="display: none"></p>
+                      <p
+                        class="profile-subtitle"
+                        id="osmProfileLink"
+                        style="display: none; margin-top: 0.5rem"
+                      >
+                        <a
+                          id="osmProfileLinkAnchor"
+                          href="#"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style="
+                            color: var(--primary-color);
+                            text-decoration: none;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 0.25rem;
+                          "
+                        >
+                          <span>View on OpenStreetMap</span>
+                          <span style="font-size: 0.8rem">↗</span>
+                        </a>
+                      </p>
+                      <p
+                        class="profile-subtitle"
+                        id="hdycProfileLink"
+                        style="display: none; margin-top: 0.5rem"
+                      >
+                        <a
+                          id="hdycProfileLinkAnchor"
+                          href="#"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style="
+                            color: var(--primary-color);
+                            text-decoration: none;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 0.25rem;
+                          "
+                        >
+                          <span>View on HDYC</span>
+                          <span style="font-size: 0.8rem">↗</span>
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+                  <div style="position: relative">
+                    <button class="share-btn" id="shareBtn" aria-label="Share profile">
+                      <span class="share-icon">🔗</span>
+                      <span class="share-text">Share</span>
+                    </button>
+                    <div
+                      id="shareMenu"
+                      style="
+                        position: absolute;
+                        top: 100%;
+                        right: 0;
+                        margin-top: 0.5rem;
+                        display: none;
+                      "
+                    ></div>
+                  </div>
                 </div>
-            </aside>
+              </section>
 
-            <!-- Main Content -->
-            <div class="main-content">
-                <div class="container">
-                    <div id="profileLoading" class="loading">Loading user profile...</div>
-                    <div id="profileError" class="error" style="display: none;"></div>
-
-                    <div id="profileContent" style="display: none;">
-                <section class="profile-header">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-                        <div style="display: flex; align-items: center; gap: 1.5rem;">
-                            <div id="userAvatar" style="width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: var(--border-color); display: none;">
-                                <img id="userAvatarImg" src="" alt="User avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                            </div>
-                            <div>
-                                <h2 class="profile-title">
-                                    <span class="profile-icon">👤</span>
-                                    <span id="username">-</span>
-                                </h2>
-                                <p class="profile-subtitle">User ID: <span id="userId">-</span></p>
-                                <p class="profile-subtitle" id="contributorType" style="display: none;"></p>
-                                <p class="profile-subtitle" id="osmProfileLink" style="display: none; margin-top: 0.5rem;">
-                                    <a id="osmProfileLinkAnchor" href="#" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                        <span>View on OpenStreetMap</span>
-                                        <span style="font-size: 0.8rem;">↗</span>
-                                    </a>
-                                </p>
-                                <p class="profile-subtitle" id="hdycProfileLink" style="display: none; margin-top: 0.5rem;">
-                                    <a id="hdycProfileLinkAnchor" href="#" target="_blank" rel="noopener noreferrer" style="color: var(--primary-color); text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
-                                        <span>View on HDYC</span>
-                                        <span style="font-size: 0.8rem;">↗</span>
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                        <div style="position: relative;">
-                            <button class="share-btn" id="shareBtn" aria-label="Share profile">
-                                <span class="share-icon">🔗</span>
-                                <span class="share-text">Share</span>
-                            </button>
-                            <div id="shareMenu" style="position: absolute; top: 100%; right: 0; margin-top: 0.5rem; display: none;"></div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-label">Notes Opened</div>
-                        <div class="stat-value" id="notesOpened">-</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Notes Closed</div>
-                        <div class="stat-value" id="notesClosed">-</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Closed with Comment</div>
-                        <div class="stat-value" id="notesClosedWithComment">-</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Comments</div>
-                        <div class="stat-value" id="notesCommented">-</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-label">Reopened</div>
-                        <div class="stat-value" id="notesReopened">-</div>
-                    </div>
-                </section>
-
-                <section class="profile-section" id="resolutionMetricsSection">
-                    <h3>Resolution Metrics</h3>
-                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-                        <div class="stat-card">
-                            <div class="stat-label">Avg Days to Resolution</div>
-                            <div class="stat-value" id="avgDaysToResolution">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Median Days to Resolution</div>
-                            <div class="stat-value" id="medianDaysToResolution">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Resolution Rate</div>
-                            <div class="stat-value" id="resolutionRate">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Notes Resolved</div>
-                            <div class="stat-value" id="notesResolvedCount">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Notes Still Open</div>
-                            <div class="stat-value" id="notesStillOpenCount">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Opened but Not Closed</div>
-                            <div class="stat-value" id="notesOpenedButNotClosed">-</div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="profile-section" id="contentQualitySection">
-                    <h3>Content Quality Metrics</h3>
-                    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-                        <div class="stat-card">
-                            <div class="stat-label">Avg Comment Length</div>
-                            <div class="stat-value" id="avgCommentLength">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Comments with URL</div>
-                            <div class="stat-value" id="commentsWithUrl">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Comments with URL %</div>
-                            <div class="stat-value" id="commentsWithUrlPct">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Comments with Mention</div>
-                            <div class="stat-value" id="commentsWithMention">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Comments with Mention %</div>
-                            <div class="stat-value" id="commentsWithMentionPct">-</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Avg Comments per Note</div>
-                            <div class="stat-value" id="avgCommentsPerNote">-</div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="profile-section" id="resolutionTrendsSection">
-                    <h3>Resolution Trends</h3>
-                    <div id="resolutionTrendsContainer">
-                        <p class="loading">Loading resolution trends...</p>
-                    </div>
-                </section>
-
-                <section class="profile-section" id="applicationStatsSection">
-                    <h3>Application Statistics</h3>
-                    <div id="applicationStatsContainer">
-                        <p class="loading">Loading application statistics...</p>
-                    </div>
-                </section>
-
-                <section class="profile-section">
-                    <h3>Activity</h3>
-                    <div id="activityHeatmap" class="activity-heatmap">
-                        <!-- GitHub-style activity heatmap will go here -->
-                        <p class="loading">Loading activity data...</p>
-                    </div>
-                </section>
-
-                <section class="profile-section">
-                    <h3>Top Hashtags</h3>
-                    <div id="hashtagsContainer" class="hashtags-container">
-                        <p class="loading">Loading hashtags...</p>
-                    </div>
-                </section>
-
-                <section class="profile-section">
-                    <h3>Active Countries</h3>
-                    <div class="contributors-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
-                        <div>
-                            <h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>📝</span> Opened Notes
-                            </h4>
-                            <div id="countriesOpenContainer" class="countries-container">
-                                <p class="loading">Loading countries...</p>
-                            </div>
-                        </div>
-                        <div>
-                            <h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>✅</span> Solved Notes
-                            </h4>
-                            <div id="countriesSolvingContainer" class="countries-container">
-                                <p class="loading">Loading countries...</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="profile-section" id="countryRankingsByYearSection">
-                    <h3>Country Rankings by Year</h3>
-                    <div style="margin-bottom: 1rem;">
-                        <label for="yearSelector" style="color: var(--text-color); margin-right: 0.5rem;">Select Year:</label>
-                        <select id="yearSelector" style="padding: 0.5rem; border-radius: var(--radius); border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color);">
-                            <option value="">All Time</option>
-                        </select>
-                    </div>
-                    <div class="contributors-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
-                        <div>
-                            <h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>📝</span> Opened Notes
-                            </h4>
-                            <div id="countriesOpenByYearContainer" class="countries-container">
-                                <p class="text-light">Select a year to view rankings</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="profile-section">
-                    <h3>Peak Activity Days</h3>
-                    <div class="contributors-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
-                        <div>
-                            <h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>📈</span> Top Opening Days
-                            </h4>
-                            <div id="topOpeningDays" class="countries-container">
-                                <p class="loading">Loading opening days...</p>
-                            </div>
-                        </div>
-                        <div>
-                            <h4 style="margin: 0 0 0.75rem 0; color: var(--text-color); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <span>📉</span> Top Closing Days
-                            </h4>
-                            <div id="topClosingDays" class="countries-container">
-                                <p class="loading">Loading closing days...</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="profile-section">
-                    <h3>Working Hours</h3>
-                    <div id="workingHoursContainer" class="working-hours-container">
-                        <p class="loading">Loading working hours...</p>
-                    </div>
-                </section>
-
-                <section class="profile-section">
-                    <h3>Activity History</h3>
-                    <div id="activityHistoryContainer" class="activity-history-container">
-                        <p class="loading">Loading activity history...</p>
-                    </div>
-                </section>
-
-                <section class="profile-section" id="yearlyHistorySection">
-                    <h3>Yearly Activity Breakdown</h3>
-                    <div id="yearlyHistoryContainer">
-                        <p class="loading">Loading yearly history...</p>
-                    </div>
-                </section>
-
-                <section class="profile-section">
-                    <h3>First Actions</h3>
-                    <div id="firstActionsContainer" class="first-actions-container">
-                        <p class="loading">Loading first actions...</p>
-                    </div>
-                </section>
-                    </div>
+              <section class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-label">Notes Opened</div>
+                  <div class="stat-value" id="notesOpened">-</div>
                 </div>
+                <div class="stat-card">
+                  <div class="stat-label">Notes Closed</div>
+                  <div class="stat-value" id="notesClosed">-</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Closed with Comment</div>
+                  <div class="stat-value" id="notesClosedWithComment">-</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Comments</div>
+                  <div class="stat-value" id="notesCommented">-</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-label">Reopened</div>
+                  <div class="stat-value" id="notesReopened">-</div>
+                </div>
+              </section>
+
+              <section class="profile-section" id="resolutionMetricsSection">
+                <h3>Resolution Metrics</h3>
+                <div
+                  class="stats-grid"
+                  style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))"
+                >
+                  <div class="stat-card">
+                    <div class="stat-label">Avg Days to Resolution</div>
+                    <div class="stat-value" id="avgDaysToResolution">-</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Median Days to Resolution</div>
+                    <div class="stat-value" id="medianDaysToResolution">-</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Resolution Rate</div>
+                    <div class="stat-value" id="resolutionRate">-</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Notes Resolved</div>
+                    <div class="stat-value" id="notesResolvedCount">-</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Notes Still Open</div>
+                    <div class="stat-value" id="notesStillOpenCount">-</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Opened but Not Closed</div>
+                    <div class="stat-value" id="notesOpenedButNotClosed">-</div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="profile-section" id="contentQualitySection">
+                <h3>Content Quality Metrics</h3>
+                <div
+                  class="stats-grid"
+                  style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr))"
+                >
+                  <div class="stat-card">
+                    <div class="stat-label">Avg Comment Length</div>
+                    <div class="stat-value" id="avgCommentLength">-</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Comments with URL</div>
+                    <div class="stat-value" id="commentsWithUrl">-</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Comments with URL %</div>
+                    <div class="stat-value" id="commentsWithUrlPct">-</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Comments with Mention</div>
+                    <div class="stat-value" id="commentsWithMention">-</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Comments with Mention %</div>
+                    <div class="stat-value" id="commentsWithMentionPct">-</div>
+                  </div>
+                  <div class="stat-card">
+                    <div class="stat-label">Avg Comments per Note</div>
+                    <div class="stat-value" id="avgCommentsPerNote">-</div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="profile-section" id="resolutionTrendsSection">
+                <h3>Resolution Trends</h3>
+                <div id="resolutionTrendsContainer">
+                  <p class="loading">Loading resolution trends...</p>
+                </div>
+              </section>
+
+              <section class="profile-section" id="applicationStatsSection">
+                <h3>Application Statistics</h3>
+                <div id="applicationStatsContainer">
+                  <p class="loading">Loading application statistics...</p>
+                </div>
+              </section>
+
+              <section class="profile-section">
+                <h3>Activity</h3>
+                <div id="activityHeatmap" class="activity-heatmap">
+                  <!-- GitHub-style activity heatmap will go here -->
+                  <p class="loading">Loading activity data...</p>
+                </div>
+              </section>
+
+              <section class="profile-section">
+                <h3>Top Hashtags</h3>
+                <div id="hashtagsContainer" class="hashtags-container">
+                  <p class="loading">Loading hashtags...</p>
+                </div>
+              </section>
+
+              <section class="profile-section">
+                <h3>Active Countries</h3>
+                <div
+                  class="contributors-grid"
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                    gap: 1.5rem;
+                  "
+                >
+                  <div>
+                    <h4
+                      style="
+                        margin: 0 0 0.75rem 0;
+                        color: var(--text-color);
+                        font-size: 0.95rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                      "
+                    >
+                      <span>📝</span> Opened Notes
+                    </h4>
+                    <div id="countriesOpenContainer" class="countries-container">
+                      <p class="loading">Loading countries...</p>
+                    </div>
+                  </div>
+                  <div>
+                    <h4
+                      style="
+                        margin: 0 0 0.75rem 0;
+                        color: var(--text-color);
+                        font-size: 0.95rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                      "
+                    >
+                      <span>✅</span> Solved Notes
+                    </h4>
+                    <div id="countriesSolvingContainer" class="countries-container">
+                      <p class="loading">Loading countries...</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="profile-section" id="countryRankingsByYearSection">
+                <h3>Country Rankings by Year</h3>
+                <div style="margin-bottom: 1rem">
+                  <label for="yearSelector" style="color: var(--text-color); margin-right: 0.5rem"
+                    >Select Year:</label
+                  >
+                  <select
+                    id="yearSelector"
+                    style="
+                      padding: 0.5rem;
+                      border-radius: var(--radius);
+                      border: 1px solid var(--border-color);
+                      background: var(--card-bg);
+                      color: var(--text-color);
+                    "
+                  >
+                    <option value="">All Time</option>
+                  </select>
+                </div>
+                <div
+                  class="contributors-grid"
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                    gap: 1.5rem;
+                  "
+                >
+                  <div>
+                    <h4
+                      style="
+                        margin: 0 0 0.75rem 0;
+                        color: var(--text-color);
+                        font-size: 0.95rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                      "
+                    >
+                      <span>📝</span> Opened Notes
+                    </h4>
+                    <div id="countriesOpenByYearContainer" class="countries-container">
+                      <p class="text-light">Select a year to view rankings</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="profile-section">
+                <h3>Peak Activity Days</h3>
+                <div
+                  class="contributors-grid"
+                  style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                    gap: 1.5rem;
+                  "
+                >
+                  <div>
+                    <h4
+                      style="
+                        margin: 0 0 0.75rem 0;
+                        color: var(--text-color);
+                        font-size: 0.95rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                      "
+                    >
+                      <span>📈</span> Top Opening Days
+                    </h4>
+                    <div id="topOpeningDays" class="countries-container">
+                      <p class="loading">Loading opening days...</p>
+                    </div>
+                  </div>
+                  <div>
+                    <h4
+                      style="
+                        margin: 0 0 0.75rem 0;
+                        color: var(--text-color);
+                        font-size: 0.95rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                      "
+                    >
+                      <span>📉</span> Top Closing Days
+                    </h4>
+                    <div id="topClosingDays" class="countries-container">
+                      <p class="loading">Loading closing days...</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="profile-section">
+                <h3>Working Hours</h3>
+                <div id="workingHoursContainer" class="working-hours-container">
+                  <p class="loading">Loading working hours...</p>
+                </div>
+              </section>
+
+              <section class="profile-section">
+                <h3>Activity History</h3>
+                <div id="activityHistoryContainer" class="activity-history-container">
+                  <p class="loading">Loading activity history...</p>
+                </div>
+              </section>
+
+              <section class="profile-section" id="yearlyHistorySection">
+                <h3>Yearly Activity Breakdown</h3>
+                <div id="yearlyHistoryContainer">
+                  <p class="loading">Loading yearly history...</p>
+                </div>
+              </section>
+
+              <section class="profile-section">
+                <h3>First Actions</h3>
+                <div id="firstActionsContainer" class="first-actions-container">
+                  <p class="loading">Loading first actions...</p>
+                </div>
+              </section>
             </div>
-
-            <!-- Right Sidebar - Recent Closed Notes -->
-            <aside class="notes-sidebar notes-sidebar-right" id="recentClosedNotesSidebar">
-                <h3>Recent Closed Notes</h3>
-                <div id="recentClosedNotesContainer" class="notes-grid">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-            </aside>
+          </div>
         </div>
+
+        <!-- Right Sidebar - Recent Closed Notes -->
+        <aside class="notes-sidebar notes-sidebar-right" id="recentClosedNotesSidebar">
+          <h3>Recent Closed Notes</h3>
+          <div id="recentClosedNotesContainer" class="notes-grid">
+            <!-- Will be populated by JavaScript -->
+          </div>
+        </aside>
+      </div>
     </main>
 
     <footer class="footer" role="contentinfo">
-        <div class="container">
-            <p>
-                <span>Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
-                | <span>Processed by</span>
-                <a href="https://github.com/OSM-Notes/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
-                & <a href="https://github.com/OSM-Notes/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
-            </p>
-            <p>
-                <a href="https://github.com/OSM-Notes/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-                | <span>Version</span> 1.0.0
-            </p>
-            <p class="footer-copyright">
-                © 2025 OSM Latam Community | <span>Made with</span> ❤️ <span>for OSM</span>
-            </p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
-                <span>Made by</span> <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
-            </p>
-        </div>
+      <div class="container">
+        <p>
+          <span>Data from</span>
+          <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer"
+            >OpenStreetMap</a
+          >
+          | <span>Processed by</span>
+          <a
+            href="https://github.com/OSM-Notes/OSM-Notes-Ingestion"
+            target="_blank"
+            rel="noopener noreferrer"
+            >OSM-Notes-Ingestion</a
+          >
+          &
+          <a
+            href="https://github.com/OSM-Notes/OSM-Notes-Analytics"
+            target="_blank"
+            rel="noopener noreferrer"
+            >OSM-Notes-Analytics</a
+          >
+        </p>
+        <p>
+          <a
+            href="https://github.com/OSM-Notes/OSM-Notes-Viewer"
+            target="_blank"
+            rel="noopener noreferrer"
+            >View on GitHub</a
+          >
+          | <span>Version</span> 1.0.0
+        </p>
+        <p class="footer-copyright">
+          © 2025 OSM Latam Community | <span>Made with</span> ❤️ <span>for OSM</span>
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem">
+          <span>Made by</span>
+          <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
+        </p>
+      </div>
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        console.log('Leaflet available:', typeof window.L);
+      console.log('Leaflet available:', typeof window.L);
     </script>
     <script type="module" src="../js/pages/userProfile.js"></script>
     <script type="module" src="../js/analytics-init.js"></script>
-</body>
+  </body>
 </html>
-
-

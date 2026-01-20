@@ -1,448 +1,619 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="title.about">About - OSM Notes Viewer</title>
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link rel="stylesheet" href="../css/main.css">
-</head>
-<body>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="stylesheet" href="../css/main.css" />
+  </head>
+  <body>
     <header class="header" role="banner">
-        <div class="container">
-            <h1 class="logo">
-                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;" aria-label="OSM Notes Viewer - Home">
-                    <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
-                </a>
-            </h1>
-            <div style="display: flex; gap: 1rem; align-items: center;">
-                <div id="languageSelector"></div>
-                <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle" data-i18n-aria-label="theme.toggle">
-                    🌙 <span data-i18n="theme.dark">Dark</span>
-                </button>
-            </div>
-            <nav class="nav" role="navigation" aria-label="Main navigation" data-i18n-aria-label="a11y.mainNavigation">
-                <a href="../index.html" class="nav-link" data-i18n="nav.home">Home</a>
-                <a href="explore.html" class="nav-link" data-i18n="nav.explore">Explore</a>
-                <a href="stats.html" class="nav-link" data-i18n="nav.stats">Stats</a>
-                <a href="map.html" class="nav-link" data-i18n="nav.map">Map</a>
-                <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
-                <a href="about.html" class="nav-link active" aria-current="page" data-i18n="nav.about">About</a>
-            </nav>
+      <div class="container">
+        <h1 class="logo">
+          <a
+            href="../index.html"
+            style="
+              text-decoration: none;
+              color: inherit;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            "
+            aria-label="OSM Notes Viewer - Home"
+          >
+            <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem" />
+          </a>
+        </h1>
+        <div style="display: flex; gap: 1rem; align-items: center">
+          <div id="languageSelector"></div>
+          <button
+            class="theme-toggle"
+            aria-label="Toggle dark mode"
+            id="themeToggle"
+            data-i18n-aria-label="theme.toggle"
+          >
+            🌙 <span data-i18n="theme.dark">Dark</span>
+          </button>
         </div>
+        <nav
+          class="nav"
+          role="navigation"
+          aria-label="Main navigation"
+          data-i18n-aria-label="a11y.mainNavigation"
+        >
+          <a href="../index.html" class="nav-link" data-i18n="nav.home">Home</a>
+          <a href="explore.html" class="nav-link" data-i18n="nav.explore">Explore</a>
+          <a href="stats.html" class="nav-link" data-i18n="nav.stats">Stats</a>
+          <a href="map.html" class="nav-link" data-i18n="nav.map">Map</a>
+          <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
+          <a href="about.html" class="nav-link active" aria-current="page" data-i18n="nav.about"
+            >About</a
+          >
+        </nav>
+      </div>
     </header>
 
     <main class="main">
-        <div class="container about-container">
-            <h2 data-i18n="about.title">About OSM Notes Viewer</h2>
+      <div class="container about-container">
+        <h2 data-i18n="about.title">About OSM Notes Viewer</h2>
 
-            <section>
-                <h3 data-i18n="about.whatIsThis">What is this?</h3>
-                <p data-i18n="about.whatIsThis.description1">
-                    OSM Notes Viewer is an interactive web application that visualizes analytics and statistics
-                    about OpenStreetMap notes activity around the world.
-                </p>
-                <p data-i18n="about.whatIsThis.description2">
-                    It provides insights into user contributions, country-level statistics, hashtag trends,
-                    and temporal patterns of note creation and resolution.
-                </p>
-            </section>
+        <section>
+          <h3 data-i18n="about.whatIsThis">What is this?</h3>
+          <p data-i18n="about.whatIsThis.description1">
+            OSM Notes Viewer is an interactive web application that visualizes analytics and
+            statistics about OpenStreetMap notes activity around the world.
+          </p>
+          <p data-i18n="about.whatIsThis.description2">
+            It provides insights into user contributions, country-level statistics, hashtag trends,
+            and temporal patterns of note creation and resolution.
+          </p>
+        </section>
 
-            <section id="manifesto" aria-labelledby="manifesto-title">
-                <h3 id="manifesto-title" data-i18n="about.manifesto.title">Manifesto: Our Perspective on OSM Notes</h3>
+        <section id="manifesto" aria-labelledby="manifesto-title">
+          <h3 id="manifesto-title" data-i18n="about.manifesto.title">
+            Manifesto: Our Perspective on OSM Notes
+          </h3>
 
-                <h4 data-i18n="about.manifesto.importance.title">The Importance of Notes in OpenStreetMap</h4>
-                <p data-i18n="about.manifesto.importance.p1">
-                    OpenStreetMap Notes are a fundamental mechanism for community collaboration and quality improvement.
-                    They serve as a bridge between mappers and the real world, allowing anyone to report issues,
-                    suggest improvements, or request new features directly on the map.
-                </p>
-                <p data-i18n="about.manifesto.importance.p2">
-                    Notes represent the collective effort of thousands of contributors working together to improve
-                    the map's accuracy and completeness. Each note tells a story—a missing road, an incorrect name,
-                    a new business, or a mapping error that needs correction.
-                </p>
-                <p data-i18n="about.manifesto.importance.p3">
-                    Notes help keep the map alive and up-to-date. They enable users who don't know how to map to report
-                    discrepancies between what they see on the street and what appears on the map. Mappers then take
-                    these reports to provide feedback to the map, improving it according to what users describe. This
-                    creates a continuous feedback loop that ensures the map reflects the real world as accurately as possible.
-                </p>
+          <h4 data-i18n="about.manifesto.importance.title">
+            The Importance of Notes in OpenStreetMap
+          </h4>
+          <p data-i18n="about.manifesto.importance.p1">
+            OpenStreetMap Notes are a fundamental mechanism for community collaboration and quality
+            improvement. They serve as a bridge between mappers and the real world, allowing anyone
+            to report issues, suggest improvements, or request new features directly on the map.
+          </p>
+          <p data-i18n="about.manifesto.importance.p2">
+            Notes represent the collective effort of thousands of contributors working together to
+            improve the map's accuracy and completeness. Each note tells a story—a missing road, an
+            incorrect name, a new business, or a mapping error that needs correction.
+          </p>
+          <p data-i18n="about.manifesto.importance.p3">
+            Notes help keep the map alive and up-to-date. They enable users who don't know how to
+            map to report discrepancies between what they see on the street and what appears on the
+            map. Mappers then take these reports to provide feedback to the map, improving it
+            according to what users describe. This creates a continuous feedback loop that ensures
+            the map reflects the real world as accurately as possible.
+          </p>
 
-                <h4 data-i18n="about.manifesto.mission.title">Our Mission</h4>
-                <p data-i18n="about.manifesto.mission.p">
-                    Our mission is to make OSM Notes more accessible, understandable, and actionable. We believe that
-                    by providing better tools and insights, we can:
-                </p>
-                <ul>
-                    <li data-i18n="about.manifesto.mission.item1">Help mappers identify and resolve notes more efficiently</li>
-                    <li data-i18n="about.manifesto.mission.item2">Encourage new contributors to engage with the notes system</li>
-                    <li data-i18n="about.manifesto.mission.item3">Provide transparency into the notes ecosystem and community activity</li>
-                    <li data-i18n="about.manifesto.mission.item4">Support research and analysis of mapping patterns and trends</li>
-                    <li data-i18n="about.manifesto.mission.item5">Foster collaboration within the OpenStreetMap community</li>
-                </ul>
-            </section>
+          <h4 data-i18n="about.manifesto.mission.title">Our Mission</h4>
+          <p data-i18n="about.manifesto.mission.p">
+            Our mission is to make OSM Notes more accessible, understandable, and actionable. We
+            believe that by providing better tools and insights, we can:
+          </p>
+          <ul>
+            <li data-i18n="about.manifesto.mission.item1">
+              Help mappers identify and resolve notes more efficiently
+            </li>
+            <li data-i18n="about.manifesto.mission.item2">
+              Encourage new contributors to engage with the notes system
+            </li>
+            <li data-i18n="about.manifesto.mission.item3">
+              Provide transparency into the notes ecosystem and community activity
+            </li>
+            <li data-i18n="about.manifesto.mission.item4">
+              Support research and analysis of mapping patterns and trends
+            </li>
+            <li data-i18n="about.manifesto.mission.item5">
+              Foster collaboration within the OpenStreetMap community
+            </li>
+          </ul>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.community.title">The Latin American Community</h3>
-                <p data-i18n="about.community.p1">
-                    There is a dedicated community in Latin America focused on resolving OSM Notes. This community
-                    works tirelessly to improve the map quality across the region, addressing notes related to:
-                </p>
-                <ul>
-                    <li data-i18n="about.community.item1">Missing or incorrect road networks</li>
-                    <li data-i18n="about.community.item2">Place names and administrative boundaries</li>
-                    <li data-i18n="about.community.item3">Points of interest (POIs) and businesses</li>
-                    <li data-i18n="about.community.item4">Geographic features and natural landmarks</li>
-                    <li data-i18n="about.community.item5">Data quality improvements</li>
-                </ul>
-                <p data-i18n="about.community.p2">
-                    This project is part of that effort, providing tools and insights to support the community's work.
-                </p>
-            </section>
+        <section>
+          <h3 data-i18n="about.community.title">The Latin American Community</h3>
+          <p data-i18n="about.community.p1">
+            There is a dedicated community in Latin America focused on resolving OSM Notes. This
+            community works tirelessly to improve the map quality across the region, addressing
+            notes related to:
+          </p>
+          <ul>
+            <li data-i18n="about.community.item1">Missing or incorrect road networks</li>
+            <li data-i18n="about.community.item2">Place names and administrative boundaries</li>
+            <li data-i18n="about.community.item3">Points of interest (POIs) and businesses</li>
+            <li data-i18n="about.community.item4">Geographic features and natural landmarks</li>
+            <li data-i18n="about.community.item5">Data quality improvements</li>
+          </ul>
+          <p data-i18n="about.community.p2">
+            This project is part of that effort, providing tools and insights to support the
+            community's work.
+          </p>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.history.title">Project History</h3>
-                <p data-i18n="about.history.p1">
-                    This project began in 2020, during the pandemic, when Andrés Gómez started reviewing notes in Colombia,
-                    where there was no information on how to resolve them, but there were many.
-                </p>
-                <p data-i18n="about.history.p2">
-                    In 2021, he began inviting others to participate in note resolution. First for Bogotá, then thanks to
-                    rustiruz, they expanded to resolve notes throughout Colombia, and that's how they came to invite people
-                    to resolve notes at the Latin America level.
-                </p>
-                <p data-i18n="about.history.p3">
-                    Rustiruz coined the term "notathon" as an activity where people gather to resolve notes. Since then,
-                    notathons have been held in several Latin American countries, and people who resolve notes have been
-                    brought together in a <a href="https://t.me/osm_notes_latam" target="_blank" rel="noopener noreferrer">Telegram channel</a> where they support each other.
-                </p>
-                <p data-i18n="about.history.p4">
-                    These notathons have allowed the Latam community to reconsolidate, reaching the point of resuming
-                    State of the Map Latam events.
-                </p>
-                <p data-i18n="about.history.p5">
-                    Returning to notes, the lack of tools for note resolution has led to requests for many applications
-                    to make changes for notes, from including the app name and version, to including specific functionality
-                    (fediphoto, damn). However, in terms of resolution, the tools are limited: they show the location of
-                    notes (notesViewer), the number of open or closed notes (HDYC), but nothing more. Analysis is scarce,
-                    like the notes heatmap app.
-                </p>
-                <p data-i18n="about.history.p6">
-                    On the other hand, notes were added after implementing OSM API 0.6, and their functionality is very limited.
-                    Querying a user's notes is tedious, and those of a country are only possible with Pascal Neis's resultMaps,
-                    but its analysis is limited.
-                </p>
-                <p data-i18n="about.history.p7">
-                    Additionally, there was a desire to recognize the great notes resolvers of Latam, and that's how the use
-                    of the planet dump began. Gradually, the idea matured of having a notes contribution profile similar to HDYC,
-                    and that's when research began on API queries for updated data.
-                </p>
-                <p data-i18n="about.history.p8">
-                    That was the Eureka moment, and a mechanism was imagined to download the history and then keep it updated.
-                    The first part was in bash, which downloaded the history. It was his friend José Luis Cerón who provided
-                    architecture techniques and advised continuing in bash, given how advanced the project was.
-                </p>
-                <p data-i18n="about.history.p9">
-                    Progress continued, but there was a blocker: processing the Planet XML is challenging, and several tools
-                    crashed. Years later, his friend José Luis showed him Cursor IDE and how to develop things, where he began
-                    practicing with GeoGame, a project that will be resumed once this viewer is stable.
-                </p>
-                <p data-i18n="about.history.p10">
-                    Thanks to AI and many prompts, the proposal was made not to use XML tools, but rather AWK, a robust command
-                    with many years of experience. That's how it was possible to process all notes without problems and move
-                    forward with the project in late 2025.
-                </p>
-                <p data-i18n="about.history.p11">
-                    Thanks to AI, the code has become more robust, correcting hundreds of errors, including unit tests, integration
-                    tests, GitHub Actions, dividing the code into multiple repositories, improving SQL, separating the ingestion
-                    part from the analytics part, as well as factoring the common part into commons. Then creating a repo for the
-                    visualization part that hadn't been thought of until then, also extracting the WMS part, and new projects emerged
-                    like Data, to keep data in another place that can even be used by an AI for context, also the API project to
-                    offer more functionality than the OSM API offers including ML, and finally monitoring to understand how all
-                    these pieces work.
-                </p>
-                <p data-i18n="about.history.p12">
-                    AI in 2025 accelerated the process and has been a learning experience, as AI sometimes hallucinates, and that's
-                    why it must be given good context to focus it. That's why all these repos are full of documentation, so that
-                    any future improvement is documented, and any AI can improve the code.
-                </p>
-            </section>
+        <section>
+          <h3 data-i18n="about.history.title">Project History</h3>
+          <p data-i18n="about.history.p1">
+            This project began in 2020, during the pandemic, when Andrés Gómez started reviewing
+            notes in Colombia, where there was no information on how to resolve them, but there were
+            many.
+          </p>
+          <p data-i18n="about.history.p2">
+            In 2021, he began inviting others to participate in note resolution. First for Bogotá,
+            then thanks to rustiruz, they expanded to resolve notes throughout Colombia, and that's
+            how they came to invite people to resolve notes at the Latin America level.
+          </p>
+          <p data-i18n="about.history.p3">
+            Rustiruz coined the term "notathon" as an activity where people gather to resolve notes.
+            Since then, notathons have been held in several Latin American countries, and people who
+            resolve notes have been brought together in a
+            <a href="https://t.me/osm_notes_latam" target="_blank" rel="noopener noreferrer"
+              >Telegram channel</a
+            >
+            where they support each other.
+          </p>
+          <p data-i18n="about.history.p4">
+            These notathons have allowed the Latam community to reconsolidate, reaching the point of
+            resuming State of the Map Latam events.
+          </p>
+          <p data-i18n="about.history.p5">
+            Returning to notes, the lack of tools for note resolution has led to requests for many
+            applications to make changes for notes, from including the app name and version, to
+            including specific functionality (fediphoto, damn). However, in terms of resolution, the
+            tools are limited: they show the location of notes (notesViewer), the number of open or
+            closed notes (HDYC), but nothing more. Analysis is scarce, like the notes heatmap app.
+          </p>
+          <p data-i18n="about.history.p6">
+            On the other hand, notes were added after implementing OSM API 0.6, and their
+            functionality is very limited. Querying a user's notes is tedious, and those of a
+            country are only possible with Pascal Neis's resultMaps, but its analysis is limited.
+          </p>
+          <p data-i18n="about.history.p7">
+            Additionally, there was a desire to recognize the great notes resolvers of Latam, and
+            that's how the use of the planet dump began. Gradually, the idea matured of having a
+            notes contribution profile similar to HDYC, and that's when research began on API
+            queries for updated data.
+          </p>
+          <p data-i18n="about.history.p8">
+            That was the Eureka moment, and a mechanism was imagined to download the history and
+            then keep it updated. The first part was in bash, which downloaded the history. It was
+            his friend José Luis Cerón who provided architecture techniques and advised continuing
+            in bash, given how advanced the project was.
+          </p>
+          <p data-i18n="about.history.p9">
+            Progress continued, but there was a blocker: processing the Planet XML is challenging,
+            and several tools crashed. Years later, his friend José Luis showed him Cursor IDE and
+            how to develop things, where he began practicing with GeoGame, a project that will be
+            resumed once this viewer is stable.
+          </p>
+          <p data-i18n="about.history.p10">
+            Thanks to AI and many prompts, the proposal was made not to use XML tools, but rather
+            AWK, a robust command with many years of experience. That's how it was possible to
+            process all notes without problems and move forward with the project in late 2025.
+          </p>
+          <p data-i18n="about.history.p11">
+            Thanks to AI, the code has become more robust, correcting hundreds of errors, including
+            unit tests, integration tests, GitHub Actions, dividing the code into multiple
+            repositories, improving SQL, separating the ingestion part from the analytics part, as
+            well as factoring the common part into commons. Then creating a repo for the
+            visualization part that hadn't been thought of until then, also extracting the WMS part,
+            and new projects emerged like Data, to keep data in another place that can even be used
+            by an AI for context, also the API project to offer more functionality than the OSM API
+            offers including ML, and finally monitoring to understand how all these pieces work.
+          </p>
+          <p data-i18n="about.history.p12">
+            AI in 2025 accelerated the process and has been a learning experience, as AI sometimes
+            hallucinates, and that's why it must be given good context to focus it. That's why all
+            these repos are full of documentation, so that any future improvement is documented, and
+            any AI can improve the code.
+          </p>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.built.title">What We've Built</h3>
-                <p data-i18n="about.built.p1">
-                    This project is part of a comprehensive ecosystem consisting of 8 repositories and 2 databases working together
-                    to process, analyze, and visualize OSM Notes. The ecosystem includes data ingestion pipelines, analytics systems,
-                    REST APIs, web map services, monitoring tools, and visualization interfaces. All components are open source
-                    and available for the community to use, modify, and extend.
-                </p>
-                <p data-i18n="about.built.p2">For detailed information about each component, see the <a href="#ecosystem-architecture">Ecosystem Architecture</a> section below.</p>
-            </section>
+        <section>
+          <h3 data-i18n="about.built.title">What We've Built</h3>
+          <p data-i18n="about.built.p1">
+            This project is part of a comprehensive ecosystem consisting of 8 repositories and 2
+            databases working together to process, analyze, and visualize OSM Notes. The ecosystem
+            includes data ingestion pipelines, analytics systems, REST APIs, web map services,
+            monitoring tools, and visualization interfaces. All components are open source and
+            available for the community to use, modify, and extend.
+          </p>
+          <p data-i18n="about.built.p2">
+            For detailed information about each component, see the
+            <a href="#ecosystem-architecture">Ecosystem Architecture</a> section below.
+          </p>
+        </section>
 
-            <section id="ecosystem-architecture" aria-labelledby="ecosystem-title">
-                <h3 id="ecosystem-title" data-i18n="about.architecture.title">Ecosystem Architecture</h3>
-                <p data-i18n="about.architecture.p">
-                    This viewer is part of a comprehensive ecosystem of 8 repositories and 2 databases working together
-                    to process, analyze, and visualize OSM Notes:
-                </p>
+        <section id="ecosystem-architecture" aria-labelledby="ecosystem-title">
+          <h3 id="ecosystem-title" data-i18n="about.architecture.title">Ecosystem Architecture</h3>
+          <p data-i18n="about.architecture.p">
+            This viewer is part of a comprehensive ecosystem of 8 repositories and 2 databases
+            working together to process, analyze, and visualize OSM Notes:
+          </p>
 
-                <h4 data-i18n="about.architecture.repositories">Repositories</h4>
-                <ol>
-                    <li>
-                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Ingestion" target="_blank">OSM-Notes-Ingestion</a>:</strong>
-                        Downloads and maintains OSM notes data from Planet dumps and API. Handles incremental updates and data synchronization.
-                    </li>
-                    <li>
-                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Common" target="_blank">OSM-Notes-Common</a>:</strong>
-                        Shared libraries and utilities used across all projects. Includes validation functions, error handling, and common Bash scripts.
-                    </li>
-                    <li>
-                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>:</strong>
-                        Data warehouse and ETL system that processes the ingested data and generates statistics. Creates datamarts and exports JSON/CSV files.
-                        Includes ML-powered recommendations for note actions (close, comment, map).
-                    </li>
-                    <li>
-                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Viewer" target="_blank">OSM-Notes-Viewer</a>:</strong>
-                        This web application that visualizes the analytics data. Provides user profiles, country statistics, and interactive visualizations.
-                    </li>
-                    <li>
-                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Data" target="_blank">OSM-Notes-Data</a>:</strong>
-                        Data repository serving pre-generated JSON files via GitHub Pages/CDN. Contains user profiles, country statistics, and indexes.
-                    </li>
-                    <li>
-                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-API" target="_blank">OSM-Notes-API</a>:</strong>
-                        REST API providing dynamic data access. Handles individual note details, hashtag statistics, ML recommendations, and note search.
-                    </li>
-                    <li>
-                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Monitoring" target="_blank">OSM-Notes-Monitoring</a>:</strong>
-                        Monitoring and observability system. Provides Grafana dashboards, Prometheus metrics, and system health monitoring for the entire ecosystem.
-                    </li>
-                    <li>
-                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-WMS" target="_blank">OSM-Notes-WMS</a>:</strong>
-                        GeoServer configuration and WMS (Web Map Service) setup. Contains GeoServer workspace configuration, layer definitions, and styling for map visualization services.
-                    </li>
-                </ol>
+          <h4 data-i18n="about.architecture.repositories">Repositories</h4>
+          <ol>
+            <li>
+              <strong
+                ><a href="https://github.com/OSM-Notes/OSM-Notes-Ingestion" target="_blank"
+                  >OSM-Notes-Ingestion</a
+                >:</strong
+              >
+              Downloads and maintains OSM notes data from Planet dumps and API. Handles incremental
+              updates and data synchronization.
+            </li>
+            <li>
+              <strong
+                ><a href="https://github.com/OSM-Notes/OSM-Notes-Common" target="_blank"
+                  >OSM-Notes-Common</a
+                >:</strong
+              >
+              Shared libraries and utilities used across all projects. Includes validation
+              functions, error handling, and common Bash scripts.
+            </li>
+            <li>
+              <strong
+                ><a href="https://github.com/OSM-Notes/OSM-Notes-Analytics" target="_blank"
+                  >OSM-Notes-Analytics</a
+                >:</strong
+              >
+              Data warehouse and ETL system that processes the ingested data and generates
+              statistics. Creates datamarts and exports JSON/CSV files. Includes ML-powered
+              recommendations for note actions (close, comment, map).
+            </li>
+            <li>
+              <strong
+                ><a href="https://github.com/OSM-Notes/OSM-Notes-Viewer" target="_blank"
+                  >OSM-Notes-Viewer</a
+                >:</strong
+              >
+              This web application that visualizes the analytics data. Provides user profiles,
+              country statistics, and interactive visualizations.
+            </li>
+            <li>
+              <strong
+                ><a href="https://github.com/OSM-Notes/OSM-Notes-Data" target="_blank"
+                  >OSM-Notes-Data</a
+                >:</strong
+              >
+              Data repository serving pre-generated JSON files via GitHub Pages/CDN. Contains user
+              profiles, country statistics, and indexes.
+            </li>
+            <li>
+              <strong
+                ><a href="https://github.com/OSM-Notes/OSM-Notes-API" target="_blank"
+                  >OSM-Notes-API</a
+                >:</strong
+              >
+              REST API providing dynamic data access. Handles individual note details, hashtag
+              statistics, ML recommendations, and note search.
+            </li>
+            <li>
+              <strong
+                ><a href="https://github.com/OSM-Notes/OSM-Notes-Monitoring" target="_blank"
+                  >OSM-Notes-Monitoring</a
+                >:</strong
+              >
+              Monitoring and observability system. Provides Grafana dashboards, Prometheus metrics,
+              and system health monitoring for the entire ecosystem.
+            </li>
+            <li>
+              <strong
+                ><a href="https://github.com/OSM-Notes/OSM-Notes-WMS" target="_blank"
+                  >OSM-Notes-WMS</a
+                >:</strong
+              >
+              GeoServer configuration and WMS (Web Map Service) setup. Contains GeoServer workspace
+              configuration, layer definitions, and styling for map visualization services.
+            </li>
+          </ol>
 
-                <h4 data-i18n="about.architecture.databases">Databases</h4>
-                <ol>
-                    <li>
-                        <strong>PostgreSQL (Ingestion Database):</strong>
-                        Stores raw notes data from OSM Planet dumps and API. Contains tables for notes, note_comments, users, and countries.
-                        Used by OSM-Notes-Ingestion for data storage and incremental updates.
-                    </li>
-                    <li>
-                        <strong>PostgreSQL (Analytics Data Warehouse):</strong>
-                        Data warehouse with star schema design. Contains fact and dimension tables for analytics processing.
-                        Used by OSM-Notes-Analytics for ETL processes and generating statistics. Includes datamarts for
-                        user profiles, country statistics, and temporal analysis.
-                    </li>
-                </ol>
+          <h4 data-i18n="about.architecture.databases">Databases</h4>
+          <ol>
+            <li>
+              <strong>PostgreSQL (Ingestion Database):</strong>
+              Stores raw notes data from OSM Planet dumps and API. Contains tables for notes,
+              note_comments, users, and countries. Used by OSM-Notes-Ingestion for data storage and
+              incremental updates.
+            </li>
+            <li>
+              <strong>PostgreSQL (Analytics Data Warehouse):</strong>
+              Data warehouse with star schema design. Contains fact and dimension tables for
+              analytics processing. Used by OSM-Notes-Analytics for ETL processes and generating
+              statistics. Includes datamarts for user profiles, country statistics, and temporal
+              analysis.
+            </li>
+          </ol>
 
-                <h4 data-i18n="about.architecture.services">Services</h4>
-                <ul>
-                    <li>
-                        <strong>GeoServer (WMS):</strong>
-                        Web Map Service providing map layers for visualization. Configured via OSM-Notes-WMS repository. Serves layers for open notes, closed notes, and country boundaries.
-                    </li>
-                    <li>
-                        <strong>ML Recommendations:</strong>
-                        Integrated within OSM-Notes-Analytics, provides machine learning-powered recommendations for note actions (close, comment, map).
-                    </li>
-                </ul>
+          <h4 data-i18n="about.architecture.services">Services</h4>
+          <ul>
+            <li>
+              <strong>GeoServer (WMS):</strong>
+              Web Map Service providing map layers for visualization. Configured via OSM-Notes-WMS
+              repository. Serves layers for open notes, closed notes, and country boundaries.
+            </li>
+            <li>
+              <strong>ML Recommendations:</strong>
+              Integrated within OSM-Notes-Analytics, provides machine learning-powered
+              recommendations for note actions (close, comment, map).
+            </li>
+          </ul>
 
-                <h4 data-i18n="about.architecture.dataFlow">Data Flow</h4>
-                <p data-i18n="about.architecture.dataFlow.p">
-                    Data flows through the ecosystem as follows:
-                </p>
-                <ol>
-                    <li><strong>OSM Planet/API</strong> → Raw notes data</li>
-                    <li><strong>OSM-Notes-Ingestion</strong> → Downloads and stores in PostgreSQL (Ingestion DB)</li>
-                    <li><strong>OSM-Notes-Analytics</strong> → Processes data into Data Warehouse (Analytics DB)</li>
-                    <li><strong>OSM-Notes-Analytics</strong> → Exports JSON files to OSM-Notes-Data repository</li>
-                    <li><strong>OSM-Notes-Data</strong> → Serves static JSON files via CDN</li>
-                    <li><strong>OSM-Notes-Viewer</strong> → Fetches and displays data</li>
-                    <li><strong>OSM-Notes-API</strong> → Provides dynamic REST API access</li>
-                    <li><strong>OSM-Notes-WMS (GeoServer)</strong> → Provides WMS map layers for visualization</li>
-                    <li><strong>OSM-Notes-Analytics (ML)</strong> → Provides recommendations via API</li>
-                    <li><strong>OSM-Notes-Monitoring</strong> → Monitors system health and performance</li>
-                </ol>
+          <h4 data-i18n="about.architecture.dataFlow">Data Flow</h4>
+          <p data-i18n="about.architecture.dataFlow.p">
+            Data flows through the ecosystem as follows:
+          </p>
+          <ol>
+            <li><strong>OSM Planet/API</strong> → Raw notes data</li>
+            <li>
+              <strong>OSM-Notes-Ingestion</strong> → Downloads and stores in PostgreSQL (Ingestion
+              DB)
+            </li>
+            <li>
+              <strong>OSM-Notes-Analytics</strong> → Processes data into Data Warehouse (Analytics
+              DB)
+            </li>
+            <li>
+              <strong>OSM-Notes-Analytics</strong> → Exports JSON files to OSM-Notes-Data repository
+            </li>
+            <li><strong>OSM-Notes-Data</strong> → Serves static JSON files via CDN</li>
+            <li><strong>OSM-Notes-Viewer</strong> → Fetches and displays data</li>
+            <li><strong>OSM-Notes-API</strong> → Provides dynamic REST API access</li>
+            <li>
+              <strong>OSM-Notes-WMS (GeoServer)</strong> → Provides WMS map layers for visualization
+            </li>
+            <li><strong>OSM-Notes-Analytics (ML)</strong> → Provides recommendations via API</li>
+            <li><strong>OSM-Notes-Monitoring</strong> → Monitors system health and performance</li>
+          </ol>
 
-                <p data-i18n="about.architecture.dataFlow.p2">
-                    The analytics backend extracts notes data, transforms and aggregates statistics,
-                    and generates pre-calculated JSON files every 15 minutes.
-                </p>
-            </section>
+          <p data-i18n="about.architecture.dataFlow.p2">
+            The analytics backend extracts notes data, transforms and aggregates statistics, and
+            generates pre-calculated JSON files every 15 minutes.
+          </p>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.dataOrigins.title">Data Origins</h3>
-                <p data-i18n="about.dataOrigins.p1">All data displayed in this viewer originates from <strong>OpenStreetMap (OSM)</strong>, including both cartographic data and notes data. The cartographic information is used for geographic visualization and mapping, while the notes data provides the statistics and analytics shown throughout the application.</p>
-                <p data-i18n="about.dataOrigins.p2">To improve the accuracy of maritime zones representation, data from <a href="https://www.marineregions.org/downloads.php" target="_blank" rel="noopener noreferrer">Marine Regions</a> was used as a reference. This allowed us to enhance the maritime boundaries and zones when attempting to replicate the information from that portal using OSM data, ensuring better alignment with recognized maritime boundaries and Exclusive Economic Zones (EEZs).</p>
-                <p data-i18n="about.dataOrigins.licenses">
-                    <strong>Licenses:</strong> OpenStreetMap data is licensed under the <a href="https://opendatacommons.org/licenses/odbl/" target="_blank" rel="noopener noreferrer">Open Database License (ODbL)</a>.
-                    Marine Regions data is licensed under <a href="https://www.marineregions.org/citation.php" target="_blank" rel="noopener noreferrer">CC-BY 4.0</a>.
-                </p>
-            </section>
+        <section>
+          <h3 data-i18n="about.dataOrigins.title">Data Origins</h3>
+          <p data-i18n="about.dataOrigins.p1">
+            All data displayed in this viewer originates from <strong>OpenStreetMap (OSM)</strong>,
+            including both cartographic data and notes data. The cartographic information is used
+            for geographic visualization and mapping, while the notes data provides the statistics
+            and analytics shown throughout the application.
+          </p>
+          <p data-i18n="about.dataOrigins.p2">
+            To improve the accuracy of maritime zones representation, data from
+            <a
+              href="https://www.marineregions.org/downloads.php"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Marine Regions</a
+            >
+            was used as a reference. This allowed us to enhance the maritime boundaries and zones
+            when attempting to replicate the information from that portal using OSM data, ensuring
+            better alignment with recognized maritime boundaries and Exclusive Economic Zones
+            (EEZs).
+          </p>
+          <p data-i18n="about.dataOrigins.licenses">
+            <strong>Licenses:</strong> OpenStreetMap data is licensed under the
+            <a
+              href="https://opendatacommons.org/licenses/odbl/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Open Database License (ODbL)</a
+            >. Marine Regions data is licensed under
+            <a
+              href="https://www.marineregions.org/citation.php"
+              target="_blank"
+              rel="noopener noreferrer"
+              >CC-BY 4.0</a
+            >.
+          </p>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.features.title">Features</h3>
-                <ul>
-                    <li data-i18n="about.features.item1">🔍 Search users and countries</li>
-                    <li data-i18n="about.features.item2">📊 Interactive statistics and charts</li>
-                    <li data-i18n="about.features.item3">📈 Activity heatmaps (GitHub-style)</li>
-                    <li data-i18n="about.features.item4">🌍 Geographic distribution analysis</li>
-                    <li data-i18n="about.features.item5">#️⃣ Hashtag usage tracking</li>
-                    <li data-i18n="about.features.item6">⏰ Working hours visualization</li>
-                    <li data-i18n="about.features.item7">📱 Responsive design for all devices</li>
-                </ul>
-            </section>
+        <section>
+          <h3 data-i18n="about.features.title">Features</h3>
+          <ul>
+            <li data-i18n="about.features.item1">🔍 Search users and countries</li>
+            <li data-i18n="about.features.item2">📊 Interactive statistics and charts</li>
+            <li data-i18n="about.features.item3">📈 Activity heatmaps (GitHub-style)</li>
+            <li data-i18n="about.features.item4">🌍 Geographic distribution analysis</li>
+            <li data-i18n="about.features.item5">#️⃣ Hashtag usage tracking</li>
+            <li data-i18n="about.features.item6">⏰ Working hours visualization</li>
+            <li data-i18n="about.features.item7">📱 Responsive design for all devices</li>
+          </ul>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.tech.title">Technology</h3>
-                <p data-i18n="about.tech.p1">
-                    This is a fully static web application built with vanilla HTML, CSS, and JavaScript.
-                    It requires no backend server and fetches all data from pre-generated JSON files.
-                </p>
-                <p><strong data-i18n="about.tech.stack">Stack:</strong></p>
-                <ul>
-                    <li data-i18n="about.tech.item1">HTML5 & CSS3</li>
-                    <li data-i18n="about.tech.item2">Vanilla JavaScript (ES6 modules)</li>
-                    <li data-i18n="about.tech.item3">Chart.js for visualizations</li>
-                    <li data-i18n="about.tech.item4">Deployed on CDN for global access</li>
-                </ul>
-            </section>
+        <section>
+          <h3 data-i18n="about.tech.title">Technology</h3>
+          <p data-i18n="about.tech.p1">
+            This is a fully static web application built with vanilla HTML, CSS, and JavaScript. It
+            requires no backend server and fetches all data from pre-generated JSON files.
+          </p>
+          <p><strong data-i18n="about.tech.stack">Stack:</strong></p>
+          <ul>
+            <li data-i18n="about.tech.item1">HTML5 & CSS3</li>
+            <li data-i18n="about.tech.item2">Vanilla JavaScript (ES6 modules)</li>
+            <li data-i18n="about.tech.item3">Chart.js for visualizations</li>
+            <li data-i18n="about.tech.item4">Deployed on CDN for global access</li>
+          </ul>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.openSource.title">Open Source</h3>
-                <p data-i18n="about.openSource.p1">
-                    All 8 repositories in the OSM Notes ecosystem are open source and available on GitHub under the
-                    <a href="https://github.com/OSM-Notes" target="_blank" rel="noopener noreferrer">OSM-Notes organization</a>.
-                    We believe in transparency, collaboration, and community-driven development.
-                </p>
-                <p data-i18n="about.openSource.p2">
-                    The entire codebase is freely available for anyone to use, study, modify, and distribute. This open approach
-                    allows the community to contribute improvements, report issues, and adapt the tools to their specific needs.
-                </p>
-                <p data-i18n="about.openSource.p3">
-                    For detailed information about each repository, including their specific purposes and how they work together,
-                    see the <a href="#ecosystem-architecture">Ecosystem Architecture</a> section above.
-                </p>
-            </section>
+        <section>
+          <h3 data-i18n="about.openSource.title">Open Source</h3>
+          <p data-i18n="about.openSource.p1">
+            All 8 repositories in the OSM Notes ecosystem are open source and available on GitHub
+            under the
+            <a href="https://github.com/OSM-Notes" target="_blank" rel="noopener noreferrer"
+              >OSM-Notes organization</a
+            >. We believe in transparency, collaboration, and community-driven development.
+          </p>
+          <p data-i18n="about.openSource.p2">
+            The entire codebase is freely available for anyone to use, study, modify, and
+            distribute. This open approach allows the community to contribute improvements, report
+            issues, and adapt the tools to their specific needs.
+          </p>
+          <p data-i18n="about.openSource.p3">
+            For detailed information about each repository, including their specific purposes and
+            how they work together, see the
+            <a href="#ecosystem-architecture">Ecosystem Architecture</a> section above.
+          </p>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.contact.title">Contact</h3>
-                <p data-i18n="about.contact.p">
-                    For questions, suggestions, or collaboration opportunities:
-                </p>
-                <ul>
-                    <li>
-                        <strong>Email:</strong>
-                        <a href="mailto:notes@osm.lat">notes@osm.lat</a>
-                    </li>
-                    <li>
-                        <strong>GitHub:</strong>
-                        <a href="https://github.com/OSM-Notes" target="_blank">github.com/OSM-Notes</a>
-                    </li>
-                    <li>
-                        <strong data-i18n="about.contact.telegram.label">Telegram:</strong>
-                        <a href="https://t.me/osm_notes_latam" target="_blank" rel="noopener noreferrer" data-i18n="about.contact.telegram.link">Join the OSM Latam Notes community</a>
-                    </li>
-                    <li>
-                        <strong data-i18n="about.contact.community.label">Community:</strong>
-                        <span data-i18n="about.contact.community.text">Join the OSM Latam community dedicated to resolving notes and improving map quality</span>
-                    </li>
-                </ul>
-            </section>
+        <section>
+          <h3 data-i18n="about.contact.title">Contact</h3>
+          <p data-i18n="about.contact.p">
+            For questions, suggestions, or collaboration opportunities:
+          </p>
+          <ul>
+            <li>
+              <strong>Email:</strong>
+              <a href="mailto:notes@osm.lat">notes@osm.lat</a>
+            </li>
+            <li>
+              <strong>GitHub:</strong>
+              <a href="https://github.com/OSM-Notes" target="_blank">github.com/OSM-Notes</a>
+            </li>
+            <li>
+              <strong data-i18n="about.contact.telegram.label">Telegram:</strong>
+              <a
+                href="https://t.me/osm_notes_latam"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-i18n="about.contact.telegram.link"
+                >Join the OSM Latam Notes community</a
+              >
+            </li>
+            <li>
+              <strong data-i18n="about.contact.community.label">Community:</strong>
+              <span data-i18n="about.contact.community.text"
+                >Join the OSM Latam community dedicated to resolving notes and improving map
+                quality</span
+              >
+            </li>
+          </ul>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.monitoring.title">Monitoring & Status</h3>
-                <p data-i18n="about.monitoring.p">
-                    Monitor system health, performance metrics, and data processing status:
-                </p>
-                <p>
-                    <a href="https://notes_mon.osm.lat" target="_blank" rel="noopener noreferrer"
-                       class="monitoring-button"
-                       data-i18n="about.monitoring.button">
-                        📊 View Monitoring Dashboard (Grafana)
-                    </a>
-                </p>
-                <p class="monitoring-description" data-i18n="about.monitoring.description">
-                    The dashboard provides real-time metrics on data processing, API performance,
-                    database status, and system health. Powered by Grafana and Prometheus.
-                </p>
-            </section>
+        <section>
+          <h3 data-i18n="about.monitoring.title">Monitoring & Status</h3>
+          <p data-i18n="about.monitoring.p">
+            Monitor system health, performance metrics, and data processing status:
+          </p>
+          <p>
+            <a
+              href="https://notes_mon.osm.lat"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="monitoring-button"
+              data-i18n="about.monitoring.button"
+            >
+              📊 View Monitoring Dashboard (Grafana)
+            </a>
+          </p>
+          <p class="monitoring-description" data-i18n="about.monitoring.description">
+            The dashboard provides real-time metrics on data processing, API performance, database
+            status, and system health. Powered by Grafana and Prometheus.
+          </p>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.contributing.title">Contributing</h3>
-                <p data-i18n="about.contributing.p">
-                    Contributions are welcome! Feel free to:
-                </p>
-                <ul>
-                    <li data-i18n="about.contributing.item1">Report bugs or request features via GitHub Issues</li>
-                    <li data-i18n="about.contributing.item2">Submit pull requests with improvements</li>
-                    <li data-i18n="about.contributing.item3">Share feedback and suggestions</li>
-                    <li data-i18n="about.contributing.item4">Help resolve OSM Notes in your region</li>
-                    <li data-i18n="about.contributing.item5">Contribute translations for your language</li>
-                </ul>
-            </section>
+        <section>
+          <h3 data-i18n="about.contributing.title">Contributing</h3>
+          <p data-i18n="about.contributing.p">Contributions are welcome! Feel free to:</p>
+          <ul>
+            <li data-i18n="about.contributing.item1">
+              Report bugs or request features via GitHub Issues
+            </li>
+            <li data-i18n="about.contributing.item2">Submit pull requests with improvements</li>
+            <li data-i18n="about.contributing.item3">Share feedback and suggestions</li>
+            <li data-i18n="about.contributing.item4">Help resolve OSM Notes in your region</li>
+            <li data-i18n="about.contributing.item5">Contribute translations for your language</li>
+          </ul>
+        </section>
 
-            <section>
-                <h3 data-i18n="about.acknowledgments.title">Acknowledgments</h3>
-                <p data-i18n="about.acknowledgments.p">
-                    Special thanks to the OpenStreetMap community and all contributors who make notes data available.
-                </p>
-            </section>
-        </div>
+        <section>
+          <h3 data-i18n="about.acknowledgments.title">Acknowledgments</h3>
+          <p data-i18n="about.acknowledgments.p">
+            Special thanks to the OpenStreetMap community and all contributors who make notes data
+            available.
+          </p>
+        </section>
+      </div>
     </main>
 
     <footer class="footer" role="contentinfo">
-        <div class="container">
-            <p>
-                <span>Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
-                | <span>Processed by</span>
-                <a href="https://github.com/OSM-Notes/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
-                & <a href="https://github.com/OSM-Notes/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
-            </p>
-            <p>
-                <a href="https://github.com/OSM-Notes/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-                | <span>Version</span> 1.0.0
-            </p>
-            <p class="footer-copyright">
-                © 2025 OSM Latam Community | <span>Made with</span> ❤️ <span>for OSM</span>
-            </p>
-            <p class="footer-author">
-                <span>Made by</span> <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
-            </p>
-        </div>
+      <div class="container">
+        <p>
+          <span>Data from</span>
+          <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer"
+            >OpenStreetMap</a
+          >
+          | <span>Processed by</span>
+          <a
+            href="https://github.com/OSM-Notes/OSM-Notes-Ingestion"
+            target="_blank"
+            rel="noopener noreferrer"
+            >OSM-Notes-Ingestion</a
+          >
+          &
+          <a
+            href="https://github.com/OSM-Notes/OSM-Notes-Analytics"
+            target="_blank"
+            rel="noopener noreferrer"
+            >OSM-Notes-Analytics</a
+          >
+        </p>
+        <p>
+          <a
+            href="https://github.com/OSM-Notes/OSM-Notes-Viewer"
+            target="_blank"
+            rel="noopener noreferrer"
+            >View on GitHub</a
+          >
+          | <span>Version</span> 1.0.0
+        </p>
+        <p class="footer-copyright">
+          © 2025 OSM Latam Community | <span>Made with</span> ❤️ <span>for OSM</span>
+        </p>
+        <p class="footer-author">
+          <span>Made by</span>
+          <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
+        </p>
+      </div>
     </footer>
     <script type="module" src="../js/analytics-init.js"></script>
     <script type="module" src="../js/components/languageSelector.js"></script>
     <script type="module" src="../js/components/darkMode.js"></script>
     <script type="module">
-        import { i18n } from '../js/utils/i18n.js';
+      import { i18n } from '../js/utils/i18n.js';
 
-        // Initialize i18n
-        // Use a function that works both when loading directly and when navigating between pages
-        async function initI18n() {
-            await i18n.init();
-            i18n.updatePageContent();
-        }
+      // Initialize i18n
+      // Use a function that works both when loading directly and when navigating between pages
+      async function initI18n() {
+        await i18n.init();
+        i18n.updatePageContent();
+      }
 
-        // Check if DOM is already ready (when navigating between pages)
-        if (document.readyState === 'loading') {
-            // DOM is still loading, wait for DOMContentLoaded
-            document.addEventListener('DOMContentLoaded', initI18n);
-        } else {
-            // DOM is already ready, initialize immediately
-            initI18n();
-        }
+      // Check if DOM is already ready (when navigating between pages)
+      if (document.readyState === 'loading') {
+        // DOM is still loading, wait for DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', initI18n);
+      } else {
+        // DOM is already ready, initialize immediately
+        initI18n();
+      }
 
-        // Listen for language changes
-        window.addEventListener('languageChanged', () => {
-            i18n.updatePageContent();
-        });
+      // Listen for language changes
+      window.addEventListener('languageChanged', () => {
+        i18n.updatePageContent();
+      });
     </script>
-</body>
+  </body>
 </html>
-
-

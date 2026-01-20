@@ -16,12 +16,14 @@ This document describes all the components used in OSM Notes Viewer.
 GitHub-style contribution calendar visualization.
 
 **Features:**
+
 - Displays 365 days of activity
 - Color-coded intensity (5 levels)
 - Hover tooltips with dates and counts
 - Responsive grid layout
 
 **Usage:**
+
 ```javascript
 import { renderActivityHeatmap } from './components/activityHeatmap.js';
 
@@ -29,6 +31,7 @@ renderActivityHeatmap(activityString, containerElement);
 ```
 
 **Parameters:**
+
 - `activityString` (string): Binary string (365 bits) representing daily activity
 - `container` (HTMLElement): DOM element to render the heatmap
 
@@ -37,25 +40,28 @@ renderActivityHeatmap(activityString, containerElement);
 24-hour × 7-day activity pattern visualization.
 
 **Features:**
+
 - Matrix visualization (hours × days)
 - Multiple activity types (opening, commenting, closing)
 - Color gradient based on intensity
 - Legend and tooltips
 
 **Usage:**
+
 ```javascript
 import { renderWorkingHoursSection } from './components/workingHoursHeatmap.js';
 
 renderWorkingHoursSection(
-    openingHours,
-    commentingHours,
-    closingHours,
-    containerElement,
-    'user' // or 'country'
+  openingHours,
+  commentingHours,
+  closingHours,
+  containerElement,
+  'user' // or 'country'
 );
 ```
 
 **Parameters:**
+
 - `openingHours` (Array): Opening activity data
 - `commentingHours` (Array): Commenting activity data
 - `closingHours` (Array): Closing activity data
@@ -67,18 +73,20 @@ renderWorkingHoursSection(
 Simple bar chart visualization using Canvas API.
 
 **Features:**
+
 - Horizontal bar charts
 - Animated rendering
 - Responsive sizing
 - Customizable colors
 
 **Usage:**
+
 ```javascript
 import { createBarChart } from './components/chart.js';
 
 const chartData = [
-    { label: 'Label 1', value: 100 },
-    { label: 'Label 2', value: 200 }
+  { label: 'Label 1', value: 100 },
+  { label: 'Label 2', value: 200 },
 ];
 
 createBarChart(chartData, containerElement);
@@ -91,20 +99,18 @@ createBarChart(chartData, containerElement);
 Autocomplete search with filtering and highlighting.
 
 **Features:**
+
 - Instant filtering as you type
 - Match highlighting
 - Keyboard navigation
 - Result click handling
 
 **Usage:**
+
 ```javascript
 import { SearchComponent } from './components/search.js';
 
-const search = new SearchComponent(
-    inputElement,
-    resultsContainer,
-    handleSelectCallback
-);
+const search = new SearchComponent(inputElement, resultsContainer, handleSelectCallback);
 
 search.setData(dataArray);
 ```
@@ -114,12 +120,14 @@ search.setData(dataArray);
 Page navigation for large lists.
 
 **Features:**
+
 - Previous/Next buttons
 - Page number display
 - Accessibility (ARIA labels)
 - Keyboard support
 
 **Usage:**
+
 ```javascript
 import { renderPagination, getPaginationInfo } from './components/pagination.js';
 
@@ -132,12 +140,14 @@ renderPagination(container, currentPage, totalPages, onClickCallback, 'users');
 Theme switching between light and dark modes.
 
 **Features:**
+
 - System preference detection
 - Persistent storage
 - Smooth transitions
 - Analytics tracking
 
 **Usage:**
+
 ```javascript
 import { initDarkMode, toggleTheme } from './components/darkMode.js';
 
@@ -153,12 +163,14 @@ toggleTheme();
 Multi-language support with UI selector.
 
 **Features:**
+
 - 4 supported languages (EN, ES, DE, FR)
 - Browser language detection
 - Persistent storage
 - Toast notifications
 
 **Usage:**
+
 ```javascript
 import { languageSelector } from './components/languageSelector.js';
 
@@ -171,6 +183,7 @@ import { languageSelector } from './components/languageSelector.js';
 Handles all UI animations and transitions.
 
 **Features:**
+
 - Scroll-triggered animations
 - Ripple effects
 - Counter animations
@@ -178,6 +191,7 @@ Handles all UI animations and transitions.
 - Loading states
 
 **Usage:**
+
 ```javascript
 import { animationManager } from './components/animationManager.js';
 
@@ -198,6 +212,7 @@ animationManager.showToast('Success!', 'success');
 Renders user profile page with all statistics.
 
 **Features:**
+
 - User statistics display
 - Activity heatmap
 - Working hours visualization
@@ -210,6 +225,7 @@ Renders user profile page with all statistics.
 Renders country profile page with statistics.
 
 **Features:**
+
 - Country statistics display
 - Activity heatmap
 - Working hours visualization
@@ -222,6 +238,7 @@ Renders country profile page with statistics.
 Browse all users and countries.
 
 **Features:**
+
 - Paginated lists
 - Sort options
 - Filter by type
@@ -234,6 +251,7 @@ Browse all users and countries.
 Handles all API requests with caching.
 
 **Methods:**
+
 - `getMetadata()` - Get export metadata
 - `getUser(userId)` - Get user profile
 - `getCountry(countryId)` - Get country profile
@@ -241,6 +259,7 @@ Handles all API requests with caching.
 - `getCountryIndex()` - Get all countries
 
 **Features:**
+
 - LocalStorage caching (15 min TTL)
 - Error handling
 - Automatic retry
@@ -250,6 +269,7 @@ Handles all API requests with caching.
 Data formatting utilities.
 
 **Functions:**
+
 - `formatNumber(value)` - Format large numbers (1,234)
 - `formatDate(dateString)` - Format dates (Jan 1, 2024)
 - `formatRelativeTime(timestamp)` - Relative time (2 hours ago)
@@ -259,6 +279,7 @@ Data formatting utilities.
 LocalStorage cache management.
 
 **Features:**
+
 - TTL (Time To Live) support
 - Automatic expiration
 - Clear all / specific keys
@@ -268,12 +289,14 @@ LocalStorage cache management.
 Internationalization system.
 
 **Features:**
+
 - 4 languages supported
 - Browser detection
 - Dynamic translation
 - Persistent storage
 
 **Usage:**
+
 ```javascript
 import { i18n } from './utils/i18n.js';
 

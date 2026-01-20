@@ -5,9 +5,9 @@
 .leaflet-container img.leaflet-tile,
 .leaflet-container .leaflet-tile-pane img,
 .leaflet-container .leaflet-image-layer img {
-    image-rendering: auto !important;
-    image-rendering: -webkit-optimize-contrast !important;
-    image-rendering: crisp-edges !important;
+  image-rendering: auto !important;
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
 }
 
 /* Fix behavior property error - remove IE-specific behavior from leaflet.css:124 */
@@ -19,7 +19,7 @@
 .leaflet-marker-pane,
 .leaflet-tooltip-pane,
 .leaflet-popup-pane {
-    /* Remove behavior property completely - it's not needed for modern browsers */
+  /* Remove behavior property completely - it's not needed for modern browsers */
 }
 
 /* Fix filter: progid error - override IE-specific filters from leaflet.css:556 */
@@ -27,17 +27,14 @@
 .leaflet-control-zoom,
 .leaflet-popup-tip,
 .leaflet-container * {
-    filter: none !important;
-    -ms-filter: none !important;
+  filter: none !important;
+  -ms-filter: none !important;
 }
 
 /* Additional overrides to ensure no legacy filters are applied */
 .leaflet-tile,
 .leaflet-tile-container,
 .leaflet-tile-pane img {
-    filter: none !important;
-    -ms-filter: none !important;
+  filter: none !important;
+  -ms-filter: none !important;
 }
-
-
-

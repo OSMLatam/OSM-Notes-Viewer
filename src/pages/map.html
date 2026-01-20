@@ -1,211 +1,435 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="title.map">Map - OSM Notes Viewer</title>
-    <meta name="description" content="Interactive maps showing OpenStreetMap notes, boundaries, and disputed areas using WMS layers">
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <meta
+      name="description"
+      content="Interactive maps showing OpenStreetMap notes, boundaries, and disputed areas using WMS layers"
+    />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
     <link rel="stylesheet" href="../css/leaflet.css" />
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/mapViewer.css">
-    <link rel="stylesheet" href="../css/leaflet-overrides.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/mapViewer.css" />
+    <link rel="stylesheet" href="../css/leaflet-overrides.css" />
+  </head>
+  <body>
     <!-- Skip link for screen readers -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <header class="header" role="banner">
-        <div class="container">
-            <h1 class="logo">
-                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;" aria-label="OSM Notes Viewer - Home">
-                    <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
-                </a>
-            </h1>
-            <nav class="nav" role="navigation" aria-label="Main navigation">
-                <a href="../index.html" class="nav-link">Home</a>
-                <a href="explore.html" class="nav-link">Explore</a>
-                <a href="stats.html" class="nav-link">Stats</a>
-                <a href="map.html" class="nav-link active" aria-current="page">Map</a>
-                <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
-                <a href="about.html" class="nav-link">About</a>
-            </nav>
-        </div>
+      <div class="container">
+        <h1 class="logo">
+          <a
+            href="../index.html"
+            style="
+              text-decoration: none;
+              color: inherit;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            "
+            aria-label="OSM Notes Viewer - Home"
+          >
+            <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem" />
+          </a>
+        </h1>
+        <nav class="nav" role="navigation" aria-label="Main navigation">
+          <a href="../index.html" class="nav-link">Home</a>
+          <a href="explore.html" class="nav-link">Explore</a>
+          <a href="stats.html" class="nav-link">Stats</a>
+          <a href="map.html" class="nav-link active" aria-current="page">Map</a>
+          <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
+          <a href="about.html" class="nav-link">About</a>
+        </nav>
+      </div>
     </header>
 
     <main class="main" id="main-content" role="main">
-        <div class="container" style="padding: 2rem 20px;">
-            <h1 style="margin-bottom: 2rem;" data-i18n="map.title">OSM Notes Maps</h1>
+      <div class="container" style="padding: 2rem 20px">
+        <h1 style="margin-bottom: 2rem" data-i18n="map.title">OSM Notes Maps</h1>
 
-            <!-- Map Tabs -->
-            <div class="map-tabs" role="tablist" aria-label="Map type selection">
-                <button class="map-tab active" data-tab="open-notes" role="tab" aria-selected="true" aria-controls="open-notes-map" id="tab-open-notes">
-                    <span class="tab-icon" aria-hidden="true">📍</span>
-                    <span class="tab-label" data-i18n="map.tabs.openNotes">Open Notes</span>
-                </button>
-                <button class="map-tab" data-tab="closed-notes" role="tab" aria-selected="false" aria-controls="closed-notes-map" id="tab-closed-notes">
-                    <span class="tab-icon" aria-hidden="true">🔒</span>
-                    <span class="tab-label" data-i18n="map.tabs.closedNotes">Closed Notes</span>
-                </button>
-                <button class="map-tab" data-tab="boundaries" role="tab" aria-selected="false" aria-controls="boundaries-map" id="tab-boundaries">
-                    <span class="tab-icon" aria-hidden="true">🌍</span>
-                    <span class="tab-label" data-i18n="map.tabs.boundaries">Boundaries</span>
-                </button>
-            </div>
-
-            <!-- Map Container -->
-            <div class="map-container-wrapper">
-                <!-- Map 1: Open Notes -->
-                <div id="open-notes-map" class="map-container active" role="tabpanel" aria-labelledby="tab-open-notes" tabindex="0"></div>
-
-                <!-- Map 2: Closed Notes -->
-                <div id="closed-notes-map" class="map-container" role="tabpanel" aria-labelledby="tab-closed-notes" tabindex="0"></div>
-
-                <!-- Map 3: Boundaries -->
-                <div id="boundaries-map" class="map-container" role="tabpanel" aria-labelledby="tab-boundaries" tabindex="0"></div>
-
-                <!-- Map Controls -->
-                <div class="map-controls" role="group" aria-label="Map controls">
-                    <div class="control-group">
-                        <label for="baseLayerSelect" data-i18n="map.controls.baseLayer">Base Layer:</label>
-                        <select id="baseLayerSelect" class="control-select" data-i18n-aria-label="map.controls.baseLayer" aria-label="Select base map layer">
-                            <option value="osm" selected data-i18n="map.controls.baseLayerOsm">OpenStreetMap</option>
-                            <option value="satellite" data-i18n="map.controls.baseLayerSatellite">Satellite</option>
-                        </select>
-                    </div>
-                    <!-- Boundaries Layer Controls (only visible on boundaries tab) -->
-                    <div id="boundariesLayerControls" class="control-group" style="display: none;">
-                        <label data-i18n="map.controls.boundariesLayers">Boundaries Layers:</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="boundariesCountriesCheckbox" checked>
-                                <span data-i18n="map.controls.boundariesCountries">Countries</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="boundariesDisputedCheckbox" checked>
-                                <span data-i18n="map.controls.boundariesDisputed">Disputed Areas</span>
-                            </label>
-                        </div>
-                        <div class="boundaries-warning" data-i18n="map.controls.boundariesWarning" style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-light); font-style: italic;">
-                            Note: The disputed areas layer may include non-disputed zones (e.g., 200 nautical mile EEZ). This is a data issue from the WMS server.
-                        </div>
-                    </div>
-                    <button id="centerUserBtn" class="control-btn" data-i18n-aria-label="map.controls.myLocation" aria-label="Center map on your current location">
-                        <span aria-hidden="true">📍</span> <span data-i18n="map.controls.myLocation">My Location</span>
-                    </button>
-                    <button id="resetViewBtn" class="control-btn" data-i18n-aria-label="map.controls.resetView" aria-label="Reset map to initial view">
-                        <span aria-hidden="true">🔄</span> <span data-i18n="map.controls.resetView">Reset View</span>
-                    </button>
-                    <button id="permalinkBtn" class="control-btn" data-i18n-aria-label="map.controls.permalink" aria-label="Copy permalink">
-                        <span aria-hidden="true">🔗</span> <span data-i18n="map.controls.permalink">Permalink</span>
-                    </button>
-                </div>
-
-                <!-- Loading Indicator -->
-                <div id="mapLoading" class="map-loading" style="display: none;" role="status" aria-live="polite">
-                    <div class="loading-spinner" aria-hidden="true"></div>
-                    <p data-i18n="map.loading">Loading map...</p>
-                </div>
-
-                <!-- Error Message -->
-                <div id="mapError" class="map-error" style="display: none;" role="alert" aria-live="assertive"></div>
-            </div>
-
-            <!-- WMS Documentation Section -->
-            <section class="wms-documentation" aria-labelledby="wms-doc-title">
-                <h2 id="wms-doc-title" data-i18n="map.wms.title">WMS Service Documentation</h2>
-                <div class="wms-info">
-                    <p data-i18n="map.wms.description">This map uses Web Map Service (WMS) layers to display OSM notes. You can add these layers as background imagery in OSM editors like iD, JOSM, or Vespucci to help you see notes while editing.</p>
-
-                    <h3 data-i18n="map.wms.endpoints">WMS Endpoints</h3>
-                    <div class="wms-endpoints" role="list">
-                        <div class="wms-endpoint" role="listitem">
-                            <h4 data-i18n="map.wms.openNotes">Open Notes</h4>
-                            <code id="wmsOpenUrl" class="wms-url" data-i18n-aria-label="map.wms.openNotes" aria-label="WMS URL for open notes">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsOpenUrl" data-i18n-aria-label="map.wms.copy" aria-label="Copy open notes WMS URL" data-i18n="map.wms.copy">Copy</button>
-                        </div>
-                        <div class="wms-endpoint" role="listitem">
-                            <h4 data-i18n="map.wms.closedNotes">Closed Notes</h4>
-                            <code id="wmsClosedUrl" class="wms-url" data-i18n-aria-label="map.wms.closedNotes" aria-label="WMS URL for closed notes">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsClosedUrl" data-i18n-aria-label="map.wms.copy" aria-label="Copy closed notes WMS URL" data-i18n="map.wms.copy">Copy</button>
-                        </div>
-                        <div class="wms-endpoint" role="listitem">
-                            <h4 data-i18n="map.wms.boundariesCountries">Boundaries (Countries)</h4>
-                            <code id="wmsCountriesUrl" class="wms-url" data-i18n-aria-label="map.wms.boundariesCountries" aria-label="WMS URL for country boundaries">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsCountriesUrl" data-i18n-aria-label="map.wms.copy" aria-label="Copy country boundaries WMS URL" data-i18n="map.wms.copy">Copy</button>
-                        </div>
-                        <div class="wms-endpoint" role="listitem">
-                            <h4 data-i18n="map.wms.boundariesDisputed">Boundaries (Disputed Areas)</h4>
-                            <code id="wmsDisputedUrl" class="wms-url" data-i18n-aria-label="map.wms.boundariesDisputed" aria-label="WMS URL for disputed areas">Loading...</code>
-                            <button class="copy-btn" data-copy="wmsDisputedUrl" data-i18n-aria-label="map.wms.copy" aria-label="Copy disputed areas WMS URL" data-i18n="map.wms.copy">Copy</button>
-                        </div>
-                    </div>
-
-                    <h3 data-i18n="map.wms.usage">Usage Examples</h3>
-                    <div class="wms-examples">
-                        <h4 data-i18n="map.wms.id">iD Editor</h4>
-                        <ol>
-                            <li data-i18n="map.wms.id.step1">Open iD Editor in your browser</li>
-                            <li data-i18n="map.wms.id.step2">Click the <code>Background Settings</code> button (or press <code>B</code>)</li>
-                            <li data-i18n="map.wms.id.step3">Click the three dots (<code>⋯</code>) next to <code>Custom</code> at the bottom</li>
-                            <li data-i18n="map.wms.id.step4">Paste the WMS URL above</li>
-                            <li data-i18n="map.wms.id.step5">Click <code>Accept</code> - the layer will be automatically selected</li>
-                        </ol>
-
-                        <h4 data-i18n="map.wms.josm">JOSM</h4>
-                        <ol>
-                            <li data-i18n="map.wms.josm.step1">Open JOSM</li>
-                            <li data-i18n="map.wms.josm.step2">Go to <code>Imagery → Imagery Preferences</code> (or press <code>Ctrl+Shift+I</code>)</li>
-                            <li data-i18n="map.wms.josm.step3">Click the <code>+ WMS</code> button</li>
-                            <li data-i18n="map.wms.josm.step4">In the "Introduzca el URL GetCapabilities" field, paste this URL: <code>http://geoserver.osm.lat/geoserver/osm_notes/ows?</code></li>
-                            <li data-i18n="map.wms.josm.step5">Click <code>Obtener capas</code> (Get layers)</li>
-                            <li data-i18n="map.wms.josm.step6">Select the desired layer from the list</li>
-                            <li data-i18n="map.wms.josm.step7">Enter a name for the layer (e.g., "OSM Notes Open")</li>
-                            <li data-i18n="map.wms.josm.step8">Click <code>Aceptar</code> (Accept) and select the layer from <code>Imagery</code> menu</li>
-                        </ol>
-
-                        <h4 data-i18n="map.wms.vespucci">Vespucci</h4>
-                        <ol>
-                            <li data-i18n="map.wms.vespucci.step1">On the main screen, tap the hamburger menu icon (☰)</li>
-                            <li data-i18n="map.wms.vespucci.step2">Tap the plus icon (+)</li>
-                            <li data-i18n="map.wms.vespucci.step3">Scroll to the bottom and select <code>Add imagery from WMS</code></li>
-                            <li data-i18n="map.wms.vespucci.step4">In the new window, tap the plus icon (+) again</li>
-                            <li data-i18n="map.wms.vespucci.step5">Enter a name (e.g., "OSM Notes") and paste the GetCapabilities URL: <code>http://geoserver.osm.lat/geoserver/osm_notes/ows?</code></li>
-                            <li data-i18n="map.wms.vespucci.step6">In the WMS Endpoints list, "OSM Notes" will appear. Select it (this will query the layers)</li>
-                            <li data-i18n="map.wms.vespucci.step7">Select the layer you want (e.g., "Open OSM Notes")</li>
-                            <li data-i18n="map.wms.vespucci.step8">In the new window, check <code>Overlay</code> and delete the numbers in the Coverage section</li>
-                            <li data-i18n="map.wms.vespucci.step9">Tap <code>Save</code>, then <code>Done</code>, <code>Done</code></li>
-                            <li data-i18n="map.wms.vespucci.step10">In the hamburger menu, select <code>Add overlay imagery layer</code> and select the layer</li>
-                            <li data-i18n="map.wms.vespucci.step11">Once added, you can move the layer up or down in the hamburger menu</li>
-                        </ol>
-                    </div>
-                </div>
-            </section>
+        <!-- Map Tabs -->
+        <div class="map-tabs" role="tablist" aria-label="Map type selection">
+          <button
+            class="map-tab active"
+            data-tab="open-notes"
+            role="tab"
+            aria-selected="true"
+            aria-controls="open-notes-map"
+            id="tab-open-notes"
+          >
+            <span class="tab-icon" aria-hidden="true">📍</span>
+            <span class="tab-label" data-i18n="map.tabs.openNotes">Open Notes</span>
+          </button>
+          <button
+            class="map-tab"
+            data-tab="closed-notes"
+            role="tab"
+            aria-selected="false"
+            aria-controls="closed-notes-map"
+            id="tab-closed-notes"
+          >
+            <span class="tab-icon" aria-hidden="true">🔒</span>
+            <span class="tab-label" data-i18n="map.tabs.closedNotes">Closed Notes</span>
+          </button>
+          <button
+            class="map-tab"
+            data-tab="boundaries"
+            role="tab"
+            aria-selected="false"
+            aria-controls="boundaries-map"
+            id="tab-boundaries"
+          >
+            <span class="tab-icon" aria-hidden="true">🌍</span>
+            <span class="tab-label" data-i18n="map.tabs.boundaries">Boundaries</span>
+          </button>
         </div>
+
+        <!-- Map Container -->
+        <div class="map-container-wrapper">
+          <!-- Map 1: Open Notes -->
+          <div
+            id="open-notes-map"
+            class="map-container active"
+            role="tabpanel"
+            aria-labelledby="tab-open-notes"
+            tabindex="0"
+          ></div>
+
+          <!-- Map 2: Closed Notes -->
+          <div
+            id="closed-notes-map"
+            class="map-container"
+            role="tabpanel"
+            aria-labelledby="tab-closed-notes"
+            tabindex="0"
+          ></div>
+
+          <!-- Map 3: Boundaries -->
+          <div
+            id="boundaries-map"
+            class="map-container"
+            role="tabpanel"
+            aria-labelledby="tab-boundaries"
+            tabindex="0"
+          ></div>
+
+          <!-- Map Controls -->
+          <div class="map-controls" role="group" aria-label="Map controls">
+            <div class="control-group">
+              <label for="baseLayerSelect" data-i18n="map.controls.baseLayer">Base Layer:</label>
+              <select
+                id="baseLayerSelect"
+                class="control-select"
+                data-i18n-aria-label="map.controls.baseLayer"
+                aria-label="Select base map layer"
+              >
+                <option value="osm" selected data-i18n="map.controls.baseLayerOsm">
+                  OpenStreetMap
+                </option>
+                <option value="satellite" data-i18n="map.controls.baseLayerSatellite">
+                  Satellite
+                </option>
+              </select>
+            </div>
+            <!-- Boundaries Layer Controls (only visible on boundaries tab) -->
+            <div id="boundariesLayerControls" class="control-group" style="display: none">
+              <label data-i18n="map.controls.boundariesLayers">Boundaries Layers:</label>
+              <div class="checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="boundariesCountriesCheckbox" checked />
+                  <span data-i18n="map.controls.boundariesCountries">Countries</span>
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="boundariesDisputedCheckbox" checked />
+                  <span data-i18n="map.controls.boundariesDisputed">Disputed Areas</span>
+                </label>
+              </div>
+              <div
+                class="boundaries-warning"
+                data-i18n="map.controls.boundariesWarning"
+                style="
+                  margin-top: 0.5rem;
+                  font-size: 0.75rem;
+                  color: var(--text-light);
+                  font-style: italic;
+                "
+              >
+                Note: The disputed areas layer may include non-disputed zones (e.g., 200 nautical
+                mile EEZ). This is a data issue from the WMS server.
+              </div>
+            </div>
+            <button
+              id="centerUserBtn"
+              class="control-btn"
+              data-i18n-aria-label="map.controls.myLocation"
+              aria-label="Center map on your current location"
+            >
+              <span aria-hidden="true">📍</span>
+              <span data-i18n="map.controls.myLocation">My Location</span>
+            </button>
+            <button
+              id="resetViewBtn"
+              class="control-btn"
+              data-i18n-aria-label="map.controls.resetView"
+              aria-label="Reset map to initial view"
+            >
+              <span aria-hidden="true">🔄</span>
+              <span data-i18n="map.controls.resetView">Reset View</span>
+            </button>
+            <button
+              id="permalinkBtn"
+              class="control-btn"
+              data-i18n-aria-label="map.controls.permalink"
+              aria-label="Copy permalink"
+            >
+              <span aria-hidden="true">🔗</span>
+              <span data-i18n="map.controls.permalink">Permalink</span>
+            </button>
+          </div>
+
+          <!-- Loading Indicator -->
+          <div
+            id="mapLoading"
+            class="map-loading"
+            style="display: none"
+            role="status"
+            aria-live="polite"
+          >
+            <div class="loading-spinner" aria-hidden="true"></div>
+            <p data-i18n="map.loading">Loading map...</p>
+          </div>
+
+          <!-- Error Message -->
+          <div
+            id="mapError"
+            class="map-error"
+            style="display: none"
+            role="alert"
+            aria-live="assertive"
+          ></div>
+        </div>
+
+        <!-- WMS Documentation Section -->
+        <section class="wms-documentation" aria-labelledby="wms-doc-title">
+          <h2 id="wms-doc-title" data-i18n="map.wms.title">WMS Service Documentation</h2>
+          <div class="wms-info">
+            <p data-i18n="map.wms.description">
+              This map uses Web Map Service (WMS) layers to display OSM notes. You can add these
+              layers as background imagery in OSM editors like iD, JOSM, or Vespucci to help you see
+              notes while editing.
+            </p>
+
+            <h3 data-i18n="map.wms.endpoints">WMS Endpoints</h3>
+            <div class="wms-endpoints" role="list">
+              <div class="wms-endpoint" role="listitem">
+                <h4 data-i18n="map.wms.openNotes">Open Notes</h4>
+                <code
+                  id="wmsOpenUrl"
+                  class="wms-url"
+                  data-i18n-aria-label="map.wms.openNotes"
+                  aria-label="WMS URL for open notes"
+                  >Loading...</code
+                >
+                <button
+                  class="copy-btn"
+                  data-copy="wmsOpenUrl"
+                  data-i18n-aria-label="map.wms.copy"
+                  aria-label="Copy open notes WMS URL"
+                  data-i18n="map.wms.copy"
+                >
+                  Copy
+                </button>
+              </div>
+              <div class="wms-endpoint" role="listitem">
+                <h4 data-i18n="map.wms.closedNotes">Closed Notes</h4>
+                <code
+                  id="wmsClosedUrl"
+                  class="wms-url"
+                  data-i18n-aria-label="map.wms.closedNotes"
+                  aria-label="WMS URL for closed notes"
+                  >Loading...</code
+                >
+                <button
+                  class="copy-btn"
+                  data-copy="wmsClosedUrl"
+                  data-i18n-aria-label="map.wms.copy"
+                  aria-label="Copy closed notes WMS URL"
+                  data-i18n="map.wms.copy"
+                >
+                  Copy
+                </button>
+              </div>
+              <div class="wms-endpoint" role="listitem">
+                <h4 data-i18n="map.wms.boundariesCountries">Boundaries (Countries)</h4>
+                <code
+                  id="wmsCountriesUrl"
+                  class="wms-url"
+                  data-i18n-aria-label="map.wms.boundariesCountries"
+                  aria-label="WMS URL for country boundaries"
+                  >Loading...</code
+                >
+                <button
+                  class="copy-btn"
+                  data-copy="wmsCountriesUrl"
+                  data-i18n-aria-label="map.wms.copy"
+                  aria-label="Copy country boundaries WMS URL"
+                  data-i18n="map.wms.copy"
+                >
+                  Copy
+                </button>
+              </div>
+              <div class="wms-endpoint" role="listitem">
+                <h4 data-i18n="map.wms.boundariesDisputed">Boundaries (Disputed Areas)</h4>
+                <code
+                  id="wmsDisputedUrl"
+                  class="wms-url"
+                  data-i18n-aria-label="map.wms.boundariesDisputed"
+                  aria-label="WMS URL for disputed areas"
+                  >Loading...</code
+                >
+                <button
+                  class="copy-btn"
+                  data-copy="wmsDisputedUrl"
+                  data-i18n-aria-label="map.wms.copy"
+                  aria-label="Copy disputed areas WMS URL"
+                  data-i18n="map.wms.copy"
+                >
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <h3 data-i18n="map.wms.usage">Usage Examples</h3>
+            <div class="wms-examples">
+              <h4 data-i18n="map.wms.id">iD Editor</h4>
+              <ol>
+                <li data-i18n="map.wms.id.step1">Open iD Editor in your browser</li>
+                <li data-i18n="map.wms.id.step2">
+                  Click the <code>Background Settings</code> button (or press <code>B</code>)
+                </li>
+                <li data-i18n="map.wms.id.step3">
+                  Click the three dots (<code>⋯</code>) next to <code>Custom</code> at the bottom
+                </li>
+                <li data-i18n="map.wms.id.step4">Paste the WMS URL above</li>
+                <li data-i18n="map.wms.id.step5">
+                  Click <code>Accept</code> - the layer will be automatically selected
+                </li>
+              </ol>
+
+              <h4 data-i18n="map.wms.josm">JOSM</h4>
+              <ol>
+                <li data-i18n="map.wms.josm.step1">Open JOSM</li>
+                <li data-i18n="map.wms.josm.step2">
+                  Go to <code>Imagery → Imagery Preferences</code> (or press
+                  <code>Ctrl+Shift+I</code>)
+                </li>
+                <li data-i18n="map.wms.josm.step3">Click the <code>+ WMS</code> button</li>
+                <li data-i18n="map.wms.josm.step4">
+                  In the "Introduzca el URL GetCapabilities" field, paste this URL:
+                  <code>http://geoserver.osm.lat/geoserver/osm_notes/ows?</code>
+                </li>
+                <li data-i18n="map.wms.josm.step5">
+                  Click <code>Obtener capas</code> (Get layers)
+                </li>
+                <li data-i18n="map.wms.josm.step6">Select the desired layer from the list</li>
+                <li data-i18n="map.wms.josm.step7">
+                  Enter a name for the layer (e.g., "OSM Notes Open")
+                </li>
+                <li data-i18n="map.wms.josm.step8">
+                  Click <code>Aceptar</code> (Accept) and select the layer from
+                  <code>Imagery</code> menu
+                </li>
+              </ol>
+
+              <h4 data-i18n="map.wms.vespucci">Vespucci</h4>
+              <ol>
+                <li data-i18n="map.wms.vespucci.step1">
+                  On the main screen, tap the hamburger menu icon (☰)
+                </li>
+                <li data-i18n="map.wms.vespucci.step2">Tap the plus icon (+)</li>
+                <li data-i18n="map.wms.vespucci.step3">
+                  Scroll to the bottom and select <code>Add imagery from WMS</code>
+                </li>
+                <li data-i18n="map.wms.vespucci.step4">
+                  In the new window, tap the plus icon (+) again
+                </li>
+                <li data-i18n="map.wms.vespucci.step5">
+                  Enter a name (e.g., "OSM Notes") and paste the GetCapabilities URL:
+                  <code>http://geoserver.osm.lat/geoserver/osm_notes/ows?</code>
+                </li>
+                <li data-i18n="map.wms.vespucci.step6">
+                  In the WMS Endpoints list, "OSM Notes" will appear. Select it (this will query the
+                  layers)
+                </li>
+                <li data-i18n="map.wms.vespucci.step7">
+                  Select the layer you want (e.g., "Open OSM Notes")
+                </li>
+                <li data-i18n="map.wms.vespucci.step8">
+                  In the new window, check <code>Overlay</code> and delete the numbers in the
+                  Coverage section
+                </li>
+                <li data-i18n="map.wms.vespucci.step9">
+                  Tap <code>Save</code>, then <code>Done</code>, <code>Done</code>
+                </li>
+                <li data-i18n="map.wms.vespucci.step10">
+                  In the hamburger menu, select <code>Add overlay imagery layer</code> and select
+                  the layer
+                </li>
+                <li data-i18n="map.wms.vespucci.step11">
+                  Once added, you can move the layer up or down in the hamburger menu
+                </li>
+              </ol>
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <footer class="footer" role="contentinfo">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <span>Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
-                    <br>
-                    <span>Processed by</span>
-                    <a href="https://github.com/OSM-Notes/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
-                    & <a href="https://github.com/OSM-Notes/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
-                </div>
-                <div class="footer-section">
-                    <a href="https://github.com/OSM-Notes/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
-                </div>
-                <div class="footer-section">
-                    <span>Made by</span> <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
-                </div>
-            </div>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <span>Data from</span>
+            <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer"
+              >OpenStreetMap</a
+            >
+            <br />
+            <span>Processed by</span>
+            <a
+              href="https://github.com/OSM-Notes/OSM-Notes-Ingestion"
+              target="_blank"
+              rel="noopener noreferrer"
+              >OSM-Notes-Ingestion</a
+            >
+            &
+            <a
+              href="https://github.com/OSM-Notes/OSM-Notes-Analytics"
+              target="_blank"
+              rel="noopener noreferrer"
+              >OSM-Notes-Analytics</a
+            >
+          </div>
+          <div class="footer-section">
+            <a
+              href="https://github.com/OSM-Notes/OSM-Notes-Viewer"
+              target="_blank"
+              rel="noopener noreferrer"
+              >View on GitHub</a
+            >
+          </div>
+          <div class="footer-section">
+            <span>Made by</span>
+            <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
+          </div>
         </div>
+      </div>
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet.wms@0.2.0/dist/leaflet.wms.js"></script>
     <script type="module" src="../js/pages/mapViewer.js"></script>
-</body>
+  </body>
 </html>

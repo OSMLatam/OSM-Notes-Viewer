@@ -82,7 +82,8 @@ This viewer is part of a larger system for processing and visualizing OSM Notes:
 
 ### Shared Libraries
 
-- **[OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common)** - Shared utilities and libraries used across all projects
+- **[OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common)** - Shared utilities and
+  libraries used across all projects
   - Common Bash functions
   - Logging utilities
   - Error handling
@@ -289,12 +290,14 @@ Setup GetFeatureInfo for note popups
 ### API Client (apiClient.js)
 
 **Responsibilities:**
+
 - Fetch static JSON files
 - Manage cache
 - Handle errors
 - Provide typed methods for each endpoint
 
 **Key Methods:**
+
 - `getMetadata()` - Export info
 - `getUserIndex()` - All users list
 - `getCountryIndex()` - All countries list
@@ -304,31 +307,37 @@ Setup GetFeatureInfo for note popups
 ### REST API Integration
 
 **Note Viewer (`noteViewer.js`):**
+
 - Fetches individual note details from `OSM-Notes-API`
 - Endpoint: `GET /api/v1/notes/{noteId}`
 - Fetches ML recommendations: `GET /api/v1/notes/{noteId}/recommendation`
 - Base URL: `https://notes-api.osm.lat` (production)
 
 **Hashtag Viewer (`hashtagViewer.js`):**
+
 - Fetches hashtag statistics: `GET /api/v1/hashtags/{hashtag}`
 - Fetches notes with hashtag: `GET /api/v1/notes?text=#{hashtag}`
 - Supports pagination and filtering (status, date_from, date_to)
 
 **WMS Integration (`mapViewer.js`):**
+
 - Consumes WMS layers from GeoServer
 - Base URL: `https://geoserver.osm.lat/geoserver/osm_notes/wms`
-- Layers: `osm_notes:notesopen`, `osm_notes:notesclosed`, `osm_notes:countries`, `osm_notes:disputedareas`
+- Layers: `osm_notes:notesopen`, `osm_notes:notesclosed`, `osm_notes:countries`,
+  `osm_notes:disputedareas`
 - Uses `leaflet.wms` plugin with native Leaflet fallback
 
 ### Cache System (cache.js)
 
 **Responsibilities:**
+
 - Store data in localStorage
 - Validate cache age
 - Clear expired cache
 - Manage cache size
 
 **Key Methods:**
+
 - `cacheSet(key, data)` - Store data
 - `cacheGet(key, maxAge)` - Retrieve if valid
 - `cacheDelete(key)` - Remove entry
@@ -337,6 +346,7 @@ Setup GetFeatureInfo for note popups
 ### Formatter (formatter.js)
 
 **Responsibilities:**
+
 - Format numbers (1234 → 1,234)
 - Format dates (ISO → readable)
 - Format percentages
@@ -379,6 +389,7 @@ osm_notes_country_456       → countries/456.json
 **Target:** < 2 seconds on 3G
 
 **Optimizations:**
+
 - Minimal CSS (< 10KB)
 - Vanilla JS (no framework overhead)
 - Lazy load components
@@ -389,6 +400,7 @@ osm_notes_country_456       → countries/456.json
 **Target:** < 500ms with cache, < 2s without
 
 **Optimizations:**
+
 - Small JSON files (2-10 KB each)
 - Client-side rendering
 - Progressive loading
@@ -399,6 +411,7 @@ osm_notes_country_456       → countries/456.json
 **Strategy:** Client-side filtering
 
 **Why:**
+
 - Index files are small (< 100 KB typically)
 - No server required
 - Instant results
@@ -431,13 +444,17 @@ osm_notes_country_456       → countries/456.json
 
 ### Future (REST API)
 
-- **Hybrid authentication strategy** - Historical data remains public, recent data requires User-Agent
-- **User-Agent required** - Valid User-Agent header required for all API endpoints (format: `AppName/Version (Contact)`)
+- **Hybrid authentication strategy** - Historical data remains public, recent data requires
+  User-Agent
+- **User-Agent required** - Valid User-Agent header required for all API endpoints (format:
+  `AppName/Version (Contact)`)
 - **OAuth 2.0 with OSM** - Optional, only for specific endpoints that require user identity
 - **Rate limiting** - Per IP + User-Agent limits for API access
 - **Usage analytics** - Track and analyze API usage patterns by application (User-Agent)
 
-This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs/API_Proposal.md). For detailed information about the authentication strategy, see [AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md).
+This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs/API_Proposal.md).
+For detailed information about the authentication strategy, see
+[AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md).
 
 ## Browser Compatibility
 
@@ -465,6 +482,7 @@ This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs
 ## Data Sources
 
 ### Static JSON Files (Historical Data)
+
 - **Base URL:** `https://notes.osm.lat/data`
 - **Format:** Pre-generated JSON files
 - **Update Frequency:** Every 15 minutes
@@ -477,6 +495,7 @@ This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs
   - `/countries/{country_id}.json`
 
 ### REST API (Recent Data & Features)
+
 - **Base URL:** `https://notes-api.osm.lat`
 - **Format:** REST API with JSON responses
 - **Update Frequency:** Real-time (updated every 15 minutes)
@@ -488,6 +507,7 @@ This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs
   - `GET /api/v1/notes/{noteId}/recommendation` - ML recommendations
 
 ### WMS Service (Map Layers)
+
 - **Base URL:** `https://geoserver.osm.lat/geoserver/osm_notes/wms`
 - **Format:** OGC WMS 1.1.0
 - **Layers:**
@@ -500,6 +520,7 @@ This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs
 ## ML Integration
 
 ### ML Recommendations API
+
 - **Endpoint:** `GET /api/v1/notes/{noteId}/recommendation`
 - **Response Format:**
   ```json
@@ -533,4 +554,3 @@ This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs
 Current (Vanilla JS) → React/Vue → Next.js/Nuxt → Full-stack
 
 Each step adds complexity but also features. Start simple, evolve as needed.
-

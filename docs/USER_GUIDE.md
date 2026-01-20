@@ -2,7 +2,8 @@
 
 ## Overview
 
-OSM Notes Viewer is a web application for exploring and analyzing OpenStreetMap Notes. This guide will help you navigate and use all the features of the application.
+OSM Notes Viewer is a web application for exploring and analyzing OpenStreetMap Notes. This guide
+will help you navigate and use all the features of the application.
 
 ## Table of Contents
 
@@ -77,11 +78,13 @@ For **open notes only**, you may see an ML recommendation section that suggests:
   - **Reopen Note**: Reopen a closed note (requires OAuth login)
   - **Report**: Report inappropriate content (requires OAuth login)
 
-**Note:** Action buttons require OAuth authentication with OpenStreetMap. This feature will be available in a future update.
+**Note:** Action buttons require OAuth authentication with OpenStreetMap. This feature will be
+available in a future update.
 
 ### Sharing Notes
 
 Click the **"Share"** button to:
+
 - Copy the note URL to clipboard
 - Share via social media (Twitter, Facebook, etc.)
 - Share via messaging apps (WhatsApp, Telegram)
@@ -186,7 +189,7 @@ ML (Machine Learning) recommendations help you decide what action to take with a
    - **Comment**: Add more information or ask for clarification
    - **Map**: The note describes a feature that should be mapped in OSM
 
-2. **Confidence Score**: 
+2. **Confidence Score**:
    - Higher scores (80%+) indicate more reliable recommendations
    - Lower scores (< 50%) should be reviewed carefully
 
@@ -195,7 +198,7 @@ ML (Machine Learning) recommendations help you decide what action to take with a
 ### Using Recommendations
 
 - **Close/Comment**: Use the action buttons in the comment form
-- **Map**: 
+- **Map**:
   1. Review the suggested JOSM tags
   2. Copy the tags using the "Copy for JOSM" button
   3. Open JOSM editor
@@ -206,7 +209,8 @@ ML (Machine Learning) recommendations help you decide what action to take with a
 
 ## Using JOSM Tags
 
-When the ML recommendation suggests "map", JOSM tags are provided to help you create the OSM feature.
+When the ML recommendation suggests "map", JOSM tags are provided to help you create the OSM
+feature.
 
 ### Format
 
@@ -216,10 +220,10 @@ Tags are provided in JOSM format: `key1=value1,key2=value2`
 
 1. **Copy Tags**: Click the "Copy for JOSM" button
 2. **Open JOSM**: Launch the JOSM editor
-3. **Create Feature**: 
+3. **Create Feature**:
    - Draw the feature (point, line, or area) at the note location
    - Select the feature
-4. **Paste Tags**: 
+4. **Paste Tags**:
    - Open the Presets menu → Tags
    - Paste the tags in the format: `key1=value1,key2=value2`
    - JOSM will automatically parse and apply the tags
@@ -232,6 +236,7 @@ Tags are provided in JOSM format: `key1=value1,key2=value2`
 If the tags are: `amenity=restaurant,name=El Buen Sabor`
 
 In JOSM:
+
 1. Create a node at the location
 2. Open Tags dialog
 3. Paste: `amenity=restaurant,name=El Buen Sabor`
@@ -267,7 +272,8 @@ The application supports full keyboard navigation for accessibility.
 
 ### Skip Links
 
-Press **Tab** when the page loads to see a "Skip to main content" link. This helps screen reader users navigate faster.
+Press **Tab** when the page loads to see a "Skip to main content" link. This helps screen reader
+users navigate faster.
 
 ---
 
@@ -289,7 +295,8 @@ The application supports multiple languages:
 
 ### Auto-Detection
 
-The application automatically detects your browser language and uses it if available. Otherwise, it defaults to English.
+The application automatically detects your browser language and uses it if available. Otherwise, it
+defaults to English.
 
 ---
 
@@ -346,4 +353,3 @@ The application automatically detects your browser language and uses it if avail
 - **No Tracking**: The application does not track your browsing
 - **Local Storage**: Language preference is stored locally in your browser
 - **Geolocation**: Your location is only used to center the map and is not stored or transmitted
-

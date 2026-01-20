@@ -10,7 +10,9 @@ Interactive web viewer for OpenStreetMap Notes analytics data.
 
 ## 🎯 Overview
 
-This web application provides an interactive interface to explore OpenStreetMap notes statistics, including:
+This web application provides an interactive interface to explore OpenStreetMap notes statistics,
+including:
+
 - User profiles with activity analysis
 - Country-level statistics
 - Hashtag usage trends
@@ -20,47 +22,54 @@ This web application provides an interactive interface to explore OpenStreetMap 
 ## 📸 Screenshots
 
 ### Home Page
-![Home Page](docs/screenshots/home.png)
-*Overview of global statistics and top contributors*
+
+![Home Page](docs/screenshots/home.png) _Overview of global statistics and top contributors_
 
 ### User Profile
-![User Profile](docs/screenshots/user-profile.png)
-*Detailed user statistics with activity heatmap and working hours*
+
+![User Profile](docs/screenshots/user-profile.png) _Detailed user statistics with activity heatmap
+and working hours_
 
 ### Country Profile
-![Country Profile](docs/screenshots/country-profile.png)
-*Country-level analytics and top contributors*
+
+![Country Profile](docs/screenshots/country-profile.png) _Country-level analytics and top
+contributors_
 
 ### Working Hours Heatmap
-![Working Hours](docs/screenshots/working-hours.png)
-*24/7 activity patterns visualization*
+
+![Working Hours](docs/screenshots/working-hours.png) _24/7 activity patterns visualization_
 
 > 📝 **Note**: Screenshots will be added after deployment. Check back soon!
 
 ## ✨ Features
 
 ### 🔍 Search & Navigation
+
 - **Instant Search** - Find users and countries with autocomplete
 - **Advanced Filtering** - Sort by activity, date, or alphabetically
 - **Quick Access** - Direct links to user and country profiles
 
 ### 📊 Visualizations
+
 - **Activity Heatmaps** - GitHub-style contribution calendars (365 days)
 - **Working Hours** - 24/7 activity patterns visualization
 - **Interactive Charts** - Bar charts for hashtags and countries
 - **Statistics Cards** - Real-time counts and metrics
 
 ### 🌍 Geographic Analysis
+
 - **Country Profiles** - Detailed statistics per country
 - **Top Contributors** - Most active users worldwide
 - **Geographic Distribution** - See where notes are created
 
 ### #️⃣ Hashtag Tracking
+
 - **Trending Hashtags** - Most used hashtags
 - **User-specific Tags** - Personalized hashtag analysis
 - **Country-specific Tags** - Regional hashtag patterns
 
 ### 🎨 User Experience
+
 - **Dark Mode** - Eye-friendly dark theme
 - **Internationalization** - Support for 4 languages (EN, ES, DE, FR)
 - **Animations** - Smooth transitions and micro-interactions
@@ -69,6 +78,7 @@ This web application provides an interactive interface to explore OpenStreetMap 
 - **Offline Mode** - Works without internet connection
 
 ### ⚡ Performance
+
 - **Lightning Fast** - Pure HTML/CSS/JS, no build step
 - **Smart Caching** - LocalStorage with TTL for instant loading
 - **Minimal Bundle** - ~50KB total size
@@ -76,7 +86,8 @@ This web application provides an interactive interface to explore OpenStreetMap 
 
 ## Data Architecture
 
-The viewer uses a **separate data repository** served via GitHub Pages for maximum flexibility and performance.
+The viewer uses a **separate data repository** served via GitHub Pages for maximum flexibility and
+performance.
 
 ### Architecture
 
@@ -118,6 +129,7 @@ cd ~/github/OSM-Notes-Analytics
 ```
 
 The script will:
+
 1. Export JSON files from the analytics database
 2. Push them to the OSM-Notes-Data repository
 3. GitHub Pages automatically updates within 1-2 minutes
@@ -126,9 +138,12 @@ The script will:
 
 This viewer is part of a larger ecosystem of projects for processing and visualizing OSM Notes:
 
-- **[OSM-Notes-Ingestion](https://github.com/OSM-Notes/OSM-Notes-Ingestion)** - Downloads and maintains a local copy of OSM notes data from the Planet dump and API
-- **[OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common)** - Shared libraries and utilities used across all OSM Notes projects
-- **[OSM-Notes-Analytics](https://github.com/OSM-Notes/OSM-Notes-Analytics)** - Data warehouse and ETL processes that generate analytics from the ingested notes
+- **[OSM-Notes-Ingestion](https://github.com/OSM-Notes/OSM-Notes-Ingestion)** - Downloads and
+  maintains a local copy of OSM notes data from the Planet dump and API
+- **[OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common)** - Shared libraries and
+  utilities used across all OSM Notes projects
+- **[OSM-Notes-Analytics](https://github.com/OSM-Notes/OSM-Notes-Analytics)** - Data warehouse and
+  ETL processes that generate analytics from the ingested notes
 - **OSM-Notes-Viewer** (this project) - Web interface for visualizing the analytics data
 
 ### Data Flow
@@ -146,6 +161,7 @@ OSM Planet Dump / API
 ```
 
 The backend generates the following JSON files:
+
 - `/api/users/{user_id}.json` - Individual user profiles
 - `/api/countries/{country_id}.json` - Country statistics
 - `/api/indexes/users.json` - List of all users
@@ -154,9 +170,12 @@ The backend generates the following JSON files:
 
 ### JSON Schema Validation
 
-To ensure data compatibility between the Analytics (producer) and Viewer (consumer) repositories, JSON Schema definitions are provided in the `lib/OSM-Notes-Common/schemas/` directory via a git submodule.
+To ensure data compatibility between the Analytics (producer) and Viewer (consumer) repositories,
+JSON Schema definitions are provided in the `lib/OSM-Notes-Common/schemas/` directory via a git
+submodule.
 
 These schemas define the contract for data exchange:
+
 - **Type safety** - Enforce correct data types
 - **Required fields** - Ensure critical data is present
 - **Validation** - Catch errors before deployment
@@ -175,11 +194,13 @@ npm install -g ajv-cli
 ajv -s lib/OSM-Notes-Common/schemas/user-profile.schema.json -d src/data/users/*.json
 ```
 
-For more details, see [docs/DATA_CONTRACT.md](docs/DATA_CONTRACT.md) and [lib/OSM-Notes-Common/schemas/README.md](lib/OSM-Notes-Common/schemas/README.md).
+For more details, see [docs/DATA_CONTRACT.md](docs/DATA_CONTRACT.md) and
+[lib/OSM-Notes-Common/schemas/README.md](lib/OSM-Notes-Common/schemas/README.md).
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - Node.js 14+ (for development)
 - Python 3+ (alternative server)
@@ -224,8 +245,10 @@ npm run preview
 ### For Production Deployment
 
 The application is deployed via GitHub Pages using GitHub Actions. Configuration files:
+
 - `.github/workflows/deploy-pages.yml` - Deployment workflow
-- Data is served from a separate repository: [OSM-Notes-Data](https://github.com/OSM-Notes/OSM-Notes-Data)
+- Data is served from a separate repository:
+  [OSM-Notes-Data](https://github.com/OSM-Notes/OSM-Notes-Data)
 
 ## Configuration
 
@@ -272,7 +295,8 @@ OSM-Notes-Viewer/
 - [Architecture](docs/ARCHITECTURE.md) - System architecture overview
 - [Components](docs/COMPONENTS.md) - Component documentation
 - [API](docs/API.md) - API endpoints and data structure
-- [Authentication Strategy](docs/AUTHENTICATION_STRATEGY.md) - Hybrid authentication approach (User-Agent required, OAuth optional) including client-side protection
+- [Authentication Strategy](docs/AUTHENTICATION_STRATEGY.md) - Hybrid authentication approach
+  (User-Agent required, OAuth optional) including client-side protection
 - [Features](docs/FEATURES.md) - Feature documentation
 - [Build Guide](docs/BUILD.md) - Building the project
 - [Contributing](docs/CONTRIBUTING.md) - Contribution guidelines
@@ -299,7 +323,8 @@ Contributions are welcome! Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) f
 
 ## Related Projects
 
-- [OSM-Notes-Ingestion](https://github.com/OSM-Notes/OSM-Notes-Ingestion) - Data ingestion from OSM Planet
+- [OSM-Notes-Ingestion](https://github.com/OSM-Notes/OSM-Notes-Ingestion) - Data ingestion from OSM
+  Planet
 - [OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common) - Shared libraries and utilities
 - [OSM-Notes-Analytics](https://github.com/OSM-Notes/OSM-Notes-Analytics) - Data processing backend
 
@@ -315,4 +340,5 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ## Contact
 
-For issues and questions, please use [GitHub Issues](https://github.com/OSM-Notes/OSM-Notes-Viewer/issues).
+For issues and questions, please use
+[GitHub Issues](https://github.com/OSM-Notes/OSM-Notes-Viewer/issues).

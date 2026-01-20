@@ -70,7 +70,8 @@ graph TD
 
 ### PlantUML Source
 
-For more advanced diagrams, see `architecture-diagrams.puml` which can be rendered with [PlantUML](https://plantuml.com).
+For more advanced diagrams, see `architecture-diagrams.puml` which can be rendered with
+[PlantUML](https://plantuml.com).
 
 To render the PlantUML file:
 
@@ -89,8 +90,10 @@ plantuml docs/architecture-diagrams.puml
 
 You can also render these diagrams online:
 
-- **Mermaid**: Use [Mermaid Live Editor](https://mermaid.live/) or [GitHub](https://github.com) (native support)
-- **PlantUML**: Use [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/) or [PlantText](https://www.planttext.com/)
+- **Mermaid**: Use [Mermaid Live Editor](https://mermaid.live/) or [GitHub](https://github.com)
+  (native support)
+- **PlantUML**: Use [PlantUML Online Server](http://www.plantuml.com/plantuml/uml/) or
+  [PlantText](https://www.planttext.com/)
 
 ## Data Flow Summary
 
@@ -102,8 +105,8 @@ You can also render these diagrams online:
 6. **External consumers** (AI, tools, researchers) access public exports
 
 This architecture provides:
+
 - ✅ Separation of concerns
 - ✅ Scalable data processing
 - ✅ Static, CDN-friendly web deployment
 - ✅ Public, accessible data exports
-

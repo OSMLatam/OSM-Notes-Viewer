@@ -1,6 +1,7 @@
 # API Metrics
 
-**Purpose**: This document lists all metrics that must be obtained from the REST API when implemented, instead of static JSON files.
+**Purpose**: This document lists all metrics that must be obtained from the REST API when
+implemented, instead of static JSON files.
 
 **Last Updated**: 2025-01-27
 
@@ -8,9 +9,14 @@
 
 ## Summary
 
-The metrics listed here are **time-sensitive** or require **real-time data** (updated every 15 minutes), so they must be obtained from the REST API instead of static JSON files (which are updated once per day).
+The metrics listed here are **time-sensitive** or require **real-time data** (updated every 15
+minutes), so they must be obtained from the REST API instead of static JSON files (which are updated
+once per day).
 
-**⚠️ User-Agent Required**: All REST API endpoints listed here **require a valid User-Agent** (format: `AppName/Version (Contact)`). OAuth with OSM is optional and only required for specific functionalities. See [AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md) for details on the hybrid authentication strategy.
+**⚠️ User-Agent Required**: All REST API endpoints listed here **require a valid User-Agent**
+(format: `AppName/Version (Contact)`). OAuth with OSM is optional and only required for specific
+functionalities. See [AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md) for details on the
+hybrid authentication strategy.
 
 ---
 
@@ -19,22 +25,26 @@ The metrics listed here are **time-sensitive** or require **real-time data** (up
 **Endpoint**: `GET /api/v1/users/{user_id}/recent-activity`
 
 ### Recent Activity Metrics (Time-Sensitive)
+
 - `notes_created_last_30_days` ⚠️ **API ONLY**
 - `notes_resolved_last_30_days` ⚠️ **API ONLY**
 - `days_since_last_action` ⚠️ **API ONLY**
 - `active_notes_count` ⚠️ **API ONLY** (currently active notes)
 
 ### Current Period Metrics (Real-Time)
+
 - `countries_open_notes_current_month` ⚠️ **API ONLY**
 - `countries_solving_notes_current_month` ⚠️ **API ONLY**
 - `countries_open_notes_current_day` ⚠️ **API ONLY**
 - `countries_solving_notes_current_day` ⚠️ **API ONLY**
 
 ### Current Status (Real-Time)
+
 - `currently_open_count` ⚠️ **API ONLY** (if needed for real-time display)
 - `notes_backlog_size` ⚠️ **API ONLY** (if needed for real-time display)
 
-**Note**: Some of these metrics exist in JSON but are **snapshots from the daily export**. For real-time accuracy, use the API.
+**Note**: Some of these metrics exist in JSON but are **snapshots from the daily export**. For
+real-time accuracy, use the API.
 
 ---
 
@@ -43,10 +53,12 @@ The metrics listed here are **time-sensitive** or require **real-time data** (up
 **Endpoint**: `GET /api/v1/countries/{country_id}/current-stats`
 
 ### Recent Activity Metrics (Time-Sensitive)
+
 - `notes_created_last_30_days` ⚠️ **API ONLY**
 - `notes_resolved_last_30_days` ⚠️ **API ONLY**
 
 ### Current Status (Real-Time)
+
 - `currently_open_count` ⚠️ **API ONLY**
 - `currently_closed_count` ⚠️ **API ONLY**
 - `notes_backlog_size` ⚠️ **API ONLY**
@@ -61,6 +73,7 @@ The metrics listed here are **time-sensitive** or require **real-time data** (up
 **Endpoint**: `GET /api/v1/global/current-stats`
 
 ### Current Statistics (Real-Time)
+
 - `currently_open_count` ⚠️ **API ONLY**
 - `currently_closed_count` ⚠️ **API ONLY**
 - `notes_created_last_30_days` ⚠️ **API ONLY**
@@ -76,15 +89,18 @@ The metrics listed here are **time-sensitive** or require **real-time data** (up
 These operations require the REST API (not available in JSON):
 
 ### Search & Filter Operations
+
 - `GET /api/v1/users?country={country_id}&min_notes={count}&sort={field}`
 - `GET /api/v1/countries?health_score_min={score}&sort={field}`
 - `GET /api/v1/users?hashtag={tag}&date_from={date}&date_to={date}`
 
 ### Comparison Operations
+
 - `GET /api/v1/compare/users?ids={id1,id2,id3}`
 - `GET /api/v1/compare/countries?ids={id1,id2,id3}`
 
 ### Ranking Operations (Real-Time)
+
 - `GET /api/v1/users/rankings?metric={field}&limit={count}`
 - `GET /api/v1/countries/rankings?metric={field}&limit={count}`
 
@@ -93,6 +109,7 @@ These operations require the REST API (not available in JSON):
 ## Criteria for Identifying API Metrics
 
 ### Use REST API When:
+
 - ⚠️ The metric contains **"last_30_days"**, **"current"**, **"today"**, **"recent"**
 - ⚠️ The metric is a **count of currently active elements**
 - ⚠️ The metric is **time-sensitive** (backlog, days since last action)
@@ -125,7 +142,7 @@ async function getMetric(metricName, userId) {
       console.warn('API unavailable, falling back to JSON');
     }
   }
-  
+
   // Fallback to JSON
   const profile = await fetchFromJSON(userId);
   return profile[metricName]; // May be snapshot from daily export
@@ -196,15 +213,15 @@ GET /api/v1/countries/rankings?metric={field}&limit={count}
 
 ## Summary of Metrics by Category
 
-| Category | API Metrics | Status |
-|----------|-------------|--------|
-| **User - Recent Activity** | 4 metrics | ⚠️ Pending API |
-| **User - Current Period** | 4 metrics | ⚠️ Pending API |
-| **User - Current Status** | 2 metrics | ⚠️ Pending API |
-| **Country - Recent Activity** | 2 metrics | ⚠️ Pending API |
-| **Country - Current Status** | 6 metrics | ⚠️ Pending API |
-| **Global - Current Stats** | 7 metrics | ⚠️ Pending API |
-| **Dynamic Queries** | Multiple endpoints | ⚠️ Pending API |
+| Category                      | API Metrics        | Status         |
+| ----------------------------- | ------------------ | -------------- |
+| **User - Recent Activity**    | 4 metrics          | ⚠️ Pending API |
+| **User - Current Period**     | 4 metrics          | ⚠️ Pending API |
+| **User - Current Status**     | 2 metrics          | ⚠️ Pending API |
+| **Country - Recent Activity** | 2 metrics          | ⚠️ Pending API |
+| **Country - Current Status**  | 6 metrics          | ⚠️ Pending API |
+| **Global - Current Stats**    | 7 metrics          | ⚠️ Pending API |
+| **Dynamic Queries**           | Multiple endpoints | ⚠️ Pending API |
 
 **Total**: ~25+ metrics that require REST API
 
@@ -212,10 +229,13 @@ GET /api/v1/countries/rankings?metric={field}&limit={count}
 
 ## References
 
-- **[AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md)**: Hybrid authentication strategy (public historical data, recent data with User-Agent)
+- **[AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md)**: Hybrid authentication strategy
+  (public historical data, recent data with User-Agent)
 - **[API.md](API.md)**: Complete endpoint documentation and data structure
-- **[API Proposal](https://github.com/OSM-Notes/OSM-Notes-Analytics/blob/main/docs/API_Proposal.md)**: API design and endpoints (when implemented)
-- **[Metric Definitions](https://github.com/OSM-Notes/OSM-Notes-Analytics/blob/main/docs/Metric_Definitions.md)**: Business definitions for all metrics
+- **[API Proposal](https://github.com/OSM-Notes/OSM-Notes-Analytics/blob/main/docs/API_Proposal.md)**:
+  API design and endpoints (when implemented)
+- **[Metric Definitions](https://github.com/OSM-Notes/OSM-Notes-Analytics/blob/main/docs/Metric_Definitions.md)**:
+  Business definitions for all metrics
 
 ---
 
@@ -233,7 +253,8 @@ The REST API requires a valid User-Agent for:
 
 ### What About Historical Data?
 
-Historical data remains **completely public** and accessible without authentication via static JSON files:
+Historical data remains **completely public** and accessible without authentication via static JSON
+files:
 
 - `/data/metadata.json`
 - `/data/indexes/users.json`
@@ -245,7 +266,9 @@ Only **recent real-time data** (last 30 days, current statistics) requires a val
 
 ### When is OAuth Required?
 
-OAuth with OSM is **optional** and only required for specific functionalities that need to identify specific OSM users, such as:
+OAuth with OSM is **optional** and only required for specific functionalities that need to identify
+specific OSM users, such as:
+
 - User's personal profile (`/api/v1/users/me/*`)
 - User's personal activity
 - Premium features specific to users
@@ -256,4 +279,3 @@ For more information, see [AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.m
 
 **Last Updated**: 2025-01-27  
 **Maintained By**: OSM-Notes-Viewer Team
-

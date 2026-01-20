@@ -20,10 +20,11 @@ To add screenshots:
    - Format: PNG or JPG
 
 3. **Optimize images:**
+
    ```bash
    # Using ImageMagick
    convert screenshot.png -resize 1200x -quality 85 screenshot-optimized.png
-   
+
    # Using TinyPNG
    # Upload to https://tinypng.com/
    ```

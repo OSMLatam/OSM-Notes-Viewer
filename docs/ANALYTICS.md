@@ -2,11 +2,13 @@
 
 ## Overview
 
-OSM Notes Viewer includes built-in analytics support using Google Analytics 4 (GA4). Analytics tracking is optional and disabled by default for privacy.
+OSM Notes Viewer includes built-in analytics support using Google Analytics 4 (GA4). Analytics
+tracking is optional and disabled by default for privacy.
 
 ## Features
 
 The analytics implementation tracks:
+
 - **Page views** - All page navigation
 - **Search events** - Search queries and results
 - **Profile views** - User and country profile visits
@@ -38,10 +40,10 @@ The analytics implementation includes privacy-focused settings:
 
 ```javascript
 export const ANALYTICS_CONFIG = {
-    anonymizeIp: true,           // GDPR compliance
-    cookieFlags: 'SameSite=None;Secure',
-    allowGoogleSignals: false,    // Disable advertising features
-    allowAdPersonalizationSignals: false
+  anonymizeIp: true, // GDPR compliance
+  cookieFlags: 'SameSite=None;Secure',
+  allowGoogleSignals: false, // Disable advertising features
+  allowAdPersonalizationSignals: false,
 };
 ```
 
@@ -56,8 +58,8 @@ import { analytics } from './utils/analytics.js';
 import { GA_MEASUREMENT_ID, ANALYTICS_ENABLED } from '../../config/analytics-config.js';
 
 if (ANALYTICS_ENABLED && GA_MEASUREMENT_ID) {
-    analytics.init(GA_MEASUREMENT_ID);
-    analytics.trackPageView(document.title);
+  analytics.init(GA_MEASUREMENT_ID);
+  analytics.trackPageView(document.title);
 }
 ```
 
@@ -66,24 +68,28 @@ if (ANALYTICS_ENABLED && GA_MEASUREMENT_ID) {
 Analytics tracks events automatically throughout the application:
 
 #### Search Tracking
+
 ```javascript
 analytics.trackSearch(searchType, query, resultCount);
 // Example: analytics.trackSearch('users', 'john', 5)
 ```
 
 #### Profile Views
+
 ```javascript
 analytics.trackProfileView(type, id);
 // Example: analytics.trackProfileView('user', 12345)
 ```
 
 #### Theme Toggle
+
 ```javascript
 analytics.trackThemeToggle(theme);
 // Example: analytics.trackThemeToggle('dark')
 ```
 
 #### Pagination
+
 ```javascript
 analytics.trackPagination(type, pageNumber);
 // Example: analytics.trackPagination('users', 2)
@@ -115,7 +121,7 @@ To add GDPR consent management:
 ```javascript
 // In analytics-init.js
 if (ANALYTICS_ENABLED && GA_MEASUREMENT_ID && getUserConsent()) {
-    analytics.init(GA_MEASUREMENT_ID);
+  analytics.init(GA_MEASUREMENT_ID);
 }
 ```
 
@@ -128,8 +134,10 @@ Plausible is a privacy-friendly alternative:
 ```javascript
 // In analytics.js, add Plausible support
 if (provider === 'plausible') {
-    window.plausible = window.plausible || function() {
-        (window.plausible.q = window.plausible.q || []).push(arguments);
+  window.plausible =
+    window.plausible ||
+    function () {
+      (window.plausible.q = window.plausible.q || []).push(arguments);
     };
 }
 ```
@@ -140,13 +148,13 @@ You can implement custom analytics by extending the `Analytics` class:
 
 ```javascript
 class CustomAnalytics extends Analytics {
-    trackEvent(eventName, category, label, value) {
-        // Custom tracking logic
-        fetch('/api/analytics', {
-            method: 'POST',
-            body: JSON.stringify({ eventName, category, label, value })
-        });
-    }
+  trackEvent(eventName, category, label, value) {
+    // Custom tracking logic
+    fetch('/api/analytics', {
+      method: 'POST',
+      body: JSON.stringify({ eventName, category, label, value }),
+    });
+  }
 }
 ```
 
@@ -165,8 +173,8 @@ Enable debug mode in `analytics-config.js`:
 
 ```javascript
 export const ANALYTICS_CONFIG = {
-    debug: true,  // Enables console logging
-    // ... other config
+  debug: true, // Enables console logging
+  // ... other config
 };
 ```
 
@@ -187,13 +195,13 @@ All events follow this structure:
 
 ### Event Examples
 
-| Event | Category | Label | Value |
-|-------|----------|-------|-------|
-| search | search | users:john | 5 |
-| profile_view | profile | user:12345 | - |
-| theme_toggle | ui | dark | - |
-| pagination | pagination | users:page_2 | - |
-| error | error | network:timeout | - |
+| Event        | Category   | Label           | Value |
+| ------------ | ---------- | --------------- | ----- |
+| search       | search     | users:john      | 5     |
+| profile_view | profile    | user:12345      | -     |
+| theme_toggle | ui         | dark            | -     |
+| pagination   | pagination | users:page_2    | -     |
+| error        | error      | network:timeout | -     |
 
 ## Viewing Analytics Data
 
@@ -228,6 +236,7 @@ All events follow this structure:
 ### Privacy Blocking
 
 Some users may have privacy extensions that block analytics:
+
 - uBlock Origin
 - Privacy Badger
 - Firefox tracking protection
@@ -239,4 +248,3 @@ This is expected behavior.
 - [Google Analytics 4 Documentation](https://developers.google.com/analytics/devguides/collection/ga4)
 - [GA4 Event Reference](https://developers.google.com地址/analytics/devguides/collection/ga4/events)
 - [Privacy Best Practices](https://developers.google.com/analytics/devguides/collection/ga4/best-practices-privacy)
-

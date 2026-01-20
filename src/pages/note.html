@@ -1,180 +1,429 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-i18n="title.note">Note Viewer - OSM Notes Viewer</title>
-    <meta name="description" content="View detailed information about an OpenStreetMap note including status, location, interactions, and ML recommendations">
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/profile.css">
-    <link rel="stylesheet" href="../css/noteViewer.css">
+    <meta
+      name="description"
+      content="View detailed information about an OpenStreetMap note including status, location, interactions, and ML recommendations"
+    />
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/profile.css" />
+    <link rel="stylesheet" href="../css/noteViewer.css" />
     <link rel="stylesheet" href="../css/leaflet.css" />
     <link rel="stylesheet" href="../css/leaflet-overrides.css" />
-</head>
-<body>
+  </head>
+  <body>
     <!-- Skip link for screen readers -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <header class="header" role="banner">
-        <div class="container">
-            <h1 class="logo">
-                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;" aria-label="OSM Notes Viewer - Home">
-                    <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
-                </a>
-            </h1>
-            <div style="display: flex; gap: 1rem; align-items: center;">
-                <div id="languageSelector"></div>
-                <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle" data-i18n-aria-label="theme.toggle">
-                    🌙 <span data-i18n="theme.dark">Dark</span>
-                </button>
-            </div>
-            <nav class="nav" role="navigation" aria-label="Main navigation" data-i18n-aria-label="a11y.mainNavigation">
-                <a href="../index.html" class="nav-link" data-i18n="nav.home">Home</a>
-                <a href="explore.html" class="nav-link" data-i18n="nav.explore">Explore</a>
-                <a href="stats.html" class="nav-link" data-i18n="nav.stats">Stats</a>
-                <a href="map.html" class="nav-link" data-i18n="nav.map">Map</a>
-                <a href="note.html" class="nav-link active" aria-current="page" data-i18n="nav.note">Note</a>
-                <a href="about.html" class="nav-link" data-i18n="nav.about">About</a>
-            </nav>
+      <div class="container">
+        <h1 class="logo">
+          <a
+            href="../index.html"
+            style="
+              text-decoration: none;
+              color: inherit;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+            "
+            aria-label="OSM Notes Viewer - Home"
+          >
+            <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem" />
+          </a>
+        </h1>
+        <div style="display: flex; gap: 1rem; align-items: center">
+          <div id="languageSelector"></div>
+          <button
+            class="theme-toggle"
+            aria-label="Toggle dark mode"
+            id="themeToggle"
+            data-i18n-aria-label="theme.toggle"
+          >
+            🌙 <span data-i18n="theme.dark">Dark</span>
+          </button>
         </div>
+        <nav
+          class="nav"
+          role="navigation"
+          aria-label="Main navigation"
+          data-i18n-aria-label="a11y.mainNavigation"
+        >
+          <a href="../index.html" class="nav-link" data-i18n="nav.home">Home</a>
+          <a href="explore.html" class="nav-link" data-i18n="nav.explore">Explore</a>
+          <a href="stats.html" class="nav-link" data-i18n="nav.stats">Stats</a>
+          <a href="map.html" class="nav-link" data-i18n="nav.map">Map</a>
+          <a href="note.html" class="nav-link active" aria-current="page" data-i18n="nav.note"
+            >Note</a
+          >
+          <a href="about.html" class="nav-link" data-i18n="nav.about">About</a>
+        </nav>
+      </div>
     </header>
 
     <main class="main" id="main-content" role="main">
-        <div class="container">
-        <div id="noteLoading" class="loading" role="status" aria-live="polite" style="display: none;" data-i18n="note.loading">Loading note...</div>
-        <div id="noteError" class="error" style="display: none;" role="alert" aria-live="assertive"></div>
-
-            <!-- Note Search Form (shown when no ID provided) -->
-            <div id="noteSearchForm" style="display: none;">
-                <div class="card" style="max-width: 600px; margin: 3rem auto; padding: 2rem;">
-                    <h2 style="margin-top: 0; text-align: center;" data-i18n="note.search.title">Search for a Note</h2>
-                    <form id="searchNoteForm" style="display: flex; flex-direction: column; gap: 1rem;">
-                        <label for="noteIdInput" class="sr-only" data-i18n="note.search.placeholder">Enter note ID</label>
-                        <input
-                            type="text"
-                            id="noteIdInput"
-                            class="form-input"
-                            placeholder=""
-                            data-i18n="note.search.placeholder"
-                            data-i18n-placeholder="note.search.placeholder"
-                            autocomplete="off"
-                            required
-                            aria-label="Note ID"
-                            aria-describedby="noteIdError"
-                        >
-                        <div id="noteIdError" class="error-message" style="display: none;" role="alert" aria-live="polite"></div>
-                        <button type="submit" class="btn btn-primary" data-i18n="note.search.button">View Note</button>
-                    </form>
-                </div>
-            </div>
-
-            <div id="noteContent" style="display: none;">
-                <!-- Note Header -->
-                <section class="note-header" aria-labelledby="noteIdDisplay">
-                    <div class="note-header-main">
-                        <div class="note-title-section">
-                            <h1 class="note-title">
-                                <a href="#" id="prevNoteLink" class="note-nav-link note-nav-prev" aria-label="Previous note" title="Previous note" style="display: none;">
-                                    <span class="note-nav-arrow">◀</span>
-                                </a>
-                                <span id="noteIdDisplay" aria-live="polite">Note #</span>
-                                <span id="noteStatusBadge" class="status-badge" role="status" aria-live="polite"></span>
-                                <a href="#" id="nextNoteLink" class="note-nav-link note-nav-next" aria-label="Next note" title="Next note" style="display: none;">
-                                    <span class="note-nav-arrow">▶</span>
-                                </a>
-                            </h1>
-                            <div class="note-meta" role="group" aria-label="Note metadata">
-                                <span id="noteCreatedDate" class="note-date" aria-label="Created date"></span>
-                                <span id="noteCreatedBy" class="note-created-by" aria-label="Created by" style="display: none;"></span>
-                                <span id="noteUpdatedDate" class="note-date" aria-label="Last updated date"></span>
-                                <span id="noteCommentsCount" class="note-comments-count" aria-label="Number of comments"></span>
-                            </div>
-                        </div>
-                        <div class="note-actions-header" role="group" aria-label="Note actions">
-                            <button id="shareBtn" class="btn btn-secondary" data-i18n-aria-label="note.share" aria-label="Share this note" data-i18n="note.share">Share</button>
-                            <a id="osmXmlLink" href="#" target="_blank" class="btn btn-secondary" data-i18n-aria-label="note.viewXml" aria-label="View note XML on OpenStreetMap (opens in new tab)" data-i18n="note.viewXml">View XML ↗</a>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Main Layout: Map + Sidebar -->
-                <div class="note-viewer-layout">
-                    <!-- Left: Map -->
-                    <div class="note-map-container">
-                        <div id="noteMap" class="note-map" role="application" aria-label="Interactive map showing note location" tabindex="0"></div>
-                        <div class="note-map-info">
-                            <div id="countryLinkContainer" class="country-link-container" style="display: none;" role="region" aria-label="Country information">
-                                <span data-i18n="note.country">Country:</span>
-                                <a id="countryLink" href="#" class="country-link" aria-label="View country profile"></a>
-                            </div>
-                        </div>
-                        <!-- Note Statistics -->
-                        <div id="noteStats" class="note-stats" role="group" aria-label="Note statistics" style="display: none;">
-                            <h3 class="note-stats-title" data-i18n="note.stats.title">Statistics</h3>
-                            <!-- Small world map for location context -->
-                            <div id="noteWorldMap" class="note-world-map" style="display: none;"></div>
-                            <div class="note-stats-content">
-                                <span id="noteDaysOpen" class="note-stat" style="display: none;"></span>
-                                <span id="noteCommentsCountStat" class="note-stat" style="display: none;"></span>
-                                <span id="noteUniqueUsers" class="note-stat" style="display: none;"></span>
-                                <span id="noteClosedBy" class="note-stat" style="display: none;"></span>
-                                <span id="noteLastActivity" class="note-stat" style="display: none;"></span>
-                                <span id="noteCountry" class="note-stat" style="display: none;"></span>
-                                <span id="noteMaritimeZone" class="note-stat" style="display: none;"></span>
-                                <div id="noteRelatedChangesets" class="note-stat" style="display: none;"></div>
-                                <div id="noteHashtags" class="note-hashtags" role="list" aria-label="Hashtags" style="display: none;"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right: Note Details -->
-                    <div class="note-details-panel">
-
-                        <!-- ML Recommendation -->
-                        <section id="mlRecommendationSection" class="note-section" style="display: none;" aria-labelledby="ml-recommendation-title">
-                            <h2 class="section-title" id="ml-recommendation-title" data-i18n="note.mlRecommendation.title">ML Recommendation</h2>
-                            <div id="mlRecommendation" class="ml-recommendation" role="region" aria-live="polite" aria-label="Machine learning recommendation"></div>
-                            <div id="josmTagsContainer" class="josm-tags-container" style="display: none;">
-                                <label for="josmTags" data-i18n="note.mlRecommendation.josmTagsLabel">Suggested OSM Tags (for JOSM):</label>
-                                <textarea id="josmTags" class="josm-tags-input" readonly aria-label="Suggested OSM tags for JOSM editor"></textarea>
-                                <div id="tagLinksContainer" class="tag-links-container" style="display: none;"></div>
-                                <button id="copyJosmTagsBtn" class="btn btn-small" data-i18n="note.mlRecommendation.copyJosm" aria-label="Copy JOSM tags to clipboard">Copy for JOSM</button>
-                            </div>
-                        </section>
-
-                        <!-- Interactions Timeline -->
-                        <section class="note-section" aria-labelledby="activity-timeline-title">
-                            <h2 class="section-title" id="activity-timeline-title" data-i18n="note.activityTimeline.title">Activity Timeline</h2>
-                            <div id="noteInteractions" class="note-interactions" role="list" aria-label="Note activity timeline"></div>
-                        </section>
-
-                        <!-- Comment Form -->
-                        <section class="note-section" aria-labelledby="comment-form-title">
-                            <h2 class="section-title" id="comment-form-title" data-i18n="note.comment.title">Add Comment</h2>
-                            <div id="authStatus" class="auth-status" style="display: none;" role="status" aria-live="polite"></div>
-                            <form id="commentForm" class="comment-form" role="form" aria-label="Add comment form">
-                                <label for="commentText" class="sr-only" data-i18n="note.comment.placeholder">Comment text</label>
-                                <textarea id="commentText" class="comment-textarea" data-i18n="note.comment.placeholder" placeholder="Enter your comment..." rows="4" aria-label="Enter your comment" aria-required="false"></textarea>
-                                <div id="hashtagSuggestions" class="hashtag-suggestions" role="group" aria-label="Suggested hashtags"></div>
-                                <div class="comment-actions" role="group" aria-label="Comment actions">
-                                    <button id="commentBtn" class="btn btn-primary" type="submit" disabled data-i18n-aria-label="note.comment.button" aria-label="Submit comment" data-i18n="note.comment.button">Comment</button>
-                                    <button id="closeBtn" class="btn btn-warning" type="button" style="display: none;" data-i18n-aria-label="note.comment.close" aria-label="Close this note" data-i18n="note.comment.close">Close Note</button>
-                                    <button id="reopenBtn" class="btn btn-success" type="button" style="display: none;" data-i18n-aria-label="note.comment.reopen" aria-label="Reopen this note" data-i18n="note.comment.reopen">Reopen Note</button>
-                                    <button id="reportBtn" class="btn btn-danger" type="button" style="display: none;" data-i18n-aria-label="note.comment.report" aria-label="Report this note" data-i18n="note.comment.report">Report</button>
-                                </div>
-                                <div id="commentError" class="error-message" style="display: none;" role="alert" aria-live="assertive"></div>
-                            </form>
-                        </section>
-                    </div>
-                </div>
-            </div>
+      <div class="container">
+        <div
+          id="noteLoading"
+          class="loading"
+          role="status"
+          aria-live="polite"
+          style="display: none"
+          data-i18n="note.loading"
+        >
+          Loading note...
         </div>
+        <div
+          id="noteError"
+          class="error"
+          style="display: none"
+          role="alert"
+          aria-live="assertive"
+        ></div>
+
+        <!-- Note Search Form (shown when no ID provided) -->
+        <div id="noteSearchForm" style="display: none">
+          <div class="card" style="max-width: 600px; margin: 3rem auto; padding: 2rem">
+            <h2 style="margin-top: 0; text-align: center" data-i18n="note.search.title">
+              Search for a Note
+            </h2>
+            <form id="searchNoteForm" style="display: flex; flex-direction: column; gap: 1rem">
+              <label for="noteIdInput" class="sr-only" data-i18n="note.search.placeholder"
+                >Enter note ID</label
+              >
+              <input
+                type="text"
+                id="noteIdInput"
+                class="form-input"
+                placeholder=""
+                data-i18n="note.search.placeholder"
+                data-i18n-placeholder="note.search.placeholder"
+                autocomplete="off"
+                required
+                aria-label="Note ID"
+                aria-describedby="noteIdError"
+              />
+              <div
+                id="noteIdError"
+                class="error-message"
+                style="display: none"
+                role="alert"
+                aria-live="polite"
+              ></div>
+              <button type="submit" class="btn btn-primary" data-i18n="note.search.button">
+                View Note
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div id="noteContent" style="display: none">
+          <!-- Note Header -->
+          <section class="note-header" aria-labelledby="noteIdDisplay">
+            <div class="note-header-main">
+              <div class="note-title-section">
+                <h1 class="note-title">
+                  <a
+                    href="#"
+                    id="prevNoteLink"
+                    class="note-nav-link note-nav-prev"
+                    aria-label="Previous note"
+                    title="Previous note"
+                    style="display: none"
+                  >
+                    <span class="note-nav-arrow">◀</span>
+                  </a>
+                  <span id="noteIdDisplay" aria-live="polite">Note #</span>
+                  <span
+                    id="noteStatusBadge"
+                    class="status-badge"
+                    role="status"
+                    aria-live="polite"
+                  ></span>
+                  <a
+                    href="#"
+                    id="nextNoteLink"
+                    class="note-nav-link note-nav-next"
+                    aria-label="Next note"
+                    title="Next note"
+                    style="display: none"
+                  >
+                    <span class="note-nav-arrow">▶</span>
+                  </a>
+                </h1>
+                <div class="note-meta" role="group" aria-label="Note metadata">
+                  <span id="noteCreatedDate" class="note-date" aria-label="Created date"></span>
+                  <span
+                    id="noteCreatedBy"
+                    class="note-created-by"
+                    aria-label="Created by"
+                    style="display: none"
+                  ></span>
+                  <span
+                    id="noteUpdatedDate"
+                    class="note-date"
+                    aria-label="Last updated date"
+                  ></span>
+                  <span
+                    id="noteCommentsCount"
+                    class="note-comments-count"
+                    aria-label="Number of comments"
+                  ></span>
+                </div>
+              </div>
+              <div class="note-actions-header" role="group" aria-label="Note actions">
+                <button
+                  id="shareBtn"
+                  class="btn btn-secondary"
+                  data-i18n-aria-label="note.share"
+                  aria-label="Share this note"
+                  data-i18n="note.share"
+                >
+                  Share
+                </button>
+                <a
+                  id="osmXmlLink"
+                  href="#"
+                  target="_blank"
+                  class="btn btn-secondary"
+                  data-i18n-aria-label="note.viewXml"
+                  aria-label="View note XML on OpenStreetMap (opens in new tab)"
+                  data-i18n="note.viewXml"
+                  >View XML ↗</a
+                >
+              </div>
+            </div>
+          </section>
+
+          <!-- Main Layout: Map + Sidebar -->
+          <div class="note-viewer-layout">
+            <!-- Left: Map -->
+            <div class="note-map-container">
+              <div
+                id="noteMap"
+                class="note-map"
+                role="application"
+                aria-label="Interactive map showing note location"
+                tabindex="0"
+              ></div>
+              <div class="note-map-info">
+                <div
+                  id="countryLinkContainer"
+                  class="country-link-container"
+                  style="display: none"
+                  role="region"
+                  aria-label="Country information"
+                >
+                  <span data-i18n="note.country">Country:</span>
+                  <a
+                    id="countryLink"
+                    href="#"
+                    class="country-link"
+                    aria-label="View country profile"
+                  ></a>
+                </div>
+              </div>
+              <!-- Note Statistics -->
+              <div
+                id="noteStats"
+                class="note-stats"
+                role="group"
+                aria-label="Note statistics"
+                style="display: none"
+              >
+                <h3 class="note-stats-title" data-i18n="note.stats.title">Statistics</h3>
+                <!-- Small world map for location context -->
+                <div id="noteWorldMap" class="note-world-map" style="display: none"></div>
+                <div class="note-stats-content">
+                  <span id="noteDaysOpen" class="note-stat" style="display: none"></span>
+                  <span id="noteCommentsCountStat" class="note-stat" style="display: none"></span>
+                  <span id="noteUniqueUsers" class="note-stat" style="display: none"></span>
+                  <span id="noteClosedBy" class="note-stat" style="display: none"></span>
+                  <span id="noteLastActivity" class="note-stat" style="display: none"></span>
+                  <span id="noteCountry" class="note-stat" style="display: none"></span>
+                  <span id="noteMaritimeZone" class="note-stat" style="display: none"></span>
+                  <div id="noteRelatedChangesets" class="note-stat" style="display: none"></div>
+                  <div
+                    id="noteHashtags"
+                    class="note-hashtags"
+                    role="list"
+                    aria-label="Hashtags"
+                    style="display: none"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Note Details -->
+            <div class="note-details-panel">
+              <!-- ML Recommendation -->
+              <section
+                id="mlRecommendationSection"
+                class="note-section"
+                style="display: none"
+                aria-labelledby="ml-recommendation-title"
+              >
+                <h2
+                  class="section-title"
+                  id="ml-recommendation-title"
+                  data-i18n="note.mlRecommendation.title"
+                >
+                  ML Recommendation
+                </h2>
+                <div
+                  id="mlRecommendation"
+                  class="ml-recommendation"
+                  role="region"
+                  aria-live="polite"
+                  aria-label="Machine learning recommendation"
+                ></div>
+                <div id="josmTagsContainer" class="josm-tags-container" style="display: none">
+                  <label for="josmTags" data-i18n="note.mlRecommendation.josmTagsLabel"
+                    >Suggested OSM Tags (for JOSM):</label
+                  >
+                  <textarea
+                    id="josmTags"
+                    class="josm-tags-input"
+                    readonly
+                    aria-label="Suggested OSM tags for JOSM editor"
+                  ></textarea>
+                  <div
+                    id="tagLinksContainer"
+                    class="tag-links-container"
+                    style="display: none"
+                  ></div>
+                  <button
+                    id="copyJosmTagsBtn"
+                    class="btn btn-small"
+                    data-i18n="note.mlRecommendation.copyJosm"
+                    aria-label="Copy JOSM tags to clipboard"
+                  >
+                    Copy for JOSM
+                  </button>
+                </div>
+              </section>
+
+              <!-- Interactions Timeline -->
+              <section class="note-section" aria-labelledby="activity-timeline-title">
+                <h2
+                  class="section-title"
+                  id="activity-timeline-title"
+                  data-i18n="note.activityTimeline.title"
+                >
+                  Activity Timeline
+                </h2>
+                <div
+                  id="noteInteractions"
+                  class="note-interactions"
+                  role="list"
+                  aria-label="Note activity timeline"
+                ></div>
+              </section>
+
+              <!-- Comment Form -->
+              <section class="note-section" aria-labelledby="comment-form-title">
+                <h2 class="section-title" id="comment-form-title" data-i18n="note.comment.title">
+                  Add Comment
+                </h2>
+                <div
+                  id="authStatus"
+                  class="auth-status"
+                  style="display: none"
+                  role="status"
+                  aria-live="polite"
+                ></div>
+                <form
+                  id="commentForm"
+                  class="comment-form"
+                  role="form"
+                  aria-label="Add comment form"
+                >
+                  <label for="commentText" class="sr-only" data-i18n="note.comment.placeholder"
+                    >Comment text</label
+                  >
+                  <textarea
+                    id="commentText"
+                    class="comment-textarea"
+                    data-i18n="note.comment.placeholder"
+                    placeholder="Enter your comment..."
+                    rows="4"
+                    aria-label="Enter your comment"
+                    aria-required="false"
+                  ></textarea>
+                  <div
+                    id="hashtagSuggestions"
+                    class="hashtag-suggestions"
+                    role="group"
+                    aria-label="Suggested hashtags"
+                  ></div>
+                  <div class="comment-actions" role="group" aria-label="Comment actions">
+                    <button
+                      id="commentBtn"
+                      class="btn btn-primary"
+                      type="submit"
+                      disabled
+                      data-i18n-aria-label="note.comment.button"
+                      aria-label="Submit comment"
+                      data-i18n="note.comment.button"
+                    >
+                      Comment
+                    </button>
+                    <button
+                      id="closeBtn"
+                      class="btn btn-warning"
+                      type="button"
+                      style="display: none"
+                      data-i18n-aria-label="note.comment.close"
+                      aria-label="Close this note"
+                      data-i18n="note.comment.close"
+                    >
+                      Close Note
+                    </button>
+                    <button
+                      id="reopenBtn"
+                      class="btn btn-success"
+                      type="button"
+                      style="display: none"
+                      data-i18n-aria-label="note.comment.reopen"
+                      aria-label="Reopen this note"
+                      data-i18n="note.comment.reopen"
+                    >
+                      Reopen Note
+                    </button>
+                    <button
+                      id="reportBtn"
+                      class="btn btn-danger"
+                      type="button"
+                      style="display: none"
+                      data-i18n-aria-label="note.comment.report"
+                      aria-label="Report this note"
+                      data-i18n="note.comment.report"
+                    >
+                      Report
+                    </button>
+                  </div>
+                  <div
+                    id="commentError"
+                    class="error-message"
+                    style="display: none"
+                    role="alert"
+                    aria-live="assertive"
+                  ></div>
+                </form>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script type="module" src="../js/components/languageSelector.js"></script>
     <script type="module" src="../js/components/darkMode.js"></script>
     <script type="module" src="../js/pages/noteViewer.js"></script>
-</body>
+  </body>
 </html>
