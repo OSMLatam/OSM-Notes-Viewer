@@ -1,5 +1,6 @@
 // Share component for sharing links
 import { analytics } from '../utils/analytics.js';
+import { i18n } from '../utils/i18n.js';
 
 /**
  * Share component for sharing pages via various methods
@@ -53,7 +54,8 @@ export class ShareComponent {
             await navigator.clipboard.writeText(url);
 
             // Show feedback
-            this.showToast('Link copied to clipboard!');
+            const message = i18n.t('share.copied') || 'Link copied to clipboard!';
+            this.showToast(message);
 
             analytics.trackShare('clipboard', 'copy_link');
             return true;
@@ -79,12 +81,14 @@ export class ShareComponent {
 
         try {
             document.execCommand('copy');
-            this.showToast('Link copied to clipboard!');
+            const message = i18n.t('share.copied') || 'Link copied to clipboard!';
+            this.showToast(message);
             analytics.trackShare('clipboard', 'copy_link_fallback');
             return true;
         } catch (error) {
             console.error('Fallback copy failed:', error);
-            this.showToast('Failed to copy link', 'error');
+            const errorMessage = i18n.t('share.failed') || 'Failed to copy link';
+            this.showToast(errorMessage, 'error');
             return false;
         } finally {
             document.body.removeChild(textArea);
@@ -132,7 +136,8 @@ export class ShareComponent {
         // Show toast for LinkedIn to remind user to paste
         if (platform === 'linkedin') {
             setTimeout(() => {
-                this.showToast('Text copied to clipboard! Paste it in your LinkedIn post.', 'success');
+                const message = i18n.t('share.linkedin.pasteReminder') || 'Text copied to clipboard! Paste it in your LinkedIn post.';
+                this.showToast(message, 'success');
             }, 500);
         }
 
