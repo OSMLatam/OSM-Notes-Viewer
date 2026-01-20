@@ -60,6 +60,41 @@ export default defineConfig({
     hmr: {
       overlay: true, // Show error overlay in browser
     },
+    // Proxy configuration to avoid CORS issues in development
+    // Proxies requests to GitHub Pages (osm-notes.github.io/OSM-Notes-Data)
+    // Note: GitHub Pages may redirect, but we'll handle that
+    proxy: {
+      '/api/data': {
+        target: 'https://osm-notes.github.io',
+        changeOrigin: true,
+        secure: true,
+        followRedirects: true,
+        rewrite: (path) => path.replace(/^\/api\/data/, '/OSM-Notes-Data/data'),
+        configure: (proxy, _options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            // Prevent redirect to custom domain
+            proxyReq.setHeader('Host', 'osm-notes.github.io');
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            // Add CORS headers
+            proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+            proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS';
+            proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type';
+            // If redirected, rewrite location header to use proxy
+            if ((proxyRes.statusCode === 301 || proxyRes.statusCode === 302) && proxyRes.headers['location']) {
+              const location = proxyRes.headers['location'];
+              // If redirecting to custom domain, ignore it and use GitHub Pages URL directly
+              // This handles cases where GitHub Pages redirects to a custom domain that doesn't have the data
+              if (location.includes('.org') && !location.includes('github.io')) {
+                // Remove the redirect and fetch directly from GitHub Pages
+                delete proxyRes.headers['location'];
+                proxyRes.statusCode = 200;
+              }
+            }
+          });
+        },
+      },
+    },
   },
 
   // CSS configuration

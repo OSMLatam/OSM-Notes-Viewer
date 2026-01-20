@@ -5,13 +5,14 @@
  */
 
 import { i18n } from '../utils/i18n.js';
+import { getUrlParam, setUrlParam, removeUrlParam } from '../utils/urlParams.js';
 
 // Configuration
 const WMS_BASE_URL = 'https://geoserver.osm.lat/geoserver/osm_notes/wms';
 
 const WMS_LAYERS = {
     openNotes: 'osm_notes:notesopen',
-    // closedNotes: 'osm_notes:notesclosed', // Disabled - causing issues
+    closedNotes: 'osm_notes:notesclosed',
     countries: 'osm_notes:countries',
     disputedAreas: 'osm_notes:disputedareas'
 };
@@ -19,7 +20,7 @@ const WMS_LAYERS = {
 // Layer names for JOSM/iD format (without namespace prefix)
 const WMS_LAYER_NAMES = {
     openNotes: 'notesopen',
-    // closedNotes: 'notesclosed', // Disabled - causing issues
+    closedNotes: 'notesclosed',
     countries: 'countries',
     disputedAreas: 'disputedareas'
 };
@@ -27,7 +28,7 @@ const WMS_LAYER_NAMES = {
 // State
 let maps = {
     openNotes: null,
-    // closedNotes: null, // Disabled - causing issues
+    closedNotes: null,
     boundaries: null
 };
 
@@ -35,9 +36,10 @@ let currentMap = 'open-notes';
 let userLocation = null;
 let initialViews = {
     openNotes: null,
-    // closedNotes: null, // Disabled - causing issues
+    closedNotes: null,
     boundaries: null
 };
+let isRestoringState = false; // Flag to prevent URL updates during state restoration
 
 // Default location: Bogotá, Colombia
 const DEFAULT_LOCATION = {
@@ -60,21 +62,20 @@ let baseLayers = {
     satellite: null
 };
 
-// Store WMS layers per map to avoid sharing issues
-// Each map should have its own layer instances
+// Store WMS layers per map - each map gets its own layer instances
+// Structure: wmsLayers[mapKey][layerKey] = layer instance
+// This ensures complete isolation between maps
 let wmsLayers = {
-    openNotes: null,
-    // closedNotes: null, // Disabled - causing issues
-    'boundaries-countries': null,
-    'boundaries-disputed': null
-};
-
-// Track which map each layer belongs to
-let wmsLayerMap = {
-    openNotes: null,
-    // closedNotes: null, // Disabled - causing issues
-    'boundaries-countries': null,
-    'boundaries-disputed': null
+    openNotes: {
+        openNotes: null
+    },
+    closedNotes: {
+        closedNotes: null
+    },
+    boundaries: {
+        'boundaries-countries': null,
+        'boundaries-disputed': null
+    }
 };
 
 // Initialize on page load
@@ -106,6 +107,12 @@ window.addEventListener('load', async () => {
         await initializeMaps();
         setupControls();
         setupWMSDocumentation();
+        setupPermalink();
+        
+        // Restore map state from URL after a delay to ensure maps are ready
+        setTimeout(() => {
+            restoreMapStateFromUrl();
+        }, 500);
 
         // Force refresh by simulating a base layer switch
         // This fixes WMS layer alignment issues that occur on initial load
@@ -124,18 +131,14 @@ window.addEventListener('load', async () => {
                     // Simulate a base layer switch to force WMS layer refresh
                     // This is what fixes the alignment when user manually switches layers
                     // Temporarily switch to satellite and back to OSM
-                    if (activeMapInstance.hasLayer(baseLayers.osm)) {
-                        activeMapInstance.removeLayer(baseLayers.osm);
-                    }
+                    safeRemoveLayer(activeMapInstance, baseLayers.osm);
                     baseLayers.satellite.addTo(activeMapInstance);
 
                     // Switch back to OSM after a delay
                     // Use a longer delay to allow satellite tiles to start loading
                     // This reduces NS_BINDING_ABORTED errors
                     setTimeout(() => {
-                        if (activeMapInstance.hasLayer(baseLayers.satellite)) {
-                            activeMapInstance.removeLayer(baseLayers.satellite);
-                        }
+                        safeRemoveLayer(activeMapInstance, baseLayers.satellite);
                         baseLayers.osm.addTo(activeMapInstance);
 
                         // Ensure select shows OSM
@@ -144,14 +147,16 @@ window.addEventListener('load', async () => {
                         // Refresh WMS layers by removing and re-adding them
                         // This ensures proper alignment after base layer switch
                         // Only refresh WMS layers for the active map
+                        const activeMapKey = mapNameToKey(currentMap);
                         const wmsLayersToRefresh = [];
-                        Object.keys(wmsLayers).forEach(layerKey => {
-                            const wmsLayer = wmsLayers[layerKey];
-                            if (wmsLayer && activeMapInstance.hasLayer(wmsLayer)) {
-                                wmsLayersToRefresh.push({ layerKey, wmsLayer });
-                                activeMapInstance.removeLayer(wmsLayer);
-                            }
-                        });
+                        if (wmsLayers[activeMapKey]) {
+                            Object.entries(wmsLayers[activeMapKey]).forEach(([layerKey, wmsLayer]) => {
+                                if (wmsLayer && activeMapInstance.hasLayer(wmsLayer)) {
+                                    wmsLayersToRefresh.push({ layerKey, wmsLayer });
+                                    activeMapInstance.removeLayer(wmsLayer);
+                                }
+                            });
+                        }
 
                         // Re-add WMS layers after a delay
                         setTimeout(() => {
@@ -223,6 +228,32 @@ function switchMap(mapName) {
     }
 
     currentMap = mapName;
+    const mapKey = mapNameToKey(mapName);
+
+    // CRITICAL: Remove ALL WMS layers from ALL maps first to prevent cross-contamination
+    // This ensures that when switching tabs, only the correct layer is visible
+    // BUT: Do NOT remove base layers - they should persist
+    Object.entries(maps).forEach(([currentMapKey, mapInstance]) => {
+        if (mapInstance) {
+            // Remove all WMS layers from all maps' storage - be very aggressive
+            Object.keys(wmsLayers).forEach(storageMapKey => {
+                if (wmsLayers[storageMapKey]) {
+                    Object.entries(wmsLayers[storageMapKey]).forEach(([layerKey, layer]) => {
+                        if (layer) {
+                            // Force remove from this map instance
+                            if (mapInstance.hasLayer(layer)) {
+                                mapInstance.removeLayer(layer);
+                            }
+                            // Also check if layer has a reference to this map
+                            if (layer._map && layer._map === mapInstance) {
+                                mapInstance.removeLayer(layer);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
 
     // Show/hide boundaries layer controls based on active tab
     const boundariesControls = document.getElementById('boundariesLayerControls');
@@ -245,9 +276,7 @@ function switchMap(mapName) {
                 }
 
                 // Remove satellite if present
-                if (boundariesMap.hasLayer(baseLayers.satellite)) {
-                    boundariesMap.removeLayer(baseLayers.satellite);
-                }
+                safeRemoveLayer(boundariesMap, baseLayers.satellite);
 
                 // Ensure OSM base layer is present
                 if (!boundariesMap.hasLayer(baseLayers.osm)) {
@@ -280,187 +309,812 @@ function switchMap(mapName) {
         }
     }
 
-    // Ensure only the correct WMS layers are visible on each map
-    const mapKey = mapNameToKey(mapName);
+    // First, ensure base layers are on the ACTIVE map only
+    // Other maps will get their base layers when they become active
+    const activeMapInstance = maps[mapKey];
+    if (activeMapInstance) {
+        // CRITICAL: For closed notes map, ensure container is visible first
+        if (mapKey === 'closedNotes') {
+            const mapContainer = document.getElementById('closed-notes-map');
+            if (mapContainer) {
+                // Ensure container is visible
+                mapContainer.classList.add('active');
+                mapContainer.setAttribute('aria-hidden', 'false');
+            }
+        }
+        
+        // CRITICAL: For open notes map, ensure container is visible first
+        if (mapKey === 'openNotes') {
+            const mapContainer = document.getElementById('open-notes-map');
+            if (mapContainer) {
+                // Ensure container is visible
+                mapContainer.classList.add('active');
+                mapContainer.setAttribute('aria-hidden', 'false');
+            }
+        }
+        
+        // Setup base layer - this is async, so we need to wait before adding WMS layers
+        setupBaseLayerForMap(activeMapInstance, mapKey);
+    }
+}
 
-    // First, ensure base layers are on all maps
-    Object.entries(maps).forEach(([key, mapInstance]) => {
-        if (mapInstance) {
-            // Ensure base layer is present
-            const baseLayerSelect = document.getElementById('baseLayerSelect');
-            const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
-            const currentBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
-            const otherBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.osm : baseLayers.satellite;
+/**
+ * Safely remove a layer from a map instance
+ * @param {L.Map} mapInstance - The map instance
+ * @param {L.Layer} layer - The layer to remove
+ */
+function safeRemoveLayer(mapInstance, layer) {
+    if (!mapInstance || !layer) return;
+    try {
+        // Check if layer exists and has a map reference
+        if (layer._map && layer._map === mapInstance) {
+            // Check if layer's container still exists in DOM
+            if (layer._container && layer._container.parentNode) {
+                if (mapInstance.hasLayer(layer)) {
+                    mapInstance.removeLayer(layer);
+                }
+            } else {
+                // Container doesn't exist, just remove from map's layer registry
+                if (mapInstance.hasLayer(layer)) {
+                    try {
+                        mapInstance.removeLayer(layer);
+                    } catch (e) {
+                        // Ignore errors if layer is already being removed
+                    }
+                }
+            }
+        } else if (mapInstance.hasLayer(layer)) {
+            // Layer is registered but may not have proper map reference
+            try {
+                mapInstance.removeLayer(layer);
+            } catch (e) {
+                // Ignore errors - layer may already be removed
+            }
+        }
+    } catch (e) {
+        // Layer may have already been removed or DOM node may be null
+        // This is safe to ignore - don't log to avoid console spam
+    }
+}
 
-            // Remove other base layer if present
+/**
+ * Setup base layer for a map instance
+ * @param {L.Map} mapInstance - The map instance
+ * @param {string} mapKey - The map key ('openNotes', 'closedNotes', 'boundaries')
+ */
+function setupBaseLayerForMap(mapInstance, mapKey) {
+    const baseLayerSelect = document.getElementById('baseLayerSelect');
+    const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
+    const currentBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+    const otherBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.osm : baseLayers.satellite;
+
+    // CRITICAL: For closed notes, always remove and re-add base layer to force refresh
+    // This works for both OSM and satellite
+    if (mapKey === 'closedNotes') {
+        // Remove ALL base layers first to ensure clean state
+        safeRemoveLayer(mapInstance, baseLayers.osm);
+        safeRemoveLayer(mapInstance, baseLayers.satellite);
+        
+        // Wait a moment for removal to complete, then add the correct one
+        // For satellite, wait longer to ensure proper cleanup and tile loading
+        const removalDelay = selectedBaseLayer === 'satellite' ? 300 : 150;
+        setTimeout(() => {
+            // Re-read the selector to get current value (could be OSM or satellite)
+            const baseLayerSelect2 = document.getElementById('baseLayerSelect');
+            const selectedBaseLayer2 = baseLayerSelect2 ? baseLayerSelect2.value : 'osm';
+            const correctBaseLayer = selectedBaseLayer2 === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+            
+            // CRITICAL: For satellite, ensure we're adding to the correct map instance
+            // Add base layer (works for both OSM and satellite)
+            // For satellite, always force add to ensure it's present
+            if (correctBaseLayer === baseLayers.satellite) {
+                // Remove first if present to force clean add
+                safeRemoveLayer(mapInstance, baseLayers.satellite);
+                // Wait a moment then add
+                setTimeout(() => {
+                    baseLayers.satellite.addTo(mapInstance);
+                    mapInstance.invalidateSize();
+                }, 50);
+            } else {
+                if (!mapInstance.hasLayer(correctBaseLayer)) {
+                    correctBaseLayer.addTo(mapInstance);
+                }
+            }
+            mapInstance.invalidateSize();
+            
+            // Force a view change to trigger tile loading (works for both OSM and satellite)
+            const center = mapInstance.getCenter();
+            const zoom = mapInstance.getZoom();
+            mapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                reset: false,
+                animate: false
+            });
+            
+            // For satellite, use longer delays to ensure tiles start loading
+            const viewRefreshDelay = correctBaseLayer === baseLayers.satellite ? 400 : 200;
+            setTimeout(() => {
+                mapInstance.setView(center, zoom, {
+                    reset: false,
+                    animate: false
+                });
+                mapInstance.invalidateSize();
+                
+                // Final verification - ensure base layer is present and visible
+                if (!mapInstance.hasLayer(correctBaseLayer)) {
+                    correctBaseLayer.addTo(mapInstance);
+                    mapInstance.invalidateSize();
+                }
+                
+                // Force another refresh to ensure tiles load (especially important for satellite)
+                const finalRefreshDelay = correctBaseLayer === baseLayers.satellite ? 350 : 150;
+                setTimeout(() => {
+                    mapInstance.invalidateSize();
+                    // Final check - CRITICAL for satellite
+                    if (!mapInstance.hasLayer(correctBaseLayer)) {
+                        correctBaseLayer.addTo(mapInstance);
+                        mapInstance.invalidateSize();
+                    }
+                    // For satellite, force multiple refreshes to ensure tiles load
+                    if (correctBaseLayer === baseLayers.satellite) {
+                        setTimeout(() => {
+                            mapInstance.invalidateSize();
+                            // One more check
+                            if (!mapInstance.hasLayer(correctBaseLayer)) {
+                                correctBaseLayer.addTo(mapInstance);
+                                mapInstance.invalidateSize();
+                            }
+                            // Final refresh for satellite
+                            setTimeout(() => {
+                                mapInstance.invalidateSize();
+                                if (!mapInstance.hasLayer(correctBaseLayer)) {
+                                    correctBaseLayer.addTo(mapInstance);
+                                    mapInstance.invalidateSize();
+                                }
+                            }, 100);
+                        }, 200);
+                    }
+                }, finalRefreshDelay);
+            }, viewRefreshDelay);
+        }, removalDelay);
+    } else {
+        // For other maps (open notes, boundaries), standard logic
+        // CRITICAL: For open notes, ensure base layer is always present when switching back
+        // This works for both OSM and satellite
+        if (mapKey === 'openNotes') {
+            // Remove ALL base layers first to ensure clean state (works for both OSM and satellite)
+            safeRemoveLayer(mapInstance, baseLayers.osm);
+            safeRemoveLayer(mapInstance, baseLayers.satellite);
+            
+            // Wait a moment for removal to complete, then add the correct one
+            setTimeout(() => {
+                // Re-read the selector to get current value (could be OSM or satellite)
+                const baseLayerSelect3 = document.getElementById('baseLayerSelect');
+                const selectedBaseLayer3 = baseLayerSelect3 ? baseLayerSelect3.value : 'osm';
+                const correctBaseLayer = selectedBaseLayer3 === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+                
+                // Add base layer (works for both OSM and satellite)
+                correctBaseLayer.addTo(mapInstance);
+                mapInstance.invalidateSize();
+                
+                // Force a view change to trigger tile loading (works for both OSM and satellite)
+                const center = mapInstance.getCenter();
+                const zoom = mapInstance.getZoom();
+                mapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                    reset: false,
+                    animate: false
+                });
+                
+                setTimeout(() => {
+                    mapInstance.setView(center, zoom, {
+                        reset: false,
+                        animate: false
+                    });
+                    mapInstance.invalidateSize();
+                    
+                    // Final verification - ensure base layer is present and visible
+                    if (!mapInstance.hasLayer(correctBaseLayer)) {
+                        correctBaseLayer.addTo(mapInstance);
+                        mapInstance.invalidateSize();
+                    }
+                    
+                    // Force another refresh to ensure tiles load (especially important for satellite)
+                    setTimeout(() => {
+                        mapInstance.invalidateSize();
+                        // Final check
+                        if (!mapInstance.hasLayer(correctBaseLayer)) {
+                            correctBaseLayer.addTo(mapInstance);
+                            mapInstance.invalidateSize();
+                        }
+                        // For satellite, force one more refresh
+                        if (correctBaseLayer === baseLayers.satellite) {
+                            setTimeout(() => {
+                                mapInstance.invalidateSize();
+                                if (!mapInstance.hasLayer(correctBaseLayer)) {
+                                    correctBaseLayer.addTo(mapInstance);
+                                    mapInstance.invalidateSize();
+                                }
+                            }, 100);
+                        }
+                    }, 150);
+                }, 200);
+            }, 150);
+        } else {
+            // For boundaries map
             if (mapInstance.hasLayer(otherBaseLayer)) {
                 mapInstance.removeLayer(otherBaseLayer);
             }
-
-            // Add current base layer if not present
             if (!mapInstance.hasLayer(currentBaseLayer)) {
                 currentBaseLayer.addTo(mapInstance);
             }
-        }
-    });
-
-    // Hide WMS layers on all maps first, then add only correct ones
-    Object.entries(maps).forEach(([key, mapInstance]) => {
-        if (mapInstance) {
-            Object.keys(wmsLayers).forEach(layerKey => {
-                const wmsLayer = wmsLayers[layerKey];
-                if (wmsLayer) {
-                    // Determine which layers should be on which map
-                    const shouldBeOnMap =
-                        (key === 'openNotes' && layerKey === 'openNotes') ||
-                        // (key === 'closedNotes' && layerKey === 'closedNotes') || // Disabled
-                        (key === 'boundaries' && (layerKey === 'boundaries-countries' || layerKey === 'boundaries-disputed'));
-
-                    // Remove layer if it shouldn't be on this map
-                    if (!shouldBeOnMap) {
-                        if (mapInstance.hasLayer(wmsLayer)) {
-                            mapInstance.removeLayer(wmsLayer);
-                        }
-                    }
-                    // Also remove if layer is tracked as being on a different map
-                    else if (wmsLayerMap[layerKey] && wmsLayerMap[layerKey] !== mapInstance) {
-                        if (mapInstance.hasLayer(wmsLayer)) {
-                            mapInstance.removeLayer(wmsLayer);
-                        }
-                    }
-                }
+            requestAnimationFrame(() => {
+                mapInstance.invalidateSize();
             });
         }
-    });
+    }
 
-    // Ensure correct layers are on the active map
-    const activeMapInstance = maps[mapKey];
-    if (activeMapInstance) {
-        Object.keys(wmsLayers).forEach(layerKey => {
-            const wmsLayer = wmsLayers[layerKey];
-            if (wmsLayer) {
-                // Determine which layers should be on the active map
-                const shouldBeOnMap =
-                    (mapKey === 'openNotes' && layerKey === 'openNotes') ||
-                    // (mapKey === 'closedNotes' && layerKey === 'closedNotes') || // Disabled
-                    (mapKey === 'boundaries' && (layerKey === 'boundaries-countries' || layerKey === 'boundaries-disputed'));
+    // WMS layers have already been removed from all maps above
+    // Now we only add the correct layers to the active map
 
-                // Add layer if it should be on this map
-                if (shouldBeOnMap) {
-                    // If layer is on a different map, remove it first
-                    if (wmsLayerMap[layerKey] && wmsLayerMap[layerKey] !== activeMapInstance) {
-                        if (wmsLayerMap[layerKey].hasLayer(wmsLayer)) {
-                            wmsLayerMap[layerKey].removeLayer(wmsLayer);
-                        }
+    // Ensure correct layers are on the active map ONLY
+    // Each map has its own isolated layer instances
+    // Use setTimeout to ensure layers are fully removed before adding new ones
+    // CRITICAL: Check if satellite is selected - need longer delay for satellite tiles to load
+    const baseLayerSelectEl = document.getElementById('baseLayerSelect');
+    const selectedBaseLayerType = baseLayerSelectEl ? baseLayerSelectEl.value : 'osm';
+    const isSatellite = selectedBaseLayerType === 'satellite';
+    // For satellite, wait longer to ensure setupBaseLayerForMap has finished (it has multiple nested setTimeout calls)
+    // For closed notes with satellite, need even more time due to complex async operations
+    const initialDelay = (isSatellite && mapKey === 'closedNotes') ? 600 : (isSatellite ? 500 : 200);
+    
+    setTimeout(() => {
+        const activeMapInstance = maps[mapKey];
+        if (!activeMapInstance) return;
+        
+        // CRITICAL: Always ensure base layer is present FIRST
+        // Re-read selector to get current value (may have changed)
+        const baseLayerSelectInner = document.getElementById('baseLayerSelect');
+        const selectedBaseLayerInner = baseLayerSelectInner ? baseLayerSelectInner.value : 'osm';
+        const currentBaseLayer = selectedBaseLayerInner === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+        const otherBaseLayer = selectedBaseLayerInner === 'satellite' ? baseLayers.osm : baseLayers.satellite;
+
+        // CRITICAL: Verify base layer is present (setupBaseLayerForMap should have set it, but verify)
+        // For satellite, this is especially important as it takes longer to load
+        if (!activeMapInstance.hasLayer(currentBaseLayer)) {
+            // If base layer is not present, add it immediately
+            currentBaseLayer.addTo(activeMapInstance);
+            activeMapInstance.invalidateSize();
+            
+            // For satellite, force a view refresh to trigger tile loading
+            if (isSatellite) {
+                const center = activeMapInstance.getCenter();
+                const zoom = activeMapInstance.getZoom();
+                activeMapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                    reset: false,
+                    animate: false
+                });
+                setTimeout(() => {
+                    activeMapInstance.setView(center, zoom, {
+                        reset: false,
+                        animate: false
+                    });
+                    activeMapInstance.invalidateSize();
+                }, 100);
+            }
+        }
+        
+        // Remove other base layer if present
+        safeRemoveLayer(activeMapInstance, otherBaseLayer);
+        
+        // Force invalidate size to ensure base layer renders
+        activeMapInstance.invalidateSize();
+        
+        // CRITICAL: Remove ALL WMS layers from this map first, then add only the correct ones
+        // This ensures clean state when switching tabs
+        Object.keys(wmsLayers).forEach(storageMapKey => {
+            if (wmsLayers[storageMapKey]) {
+                Object.values(wmsLayers[storageMapKey]).forEach(layer => {
+                    if (layer) {
+                        safeRemoveLayer(activeMapInstance, layer);
                     }
-
-                    // Add layer if not already on this map
-                    if (!activeMapInstance.hasLayer(wmsLayer)) {
-                        activeMapInstance.addLayer(wmsLayer);
-                        wmsLayerMap[layerKey] = activeMapInstance; // Update tracking
-                        // Ensure open notes are on top if both are present (shouldn't happen, but just in case)
-                        if (layerKey === 'openNotes') {
-                            wmsLayer.bringToFront();
-                        }
-                    }
-                }
+                });
             }
         });
-
-        // Use requestAnimationFrame to ensure the container is visible before invalidating
-        requestAnimationFrame(() => {
-            setTimeout(() => {
-                // Special handling for boundaries map to ensure base layer is visible
-                if (mapKey === 'boundaries') {
-                    // Ensure base layer OSM is present
-                    if (!baseLayers.osm) {
-                        console.error('Base layer OSM not initialized');
-                        return;
+        
+        // Wait a bit to ensure base layer is ready before adding WMS layers
+        // For satellite, wait longer to ensure tiles are loading
+        // For closed notes with satellite, need even more time to ensure base layer is fully loaded
+        const wmsDelay = (isSatellite && mapKey === 'closedNotes') ? 1000 : (isSatellite ? 600 : 200);
+        setTimeout(() => {
+            // CRITICAL: Remove ALL WMS layers from this map again to ensure clean state
+            // This is especially important when switching back to open notes
+            Object.keys(wmsLayers).forEach(storageMapKey => {
+                if (wmsLayers[storageMapKey]) {
+                    Object.values(wmsLayers[storageMapKey]).forEach(layer => {
+                        if (layer) {
+                            safeRemoveLayer(activeMapInstance, layer);
+                        }
+                    });
+                }
+            });
+            
+            // CRITICAL: Verify base layer is present before adding WMS layers
+            // This is especially important when switching tabs with satellite selected
+            const baseLayerSelect = document.getElementById('baseLayerSelect');
+            const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
+            const correctBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+            const otherBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.osm : baseLayers.satellite;
+            
+            // Remove other base layer if present
+            safeRemoveLayer(activeMapInstance, otherBaseLayer);
+            
+            // CRITICAL: Ensure correct base layer is present (setupBaseLayerForMap should have set it, but verify)
+            if (!activeMapInstance.hasLayer(correctBaseLayer)) {
+                // If base layer is not present, add it immediately
+                correctBaseLayer.addTo(activeMapInstance);
+                activeMapInstance.invalidateSize();
+                
+                // For satellite, force a view refresh to trigger tile loading
+                if (correctBaseLayer === baseLayers.satellite) {
+                    const center = activeMapInstance.getCenter();
+                    const zoom = activeMapInstance.getZoom();
+                    activeMapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                        reset: false,
+                        animate: false
+                    });
+                    setTimeout(() => {
+                        activeMapInstance.setView(center, zoom, {
+                            reset: false,
+                            animate: false
+                        });
+                        activeMapInstance.invalidateSize();
+                    }, 100);
+                }
+            } else {
+                // Base layer is present, but for satellite, force a refresh to ensure tiles are loading
+                if (correctBaseLayer === baseLayers.satellite) {
+                    activeMapInstance.invalidateSize();
+                    const center = activeMapInstance.getCenter();
+                    const zoom = activeMapInstance.getZoom();
+                    activeMapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                        reset: false,
+                        animate: false
+                    });
+                    setTimeout(() => {
+                        activeMapInstance.setView(center, zoom, {
+                            reset: false,
+                            animate: false
+                        });
+                        activeMapInstance.invalidateSize();
+                    }, 100);
+                }
+            }
+            
+            // Then, add only the layers that belong to this map
+            // For closed notes map, create the layer if it doesn't exist yet
+            if (mapKey === 'closedNotes' && (!wmsLayers.closedNotes || !wmsLayers.closedNotes.closedNotes)) {
+                // CRITICAL: Ensure base layer is definitely present before adding WMS layer
+                // The base layer should have been set up by setupBaseLayerForMap, but verify
+                // This works for both OSM and satellite
+                // Use correctBaseLayer which was defined above
+                if (!activeMapInstance.hasLayer(correctBaseLayer)) {
+                    correctBaseLayer.addTo(activeMapInstance);
+                    activeMapInstance.invalidateSize();
+                }
+                
+                // Wait longer to ensure base layer tiles are loading before adding WMS
+                // This is critical for closed notes map (works for both OSM and satellite)
+                // For satellite, wait even longer to ensure tiles are fully loaded and visible
+                const wmsAddDelay = correctBaseLayer === baseLayers.satellite ? 1000 : 500;
+                setTimeout(() => {
+                    // Re-read selector to get current value
+                    const baseLayerSelect = document.getElementById('baseLayerSelect');
+                    const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
+                    const correctBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+                    
+                    // Final check before adding WMS - ensure base layer is present
+                    if (!activeMapInstance.hasLayer(correctBaseLayer)) {
+                        correctBaseLayer.addTo(activeMapInstance);
+                        activeMapInstance.invalidateSize();
                     }
-
-                    // Remove satellite if present
-                    if (activeMapInstance.hasLayer(baseLayers.satellite)) {
-                        activeMapInstance.removeLayer(baseLayers.satellite);
+                    
+                    // Force a view refresh to ensure base layer tiles are loading
+                    // This is especially important for satellite tiles
+                    const center = activeMapInstance.getCenter();
+                    const zoom = activeMapInstance.getZoom();
+                    activeMapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                        reset: false,
+                        animate: false
+                    });
+                    
+                    setTimeout(() => {
+                        activeMapInstance.setView(center, zoom, {
+                            reset: false,
+                            animate: false
+                        });
+                        activeMapInstance.invalidateSize();
+                        
+                        // Verify base layer is still present (for both OSM and satellite)
+                        if (!activeMapInstance.hasLayer(correctBaseLayer)) {
+                            correctBaseLayer.addTo(activeMapInstance);
+                            activeMapInstance.invalidateSize();
+                        }
+                        
+                        // CRITICAL: Before adding WMS layer, ensure base layer is definitely present
+                        // Re-read selector to ensure we have the correct base layer
+                        const baseLayerSelectBeforeWMS = document.getElementById('baseLayerSelect');
+                        const selectedBaseLayerBeforeWMS = baseLayerSelectBeforeWMS ? baseLayerSelectBeforeWMS.value : 'osm';
+                        const baseLayerBeforeWMS = selectedBaseLayerBeforeWMS === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+                        
+                        // Ensure base layer is present before adding WMS
+                        if (!activeMapInstance.hasLayer(baseLayerBeforeWMS)) {
+                            baseLayerBeforeWMS.addTo(activeMapInstance);
+                            activeMapInstance.invalidateSize();
+                        }
+                        
+                        // Now add WMS layer
+                        const bbox = calculateBbox(DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon, 500);
+                        addWMSLayer(maps.closedNotes, WMS_LAYERS.closedNotes, 'closedNotes', bbox);
+                        
+                        // CRITICAL: Immediately verify base layer is still present after adding WMS
+                        // This must happen synchronously, not in a setTimeout
+                        // Re-read selector to ensure we have the correct base layer
+                        const baseLayerSelectFinal = document.getElementById('baseLayerSelect');
+                        const selectedBaseLayerFinal = baseLayerSelectFinal ? baseLayerSelectFinal.value : 'osm';
+                        const finalBaseLayer = selectedBaseLayerFinal === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+                        
+                        // CRITICAL: Check immediately if base layer is still present
+                        // For satellite, this is especially important
+                        if (!activeMapInstance.hasLayer(finalBaseLayer)) {
+                            // Base layer was removed, re-add it immediately
+                            finalBaseLayer.addTo(activeMapInstance);
+                            // For satellite, ensure it's brought to back so WMS appears on top
+                            if (finalBaseLayer === baseLayers.satellite && finalBaseLayer.bringToBack) {
+                                finalBaseLayer.bringToBack();
+                            }
+                        }
+                        
+                        // Force refresh after adding WMS layer
+                        activeMapInstance.invalidateSize();
+                        
+                        // For satellite, force an additional immediate refresh
+                        if (finalBaseLayer === baseLayers.satellite) {
+                            // Use requestAnimationFrame to ensure DOM is updated
+                            requestAnimationFrame(() => {
+                                // Double-check base layer is present
+                                if (!activeMapInstance.hasLayer(finalBaseLayer)) {
+                                    finalBaseLayer.addTo(activeMapInstance);
+                                    if (finalBaseLayer.bringToBack) {
+                                        finalBaseLayer.bringToBack();
+                                    }
+                                }
+                                activeMapInstance.invalidateSize();
+                                
+                                // Force a view refresh to trigger satellite tile loading
+                                const center = activeMapInstance.getCenter();
+                                const zoom = activeMapInstance.getZoom();
+                                activeMapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                                    reset: false,
+                                    animate: false
+                                });
+                                setTimeout(() => {
+                                    activeMapInstance.setView(center, zoom, {
+                                        reset: false,
+                                        animate: false
+                                    });
+                                    activeMapInstance.invalidateSize();
+                                    // Final check
+                                    if (!activeMapInstance.hasLayer(finalBaseLayer)) {
+                                        finalBaseLayer.addTo(activeMapInstance);
+                                        if (finalBaseLayer.bringToBack) {
+                                            finalBaseLayer.bringToBack();
+                                        }
+                                        activeMapInstance.invalidateSize();
+                                    }
+                                }, 100);
+                            });
+                        }
+                        
+                        // CRITICAL: Ensure base layer is still visible after WMS layer is added
+                        // This is especially important for satellite - WMS layer addition can interfere
+                        // Works for both OSM and satellite
+                        setTimeout(() => {
+                            // Double-check base layer is present
+                            if (!activeMapInstance.hasLayer(finalBaseLayer)) {
+                                finalBaseLayer.addTo(activeMapInstance);
+                                activeMapInstance.invalidateSize();
+                            }
+                            
+                            // Force refresh for satellite tiles
+                            if (finalBaseLayer === baseLayers.satellite) {
+                                activeMapInstance.invalidateSize();
+                                // Force view refresh to trigger tile loading
+                                const center = activeMapInstance.getCenter();
+                                const zoom = activeMapInstance.getZoom();
+                                activeMapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                                    reset: false,
+                                    animate: false
+                                });
+                                setTimeout(() => {
+                                    activeMapInstance.setView(center, zoom, {
+                                        reset: false,
+                                        animate: false
+                                    });
+                                    activeMapInstance.invalidateSize();
+                                    // Final check
+                                    if (!activeMapInstance.hasLayer(finalBaseLayer)) {
+                                        finalBaseLayer.addTo(activeMapInstance);
+                                        activeMapInstance.invalidateSize();
+                                    }
+                                    // One more refresh for satellite
+                                    setTimeout(() => {
+                                        activeMapInstance.invalidateSize();
+                                        if (!activeMapInstance.hasLayer(finalBaseLayer)) {
+                                            finalBaseLayer.addTo(activeMapInstance);
+                                            activeMapInstance.invalidateSize();
+                                        }
+                                    }, 150);
+                                }, 150);
+                            } else {
+                                activeMapInstance.invalidateSize();
+                            }
+                        }, 200);
+                    }, 200);
+                }, 500);
+            } else if (wmsLayers[mapKey]) {
+                // For existing WMS layers (including when switching back to open notes or closed notes)
+                // CRITICAL: Force base layer refresh BEFORE adding WMS (works for both OSM and satellite)
+                if (mapKey === 'openNotes' || mapKey === 'closedNotes') {
+                    // Re-read selector to get current value
+                    const baseLayerSelect = document.getElementById('baseLayerSelect');
+                    const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
+                    const correctBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+                    const otherBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.osm : baseLayers.satellite;
+                    
+                    // Remove ALL base layers first to ensure clean state
+                    safeRemoveLayer(activeMapInstance, baseLayers.osm);
+                    safeRemoveLayer(activeMapInstance, baseLayers.satellite);
+                    
+                    // Wait a moment, then add correct base layer
+                    setTimeout(() => {
+                        correctBaseLayer.addTo(activeMapInstance);
+                        activeMapInstance.invalidateSize();
+                        
+                        // Force view refresh for satellite tiles
+                        if (correctBaseLayer === baseLayers.satellite) {
+                            const center = activeMapInstance.getCenter();
+                            const zoom = activeMapInstance.getZoom();
+                            activeMapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                                reset: false,
+                                animate: false
+                            });
+                            setTimeout(() => {
+                                activeMapInstance.setView(center, zoom, {
+                                    reset: false,
+                                    animate: false
+                                });
+                                activeMapInstance.invalidateSize();
+                            }, 100);
+                        }
+                    }, 100);
+                    
+                    // Wait a moment for base layer to start loading
+                    setTimeout(() => {
+                        // Re-read selector to get current value
+                        const baseLayerSelect = document.getElementById('baseLayerSelect');
+                        const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
+                        const correctBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+                        
+                        // Verify base layer is present
+                        if (!activeMapInstance.hasLayer(correctBaseLayer)) {
+                            correctBaseLayer.addTo(activeMapInstance);
+                        }
+                        activeMapInstance.invalidateSize();
+                        
+                        // Now add WMS layers
+                        Object.entries(wmsLayers[mapKey]).forEach(([layerKey, wmsLayer]) => {
+                            if (wmsLayer) {
+                                // Add layer if not already on this map
+                                if (!activeMapInstance.hasLayer(wmsLayer)) {
+                                    activeMapInstance.addLayer(wmsLayer);
+                                    // Ensure open notes are on top if present
+                                    if (layerKey === 'openNotes') {
+                                        wmsLayer.bringToFront();
+                                    }
+                                }
+                                // Refresh WMS layer to ensure it renders correctly with current base layer
+                                if (wmsLayer.redraw) {
+                                    wmsLayer.redraw();
+                                }
+                            }
+                        });
+                        // Force invalidate size after adding WMS layers
+                        activeMapInstance.invalidateSize();
+                        
+                        // Final check - ensure base layer is still present
+                        setTimeout(() => {
+                            if (!activeMapInstance.hasLayer(correctBaseLayer)) {
+                                correctBaseLayer.addTo(activeMapInstance);
+                            }
+                            // Force a view refresh to trigger tile loading (especially important for satellite)
+                            const center = activeMapInstance.getCenter();
+                            const zoom = activeMapInstance.getZoom();
+                            activeMapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                                reset: false,
+                                animate: false
+                            });
+                            setTimeout(() => {
+                                activeMapInstance.setView(center, zoom, {
+                                    reset: false,
+                                    animate: false
+                                });
+                                activeMapInstance.invalidateSize();
+                                // Final verification
+                                if (!activeMapInstance.hasLayer(correctBaseLayer)) {
+                                    correctBaseLayer.addTo(activeMapInstance);
+                                    activeMapInstance.invalidateSize();
+                                }
+                                // For satellite, force one more refresh
+                                if (correctBaseLayer === baseLayers.satellite) {
+                                    setTimeout(() => {
+                                        activeMapInstance.invalidateSize();
+                                        if (!activeMapInstance.hasLayer(correctBaseLayer)) {
+                                            correctBaseLayer.addTo(activeMapInstance);
+                                            activeMapInstance.invalidateSize();
+                                        }
+                                    }, 100);
+                                }
+                            }, 150);
+                        }, 200);
+                    });
+                } else {
+                    // For boundaries map with existing WMS layers
+                    // Re-read selector to get current value
+                    const baseLayerSelect = document.getElementById('baseLayerSelect');
+                    const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
+                    const correctBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+                    const otherBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.osm : baseLayers.satellite;
+                    
+                    // Remove other base layer if present
+                    safeRemoveLayer(activeMapInstance, otherBaseLayer);
+                    // Ensure current base layer is present
+                    if (!activeMapInstance.hasLayer(correctBaseLayer)) {
+                        correctBaseLayer.addTo(activeMapInstance);
+                        activeMapInstance.invalidateSize();
                     }
+                    
+                    // Add WMS layers
+                    Object.entries(wmsLayers[mapKey]).forEach(([layerKey, wmsLayer]) => {
+                        if (wmsLayer) {
+                            // Add layer if not already on this map
+                            if (!activeMapInstance.hasLayer(wmsLayer)) {
+                                activeMapInstance.addLayer(wmsLayer);
+                            }
+                            // Refresh WMS layer to ensure it renders correctly with current base layer
+                            if (wmsLayer.redraw) {
+                                wmsLayer.redraw();
+                            }
+                        }
+                    });
+                    activeMapInstance.invalidateSize();
+                }
+            }
+        }, 200);
+    }, 150);
 
-                    // Remove and re-add OSM layer to force refresh
-                    if (activeMapInstance.hasLayer(baseLayers.osm)) {
-                        activeMapInstance.removeLayer(baseLayers.osm);
+    // Use requestAnimationFrame to ensure the container is visible before invalidating
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            // Get the active map instance again (it's already set up by setupBaseLayerForMap)
+            const activeMapInstance = maps[mapKey];
+            if (!activeMapInstance) return;
+            
+            // Special handling for boundaries map to ensure base layer is visible
+            if (mapKey === 'boundaries') {
+                // Ensure base layer OSM is present
+                if (!baseLayers.osm) {
+                    console.error('Base layer OSM not initialized');
+                    return;
+                }
+
+                // Remove satellite if present
+                safeRemoveLayer(activeMapInstance, baseLayers.satellite);
+
+                // Remove and re-add OSM layer to force refresh
+                safeRemoveLayer(activeMapInstance, baseLayers.osm);
+
+                setTimeout(() => {
+                    baseLayers.osm.addTo(activeMapInstance);
+                    activeMapInstance.invalidateSize();
+
+                    const currentCenter = activeMapInstance.getCenter();
+                    const currentZoom = activeMapInstance.getZoom();
+
+                    // Force a view change to refresh tiles
+                    activeMapInstance.setView([currentCenter.lat + 0.000001, currentCenter.lng], currentZoom, {
+                        reset: false,
+                        animate: false
+                    });
+
+                    setTimeout(() => {
+                        activeMapInstance.setView(currentCenter, currentZoom, {
+                            reset: false,
+                            animate: false
+                        });
+                        activeMapInstance.invalidateSize();
+                    }, 100);
+                }, 50);
+            } else {
+                // Standard handling for other maps (openNotes, closedNotes)
+                // CRITICAL: Don't interfere with base layer setup that was done in setupBaseLayerForMap
+                // Just verify that the correct base layer is present
+                const baseLayerSelect = document.getElementById('baseLayerSelect');
+                const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
+                const currentBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+                const otherBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.osm : baseLayers.satellite;
+
+                // Only remove other base layer if it's definitely present and wrong
+                // Use safeRemoveLayer to avoid errors
+                safeRemoveLayer(activeMapInstance, otherBaseLayer);
+
+                // CRITICAL: Ensure current base layer is present (especially important for satellite)
+                if (!activeMapInstance.hasLayer(currentBaseLayer)) {
+                    currentBaseLayer.addTo(activeMapInstance);
+                    activeMapInstance.invalidateSize();
+                    
+                    // For satellite, force a view refresh to trigger tile loading
+                    if (currentBaseLayer === baseLayers.satellite) {
+                        const center = activeMapInstance.getCenter();
+                        const zoom = activeMapInstance.getZoom();
+                        activeMapInstance.setView([center.lat + 0.000001, center.lng], zoom, {
+                            reset: false,
+                            animate: false
+                        });
+                        setTimeout(() => {
+                            activeMapInstance.setView(center, zoom, {
+                                reset: false,
+                                animate: false
+                            });
+                            activeMapInstance.invalidateSize();
+                        }, 100);
+                    }
+                } else {
+                    // Base layer is present, but for satellite, ensure it's visible
+                    if (currentBaseLayer === baseLayers.satellite) {
+                        activeMapInstance.invalidateSize();
+                    }
+                }
+
+                // Force a view update to ensure tiles load correctly
+                const currentCenter = activeMapInstance.getCenter();
+                const currentZoom = activeMapInstance.getZoom();
+                activeMapInstance.setView(currentCenter, currentZoom);
+
+                setTimeout(() => {
+                    activeMapInstance.invalidateSize();
+                    // Ensure base layer is still there
+                    if (!activeMapInstance.hasLayer(currentBaseLayer)) {
+                        currentBaseLayer.addTo(activeMapInstance);
                     }
 
                     setTimeout(() => {
-                        baseLayers.osm.addTo(activeMapInstance);
                         activeMapInstance.invalidateSize();
-
-                        const currentCenter = activeMapInstance.getCenter();
-                        const currentZoom = activeMapInstance.getZoom();
-
-                        // Force a view change to refresh tiles
+                        // Trigger a small view change to force tile refresh
                         activeMapInstance.setView([currentCenter.lat + 0.000001, currentCenter.lng], currentZoom, {
                             reset: false,
                             animate: false
                         });
-
                         setTimeout(() => {
                             activeMapInstance.setView(currentCenter, currentZoom, {
                                 reset: false,
                                 animate: false
                             });
                             activeMapInstance.invalidateSize();
-                        }, 100);
-                    }, 50);
-                } else {
-                    // Standard handling for other maps
-                    const baseLayerSelect = document.getElementById('baseLayerSelect');
-                    const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
-                    const currentBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
-                    const otherBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.osm : baseLayers.satellite;
-
-                    // Remove other base layer if present
-                    if (activeMapInstance.hasLayer(otherBaseLayer)) {
-                        activeMapInstance.removeLayer(otherBaseLayer);
-                    }
-
-                    // Add current base layer if not present
-                    if (!activeMapInstance.hasLayer(currentBaseLayer)) {
-                        currentBaseLayer.addTo(activeMapInstance);
-                    }
-
-                    // Invalidate size to ensure map renders correctly
-                    activeMapInstance.invalidateSize();
-
-                    // Force a view update to ensure tiles load correctly
-                    const currentCenter = activeMapInstance.getCenter();
-                    const currentZoom = activeMapInstance.getZoom();
-                    activeMapInstance.setView(currentCenter, currentZoom);
-
-                    setTimeout(() => {
-                        activeMapInstance.invalidateSize();
-                        // Ensure base layer is still there
-                        if (!activeMapInstance.hasLayer(currentBaseLayer)) {
-                            currentBaseLayer.addTo(activeMapInstance);
-                        }
-
-                        setTimeout(() => {
-                            activeMapInstance.invalidateSize();
-                            // Trigger a small view change to force tile refresh
-                            activeMapInstance.setView([currentCenter.lat + 0.000001, currentCenter.lng], currentZoom, {
-                                reset: false,
-                                animate: false
-                            });
-                            setTimeout(() => {
-                                activeMapInstance.setView(currentCenter, currentZoom, {
-                                    reset: false,
-                                    animate: false
-                                });
-                                activeMapInstance.invalidateSize();
-                            }, 50);
-                        }, 100);
-                    }, 150);
-                }
-            }, 150);
-        });
-    }
+                        }, 50);
+                    }, 100);
+                }, 150);
+            }
+        }, 150);
+    });
 }
 
 /**
@@ -495,10 +1149,11 @@ async function initializeMaps() {
         // Initialize Map 1: Open Notes (active by default)
         await initializeOpenNotesMap();
 
-        // Initialize Map 2: Boundaries (hidden initially)
-        await initializeBoundariesMap();
+        // Initialize Map 2: Closed Notes (hidden initially)
+        await initializeClosedNotesMap();
 
-        // Closed Notes map disabled - causing issues with open notes display
+        // Initialize Map 3: Boundaries (hidden initially)
+        await initializeBoundariesMap();
 
         // Ensure OSM is selected on all maps from the start
         const baseLayerSelect = document.getElementById('baseLayerSelect');
@@ -515,10 +1170,25 @@ async function initializeMaps() {
                 baseLayers.osm.addTo(activeMapInstance);
             }
             // Ensure satellite is NOT on the map
-            if (activeMapInstance.hasLayer(baseLayers.satellite)) {
-                activeMapInstance.removeLayer(baseLayers.satellite);
-            }
+            safeRemoveLayer(activeMapInstance, baseLayers.satellite);
         }
+
+        // CRITICAL: After initialization, ensure only the active map has WMS layers
+        // Remove any WMS layers from inactive maps that might have been added during initialization
+        Object.entries(maps).forEach(([mapKeyIter, mapInstance]) => {
+            if (mapInstance && mapKeyIter !== activeMapKey) {
+                // Remove all WMS layers from inactive maps
+                Object.keys(wmsLayers).forEach(storageMapKey => {
+                    if (wmsLayers[storageMapKey]) {
+                        Object.values(wmsLayers[storageMapKey]).forEach(layer => {
+                            if (layer && mapInstance.hasLayer(layer)) {
+                                mapInstance.removeLayer(layer);
+                            }
+                        });
+                    }
+                });
+            }
+        });
 
         hideLoading();
     } catch (error) {
@@ -580,9 +1250,7 @@ async function initializeOpenNotesMap() {
     baseLayers.osm.addTo(maps.openNotes);
 
     // Double-check that satellite is NOT on the map
-    if (maps.openNotes.hasLayer(baseLayers.satellite)) {
-        maps.openNotes.removeLayer(baseLayers.satellite);
-    }
+    safeRemoveLayer(maps.openNotes, baseLayers.satellite);
 
     // Wait for next frame to ensure map container is fully rendered
     await new Promise(resolve => requestAnimationFrame(resolve));
@@ -615,11 +1283,81 @@ async function initializeOpenNotesMap() {
 
 /**
  * Initialize Closed Notes Map
- * DISABLED - Causing issues with open notes display
  */
 async function initializeClosedNotesMap() {
-    // Function completely disabled - closed notes causing issues with open notes visibility
-    return;
+    const mapContainer = document.getElementById('closed-notes-map');
+    if (!mapContainer) return;
+
+    // Ensure the container is visible before initializing Leaflet
+    // The container should have 'active' class, but verify it's actually visible
+    if (!mapContainer.classList.contains('active')) {
+        mapContainer.classList.add('active');
+    }
+    
+    // Wait for the container to be fully rendered and visible
+    await new Promise(resolve => {
+        // Check if container is visible
+        const checkVisibility = () => {
+            const rect = mapContainer.getBoundingClientRect();
+            if (rect.width > 0 && rect.height > 0) {
+                resolve();
+            } else {
+                requestAnimationFrame(checkVisibility);
+            }
+        };
+        requestAnimationFrame(checkVisibility);
+    });
+
+    // Create map with default location (Bogotá) - will be updated if geolocation succeeds
+    // Explicitly use EPSG:3857 (Web Mercator) to match OpenStreetMap tiles
+    maps.closedNotes = L.map('closed-notes-map', {
+        zoomControl: true,
+        attributionControl: false, // Disable default to avoid duplicates
+        center: [DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon],
+        zoom: DEFAULT_ZOOM,
+        crs: L.CRS.EPSG3857 // Explicitly set CRS to match base map tiles
+    });
+    
+    // Add custom attribution control without "Leaflet" prefix
+    const closedNotesAttribution = L.control.attribution({
+        prefix: false
+    });
+    closedNotesAttribution.addTo(maps.closedNotes);
+    // Add OSM attribution manually to ensure it's always shown
+    closedNotesAttribution.addAttribution('© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors');
+
+    // Set initial view to default location
+    initialViews.closedNotes = { center: [DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon], zoom: DEFAULT_ZOOM };
+
+    // Add base layer - ensure OSM is added, not satellite
+    baseLayers.osm.addTo(maps.closedNotes);
+    
+    // Double-check that satellite is NOT on the map
+    safeRemoveLayer(maps.closedNotes, baseLayers.satellite);
+
+    // Wait for next frame to ensure map container is fully rendered
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    
+    // Force Leaflet to calculate size and start loading tiles immediately
+    maps.closedNotes.invalidateSize();
+    
+    // Listen for map load event to ensure tiles are displayed
+    maps.closedNotes.once('load', () => {
+        // Map is fully loaded, ensure tiles are visible
+        maps.closedNotes.invalidateSize();
+    });
+    
+    // Also force a refresh after a delay to ensure tiles load
+    setTimeout(() => {
+        maps.closedNotes.invalidateSize();
+        const center = maps.closedNotes.getCenter();
+        const zoom = maps.closedNotes.getZoom();
+        maps.closedNotes.setView(center, zoom);
+    }, 200);
+    
+    // DO NOT add WMS layer during initialization for closed notes map
+    // The layer will be added when the user switches to the closed notes tab
+    // This prevents both layers from being active at the same time on page load
 }
 
 /**
@@ -708,10 +1446,10 @@ async function requestUserLocation() {
                 // Calculate 500km bbox
                 const bbox = calculateBbox(userLocation.lat, userLocation.lon, 500);
 
-                // Update initial views for open notes map
+                // Update initial views for open and closed notes maps
                 const zoom = calculateZoomForBbox(bbox);
                 initialViews.openNotes = { center: [userLocation.lat, userLocation.lon], zoom };
-                // initialViews.closedNotes = { center: [userLocation.lat, userLocation.lon], zoom }; // Disabled
+                initialViews.closedNotes = { center: [userLocation.lat, userLocation.lon], zoom };
 
                 // Only update map views if user explicitly wants to use their location
                 // For now, we'll keep the default location (Bogotá) to avoid disrupting the map
@@ -742,9 +1480,9 @@ function invalidateMapSizes() {
         if (maps.openNotes) {
             maps.openNotes.invalidateSize();
         }
-        // if (maps.closedNotes) { // Disabled
-        //     maps.closedNotes.invalidateSize();
-        // }
+        if (maps.closedNotes) {
+            maps.closedNotes.invalidateSize();
+        }
         if (maps.boundaries) {
             maps.boundaries.invalidateSize();
         }
@@ -799,27 +1537,34 @@ function calculateZoomForBbox(bbox) {
  * Add WMS layer to a map using leaflet.wms plugin for better WMS support
  * @param {L.Map} map - Leaflet map instance
  * @param {string} layerName - WMS layer name
- * @param {string} layerKey - Key for storing layer reference
+ * @param {string} layerKey - Key for storing layer reference (e.g., 'openNotes', 'closedNotes')
  * @param {Object} bbox - Optional bounding box (not used with plugin, but kept for compatibility)
  */
 function addWMSLayer(map, layerName, layerKey, bbox = null) {
     if (!map) return;
 
-    // Check if this layer already exists and is on a different map
-    // If so, remove it from that map first (a Leaflet layer can only be on one map at a time)
-    if (wmsLayers[layerKey] && wmsLayerMap[layerKey] && wmsLayerMap[layerKey] !== map) {
-        const previousMap = wmsLayerMap[layerKey];
-        if (previousMap.hasLayer(wmsLayers[layerKey])) {
-            previousMap.removeLayer(wmsLayers[layerKey]);
-        }
-        // Clear the reference since we're moving it to a new map
-        wmsLayers[layerKey] = null;
-        wmsLayerMap[layerKey] = null;
+    // Determine which map this layer belongs to based on the map instance
+    let mapKey = null;
+    if (map === maps.openNotes) {
+        mapKey = 'openNotes';
+    } else if (map === maps.closedNotes) {
+        mapKey = 'closedNotes';
+    } else if (map === maps.boundaries) {
+        mapKey = 'boundaries';
+    } else {
+        console.error('Unknown map instance in addWMSLayer');
+        return;
+    }
+
+    // Initialize map entry if it doesn't exist
+    if (!wmsLayers[mapKey]) {
+        wmsLayers[mapKey] = {};
     }
 
     // Remove existing layer from this map if present
-    if (wmsLayers[layerKey] && map.hasLayer(wmsLayers[layerKey])) {
-        map.removeLayer(wmsLayers[layerKey]);
+    if (wmsLayers[mapKey][layerKey] && map.hasLayer(wmsLayers[mapKey][layerKey])) {
+        map.removeLayer(wmsLayers[mapKey][layerKey]);
+        wmsLayers[mapKey][layerKey] = null;
     }
 
     // Use native Leaflet TileLayer.WMS implementation for better CRS handling
@@ -858,9 +1603,31 @@ function addWMSLayer(map, layerName, layerKey, bbox = null) {
             const wmsLayer = wmsSource.getLayer(layerName);
 
             if (wmsLayer) {
+                // CRITICAL: Before adding WMS layer, ensure base layer is present
+                // This is especially important for satellite
+                const baseLayerSelect = document.getElementById('baseLayerSelect');
+                const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
+                const currentBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+                
+                // Ensure base layer is present before adding WMS
+                if (!map.hasLayer(currentBaseLayer)) {
+                    currentBaseLayer.addTo(map);
+                }
+                
                 wmsLayer.addTo(map);
-                wmsLayers[layerKey] = wmsLayer;
-                wmsLayerMap[layerKey] = map; // Track which map this layer belongs to
+                
+                // CRITICAL: Immediately after adding WMS, verify base layer is still present
+                // WMS layer addition can sometimes interfere with base layers
+                if (!map.hasLayer(currentBaseLayer)) {
+                    // Base layer was removed, re-add it immediately
+                    currentBaseLayer.addTo(map);
+                }
+                
+                // Store layer in map-specific structure
+                if (!wmsLayers[mapKey]) {
+                    wmsLayers[mapKey] = {};
+                }
+                wmsLayers[mapKey][layerKey] = wmsLayer;
 
                 // Setup click handler for GetFeatureInfo
                 wmsLayer.on('click', async (e) => {
@@ -878,8 +1645,8 @@ function addWMSLayer(map, layerName, layerKey, bbox = null) {
 
     // Use native Leaflet TileLayer.WMS implementation
     // This ensures proper CRS handling and alignment with base map tiles
-    // Always create a new layer instance to ensure it's bound to the correct map
-    if (!wmsLayers[layerKey] || !map.hasLayer(wmsLayers[layerKey])) {
+    // Always create a new layer instance for each map to ensure complete isolation
+    if (!wmsLayers[mapKey][layerKey] || !map.hasLayer(wmsLayers[mapKey][layerKey])) {
         // Verify map CRS
         const mapCrs = map.options.crs || map.getCRS();
         const mapCrsCode = mapCrs?.code || (mapCrs === L.CRS.EPSG3857 ? 'EPSG:3857' : 'unknown');
@@ -892,22 +1659,52 @@ function addWMSLayer(map, layerName, layerKey, bbox = null) {
             transparent: true,
             version: '1.1.0',
             uppercase: true,
-            attribution: '<a href="https://github.com/OSMLatam/OSM-Notes-Analytics">OSM Notes Analytics</a>',
+            attribution: '<a href="https://github.com/OSM-Notes/OSM-Notes-Analytics">OSM Notes Analytics</a>',
             tiled: true,
             updateWhenIdle: false,
-            updateWhenZooming: true,
-            // Ensure WMS layer appears on top of base layers
-            pane: 'overlayPane'
+            updateWhenZooming: true
+            // Don't specify pane - let Leaflet handle layer ordering naturally
         });
 
+        // CRITICAL: Before adding WMS layer, ensure base layer is present
+        // This is especially important for satellite
+        const baseLayerSelect = document.getElementById('baseLayerSelect');
+        const selectedBaseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
+        const currentBaseLayer = selectedBaseLayer === 'satellite' ? baseLayers.satellite : baseLayers.osm;
+        
+        // Ensure base layer is present before adding WMS
+        if (!map.hasLayer(currentBaseLayer)) {
+            currentBaseLayer.addTo(map);
+        }
+        
         // Add WMS layer to map - it will appear on top of base layers
         wmsLayer.addTo(map);
-        wmsLayers[layerKey] = wmsLayer;
-        wmsLayerMap[layerKey] = map; // Track which map this layer belongs to
+        
+        // CRITICAL: Immediately after adding WMS, verify base layer is still present
+        // WMS layer addition can sometimes interfere with base layers
+        // For satellite, this is especially critical
+        if (!map.hasLayer(currentBaseLayer)) {
+            // Base layer was removed, re-add it immediately and bring to back
+            currentBaseLayer.addTo(map);
+            // Ensure base layer is behind WMS layer
+            if (currentBaseLayer.bringToBack) {
+                currentBaseLayer.bringToBack();
+            }
+            // Force invalidate to ensure tiles load
+            map.invalidateSize();
+        } else if (currentBaseLayer === baseLayers.satellite) {
+            // For satellite, even if present, ensure it's visible and refresh
+            if (currentBaseLayer.bringToBack) {
+                currentBaseLayer.bringToBack();
+            }
+            map.invalidateSize();
+        }
+        
+        // Store layer in map-specific structure
+        wmsLayers[mapKey][layerKey] = wmsLayer;
 
-        // Ensure open notes layer is always on top of closed notes layer
+        // Ensure open notes layer is always on top
         if (layerKey === 'openNotes') {
-            // Use a small delay to ensure closed notes layer is added first if it exists
             setTimeout(() => {
                 if (map.hasLayer(wmsLayer)) {
                     wmsLayer.bringToFront();
@@ -915,10 +1712,30 @@ function addWMSLayer(map, layerName, layerKey, bbox = null) {
             }, 100);
         }
 
-        // Add click handler for popups
-        map.on('click', async (e) => {
-            await handleMapClick(e, map, layerName);
-        });
+        // Add click handler for popups - only add once per map
+        // Check if handler already exists to avoid duplicates
+        if (!map._wmsClickHandlerAdded) {
+            map.on('click', async (e) => {
+                // Determine which layer to query based on active map
+                let activeLayerName = null;
+                if (map === maps.openNotes && wmsLayers.openNotes && wmsLayers.openNotes.openNotes) {
+                    activeLayerName = WMS_LAYERS.openNotes;
+                } else if (map === maps.closedNotes && wmsLayers.closedNotes && wmsLayers.closedNotes.closedNotes) {
+                    activeLayerName = WMS_LAYERS.closedNotes;
+                } else if (map === maps.boundaries) {
+                    // For boundaries, check which layers are active
+                    if (wmsLayers.boundaries && wmsLayers.boundaries['boundaries-countries']) {
+                        activeLayerName = WMS_LAYERS.countries;
+                    } else if (wmsLayers.boundaries && wmsLayers.boundaries['boundaries-disputed']) {
+                        activeLayerName = WMS_LAYERS.disputedAreas;
+                    }
+                }
+                if (activeLayerName) {
+                    await handleMapClick(e, map, activeLayerName);
+                }
+            });
+            map._wmsClickHandlerAdded = true;
+        }
     }
 }
 
@@ -1082,6 +1899,16 @@ function setupControls() {
     if (resetViewBtn) {
         resetViewBtn.addEventListener('click', () => {
             resetView();
+            // Clear URL parameters when resetting view
+            setTimeout(() => {
+                removeUrlParam('lat');
+                removeUrlParam('lon');
+                removeUrlParam('zoom');
+                removeUrlParam('tab');
+                removeUrlParam('baseLayer');
+                removeUrlParam('boundariesCountries');
+                removeUrlParam('boundariesDisputed');
+            }, 300);
         });
     }
 }
@@ -1103,114 +1930,98 @@ function switchBaseLayer(layerType) {
     const newLayer = layerType === 'satellite' ? baseLayers.satellite : baseLayers.osm;
     const oldLayer = layerType === 'satellite' ? baseLayers.osm : baseLayers.satellite;
 
-    Object.entries(maps).forEach(([mapKey, map]) => {
-        if (map && oldLayer && newLayer) {
-            try {
-                // Preserve current view (center and zoom) before switching layers
-                const currentCenter = map.getCenter();
-                const currentZoom = map.getZoom();
+    // Only switch base layer on the ACTIVE map
+    const activeMapKey = mapNameToKey(currentMap);
+    const activeMap = maps[activeMapKey];
+    
+    if (activeMap && oldLayer && newLayer) {
+        try {
+            // Preserve current view (center and zoom) before switching layers
+            const currentCenter = activeMap.getCenter();
+            const currentZoom = activeMap.getZoom();
 
-                // Stop any ongoing animations
-                if (map.stop) {
-                    map.stop();
-                }
+            // Stop any ongoing animations
+            if (activeMap.stop) {
+                activeMap.stop();
+            }
 
-                // Remove old layer if present
-                if (map.hasLayer(oldLayer)) {
-                    map.removeLayer(oldLayer);
-                }
+            // Remove old layer if present
+            if (activeMap.hasLayer(oldLayer)) {
+                activeMap.removeLayer(oldLayer);
+            }
 
-                // Add new layer if not already present
-                if (!map.hasLayer(newLayer)) {
-                    newLayer.addTo(map);
-                }
+            // Add new layer if not already present
+            if (!activeMap.hasLayer(newLayer)) {
+                newLayer.addTo(activeMap);
+            }
 
-                // Ensure view stays the same after layer switch
-                // Use requestAnimationFrame to allow Leaflet to process the layer change
-                requestAnimationFrame(() => {
-                    // Set view without reset to avoid canceling tile requests
-                    map.setView(currentCenter, currentZoom, {
-                        reset: false,
-                        animate: false
-                    });
+            // Ensure view stays the same after layer switch
+            // Use requestAnimationFrame to allow Leaflet to process the layer change
+            requestAnimationFrame(() => {
+                // Set view without reset to avoid canceling tile requests
+                activeMap.setView(currentCenter, currentZoom, {
+                    reset: false,
+                    animate: false
+                });
 
-                    // Invalidate size after a small delay to ensure tiles start loading
+                // Invalidate size after a small delay to ensure tiles start loading
+                setTimeout(() => {
+                    activeMap.invalidateSize();
+
+                    // Refresh WMS layers to ensure they align properly and appear on top
+                    // Only refresh layers that belong to the active map
                     setTimeout(() => {
-                        map.invalidateSize();
-
-                        // Refresh WMS layers to ensure they align properly and appear on top
-                        // Order matters: closed notes first, then open notes (so open notes appear on top)
-                        setTimeout(() => {
-                            // Define layer order: open notes first, then boundaries
-                            const layerOrder = ['openNotes', 'boundaries-countries', 'boundaries-disputed'];
+                        if (wmsLayers[activeMapKey]) {
+                            const layerOrder = [];
+                            if (activeMapKey === 'openNotes') {
+                                layerOrder.push('openNotes');
+                            } else if (activeMapKey === 'closedNotes') {
+                                layerOrder.push('closedNotes');
+                            } else if (activeMapKey === 'boundaries') {
+                                layerOrder.push('boundaries-countries', 'boundaries-disputed');
+                            }
 
                             // Process layers in the correct order
                             layerOrder.forEach(layerKey => {
-                                const wmsLayer = wmsLayers[layerKey];
-                                if (wmsLayer) {
+                                const wmsLayer = wmsLayers[activeMapKey][layerKey];
+                                if (wmsLayer && activeMap.hasLayer(wmsLayer)) {
                                     try {
-                                        // Check if layer should be on this map
-                                        // Only refresh layers that belong to this map
-                                        const shouldBeOnMap =
-                                            (mapKey === 'openNotes' && layerKey === 'openNotes') ||
-                                            // (mapKey === 'closedNotes' && layerKey === 'closedNotes') || // Disabled
-                                            (mapKey === 'boundaries' && (layerKey === 'boundaries-countries' || layerKey === 'boundaries-disputed'));
-
-                                        if (!shouldBeOnMap) {
-                                            return; // Skip layers that don't belong to this map
-                                        }
-
-                                        // Check if layer is on the map
-                                        const wasOnMap = map.hasLayer(wmsLayer);
-
-                                        // Remove layer if present to force refresh
-                                        if (wasOnMap) {
-                                            map.removeLayer(wmsLayer);
-                                        }
-
-                                        // Re-add after a short delay to ensure base layer is ready
-                                        // This ensures WMS layers appear on top of base layers
-                                        // Use a delay that increases for each layer to maintain order
-                                        const delay = layerKey === 'openNotes' ? 200 : 300;
-
+                                        // Force refresh by removing and re-adding
+                                        activeMap.removeLayer(wmsLayer);
+                                        
                                         setTimeout(() => {
-                                            // Add layer back to map - it will appear on top of base layer
-                                            wmsLayer.addTo(map);
-
-                                            // If this is the open notes layer, bring it to front to ensure it's on top
-                                            if (layerKey === 'openNotes' && map.hasLayer(wmsLayer)) {
+                                            // Re-add layer - it will appear on top of base layer
+                                            wmsLayer.addTo(activeMap);
+                                            
+                                            // If this is the open notes layer, bring it to front
+                                            if (layerKey === 'openNotes') {
                                                 wmsLayer.bringToFront();
                                             }
-
+                                            
                                             // Force WMS layer to update its tiles
+                                            activeMap.invalidateSize();
+                                            
                                             // Trigger a small view change to force tile refresh
-                                            const center = map.getCenter();
-                                            const zoom = map.getZoom();
-
-                                            // Use a tiny offset to force refresh without visible movement
-                                            map.setView([center.lat + 0.000001, center.lng], zoom, {
+                                            const center = activeMap.getCenter();
+                                            const zoom = activeMap.getZoom();
+                                            activeMap.setView([center.lat + 0.000001, center.lng], zoom, {
                                                 reset: false,
                                                 animate: false
                                             });
-
-                                            // Immediately restore original view
+                                            
                                             setTimeout(() => {
-                                                map.setView(center, zoom, {
+                                                activeMap.setView(center, zoom, {
                                                     reset: false,
                                                     animate: false
                                                 });
-
-                                                // Ensure open notes are on top after view restore
-                                                if (layerKey === 'openNotes' && map.hasLayer(wmsLayer)) {
-                                                    wmsLayer.bringToFront();
-                                                }
+                                                activeMap.invalidateSize();
                                             }, 50);
-                                        }, delay);
+                                        }, 150);
                                     } catch (wmsError) {
                                         console.warn('Error refreshing WMS layer:', wmsError);
                                         // Try to re-add layer even if refresh failed
-                                        if (wmsLayer && !map.hasLayer(wmsLayer)) {
-                                            wmsLayer.addTo(map);
+                                        if (wmsLayer && !activeMap.hasLayer(wmsLayer)) {
+                                            wmsLayer.addTo(activeMap);
                                             // Ensure open notes are on top
                                             if (layerKey === 'openNotes') {
                                                 wmsLayer.bringToFront();
@@ -1219,14 +2030,14 @@ function switchBaseLayer(layerType) {
                                     }
                                 }
                             });
-                        }, 300);
+                        }
                     }, 100);
-                });
-            } catch (error) {
-                console.warn('Error switching base layer:', error);
-            }
+                }, 50);
+            });
+        } catch (error) {
+            console.warn('Error switching base layer:', error);
         }
-    });
+    }
 
     // Update select options text
     const baseLayerSelect = document.getElementById('baseLayerSelect');
@@ -1277,7 +2088,7 @@ function resetView() {
 function setupWMSDocumentation() {
     // Generate WMS URLs for iD Editor (complete URLs)
     const openNotesUrl = generateWMSUrl('openNotes');
-    // const closedNotesUrl = generateWMSUrl('closedNotes'); // Disabled
+    const closedNotesUrl = generateWMSUrl('closedNotes');
     const countriesUrl = generateWMSUrl('countries');
     const disputedAreasUrl = generateWMSUrl('disputedAreas');
 
@@ -1288,7 +2099,7 @@ function setupWMSDocumentation() {
     const disputedUrlEl = document.getElementById('wmsDisputedUrl');
 
     if (openUrlEl) openUrlEl.textContent = openNotesUrl;
-    // if (closedUrlEl) closedUrlEl.textContent = closedNotesUrl; // Disabled
+    if (closedUrlEl) closedUrlEl.textContent = closedNotesUrl;
     if (countriesUrlEl) countriesUrlEl.textContent = countriesUrl;
     if (disputedUrlEl) disputedUrlEl.textContent = disputedAreasUrl;
 
@@ -1343,7 +2154,8 @@ function toggleBoundariesLayer(layerKey, visible) {
     const wmsLayerName = layerMap[layerKey];
     if (!wmsLayerName) return;
 
-    const wmsLayer = wmsLayers[layerKey];
+    // Get layer from boundaries map-specific storage
+    const wmsLayer = wmsLayers.boundaries && wmsLayers.boundaries[layerKey] ? wmsLayers.boundaries[layerKey] : null;
 
     if (visible) {
         // Add layer if not already present
@@ -1352,7 +2164,6 @@ function toggleBoundariesLayer(layerKey, visible) {
         } else if (!maps.boundaries.hasLayer(wmsLayer)) {
             // Layer exists but not on map, add it
             wmsLayer.addTo(maps.boundaries);
-            wmsLayerMap[layerKey] = maps.boundaries;
         }
     } else {
         // Remove layer if present
@@ -1386,9 +2197,7 @@ function toggleBoundariesLayer(layerKey, visible) {
         const zoom = maps.boundaries.getZoom();
 
         // Remove OSM layer if present
-        if (maps.boundaries.hasLayer(baseLayers.osm)) {
-            maps.boundaries.removeLayer(baseLayers.osm);
-        }
+        safeRemoveLayer(maps.boundaries, baseLayers.osm);
 
         // Wait a bit then re-add
         setTimeout(() => {
@@ -1477,5 +2286,245 @@ function showError(message) {
     if (error) {
         error.textContent = message;
         error.style.display = 'block';
+    }
+}
+
+/**
+ * Update URL with current map state (permalink)
+ */
+function updatePermalink() {
+    // Don't update URL during state restoration
+    if (isRestoringState) return;
+    
+    const activeMapKey = mapNameToKey(currentMap);
+    const activeMap = maps[activeMapKey];
+    
+    if (!activeMap) return;
+    
+    const center = activeMap.getCenter();
+    const zoom = activeMap.getZoom();
+    const baseLayerSelect = document.getElementById('baseLayerSelect');
+    const baseLayer = baseLayerSelect ? baseLayerSelect.value : 'osm';
+    
+    // Update URL parameters
+    setUrlParam('lat', center.lat.toFixed(6));
+    setUrlParam('lon', center.lng.toFixed(6));
+    setUrlParam('zoom', zoom.toString());
+    setUrlParam('tab', currentMap);
+    setUrlParam('baseLayer', baseLayer);
+    
+    // For boundaries map, also save layer visibility
+    if (currentMap === 'boundaries') {
+        const countriesCheckbox = document.getElementById('boundariesCountriesCheckbox');
+        const disputedCheckbox = document.getElementById('boundariesDisputedCheckbox');
+        if (countriesCheckbox) {
+            setUrlParam('boundariesCountries', countriesCheckbox.checked ? '1' : '0');
+        }
+        if (disputedCheckbox) {
+            setUrlParam('boundariesDisputed', disputedCheckbox.checked ? '1' : '0');
+        }
+    } else {
+        // Remove boundaries-specific params when not on boundaries tab
+        removeUrlParam('boundariesCountries');
+        removeUrlParam('boundariesDisputed');
+    }
+}
+
+/**
+ * Restore map state from URL parameters
+ */
+function restoreMapStateFromUrl() {
+    isRestoringState = true;
+    
+    const lat = parseFloat(getUrlParam('lat'));
+    const lon = parseFloat(getUrlParam('lon'));
+    const zoom = parseInt(getUrlParam('zoom'), 10);
+    const tab = getUrlParam('tab');
+    const baseLayer = getUrlParam('baseLayer');
+    
+    // Restore tab if valid - do this first
+    if (tab && ['open-notes', 'closed-notes', 'boundaries'].includes(tab)) {
+        if (tab !== currentMap) {
+            switchMap(tab);
+            // Wait for map switch to complete before restoring view
+            setTimeout(() => {
+                restoreMapViewAndLayers(lat, lon, zoom, baseLayer);
+                // Re-enable URL updates after restoration is complete
+                setTimeout(() => {
+                    isRestoringState = false;
+                }, 1000);
+            }, 500);
+            return; // Exit early, will restore view after tab switch
+        }
+    }
+    
+    // If no tab change needed, restore view immediately
+    restoreMapViewAndLayers(lat, lon, zoom, baseLayer);
+    // Re-enable URL updates after restoration is complete
+    setTimeout(() => {
+        isRestoringState = false;
+    }, 1000);
+}
+
+/**
+ * Restore map view and layer settings
+ */
+function restoreMapViewAndLayers(lat, lon, zoom, baseLayer) {
+    const activeMapKey = mapNameToKey(currentMap);
+    const activeMap = maps[activeMapKey];
+    
+    // Restore map view if valid coordinates and zoom
+    if (!isNaN(lat) && !isNaN(lon) && !isNaN(zoom) && 
+        lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180 && zoom >= 0 && zoom <= 20) {
+        if (activeMap) {
+            // Wait a bit for map to be ready
+            setTimeout(() => {
+                activeMap.setView([lat, lon], zoom, { animate: false });
+            }, 300);
+        }
+    }
+    
+    // Restore base layer if valid
+    if (baseLayer && ['osm', 'satellite'].includes(baseLayer)) {
+        const baseLayerSelect = document.getElementById('baseLayerSelect');
+        if (baseLayerSelect && baseLayerSelect.value !== baseLayer) {
+            // Wait a bit for map to be ready before switching layers
+            setTimeout(() => {
+                baseLayerSelect.value = baseLayer;
+                // Trigger change event to switch layer
+                baseLayerSelect.dispatchEvent(new Event('change'));
+            }, 400);
+        }
+    }
+    
+    // Restore boundaries layer visibility
+    if (currentMap === 'boundaries') {
+        const countriesParam = getUrlParam('boundariesCountries');
+        const disputedParam = getUrlParam('boundariesDisputed');
+        
+        setTimeout(() => {
+            if (countriesParam !== null) {
+                const countriesCheckbox = document.getElementById('boundariesCountriesCheckbox');
+                if (countriesCheckbox) {
+                    countriesCheckbox.checked = countriesParam === '1';
+                    countriesCheckbox.dispatchEvent(new Event('change'));
+                }
+            }
+            
+            if (disputedParam !== null) {
+                const disputedCheckbox = document.getElementById('boundariesDisputedCheckbox');
+                if (disputedCheckbox) {
+                    disputedCheckbox.checked = disputedParam === '1';
+                    disputedCheckbox.dispatchEvent(new Event('change'));
+                }
+            }
+        }, 500);
+    }
+}
+
+/**
+ * Copy permalink to clipboard
+ */
+async function copyPermalink() {
+    updatePermalink();
+    const url = window.location.href;
+    
+    try {
+        await navigator.clipboard.writeText(url);
+        // Show feedback
+        const permalinkBtn = document.getElementById('permalinkBtn');
+        if (permalinkBtn) {
+            const originalText = permalinkBtn.innerHTML;
+            permalinkBtn.innerHTML = '<span aria-hidden="true">✓</span> <span data-i18n="map.controls.copied">Copied!</span>';
+            permalinkBtn.disabled = true;
+            
+            setTimeout(() => {
+                permalinkBtn.innerHTML = originalText;
+                permalinkBtn.disabled = false;
+                // Update i18n text
+                i18n.updatePageContent();
+            }, 2000);
+        }
+    } catch (error) {
+        console.error('Failed to copy permalink:', error);
+        // Fallback: select text in a temporary input
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            const permalinkBtn = document.getElementById('permalinkBtn');
+            if (permalinkBtn) {
+                const originalText = permalinkBtn.innerHTML;
+                permalinkBtn.innerHTML = '<span aria-hidden="true">✓</span> <span data-i18n="map.controls.copied">Copied!</span>';
+                permalinkBtn.disabled = true;
+                
+                setTimeout(() => {
+                    permalinkBtn.innerHTML = originalText;
+                    permalinkBtn.disabled = false;
+                    i18n.updatePageContent();
+                }, 2000);
+            }
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }
+}
+
+/**
+ * Setup permalink functionality
+ */
+function setupPermalink() {
+    // Setup permalink button
+    const permalinkBtn = document.getElementById('permalinkBtn');
+    if (permalinkBtn) {
+        permalinkBtn.addEventListener('click', copyPermalink);
+    }
+    
+    // Add debounced listeners to update URL when map changes
+    let updateTimeout;
+    const debouncedUpdatePermalink = () => {
+        clearTimeout(updateTimeout);
+        updateTimeout = setTimeout(updatePermalink, 500); // Wait 500ms after last change
+    };
+    
+    // Listen to map move and zoom events for all maps
+    Object.values(maps).forEach(map => {
+        if (map) {
+            map.on('moveend', debouncedUpdatePermalink);
+            map.on('zoomend', debouncedUpdatePermalink);
+        }
+    });
+    
+    // Listen to tab changes
+    const tabs = document.querySelectorAll('.map-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            setTimeout(updatePermalink, 300); // Wait for map switch to complete
+        });
+    });
+    
+    // Listen to base layer changes
+    const baseLayerSelect = document.getElementById('baseLayerSelect');
+    if (baseLayerSelect) {
+        baseLayerSelect.addEventListener('change', () => {
+            setTimeout(updatePermalink, 300); // Wait for layer switch to complete
+        });
+    }
+    
+    // Listen to boundaries layer checkbox changes
+    const countriesCheckbox = document.getElementById('boundariesCountriesCheckbox');
+    const disputedCheckbox = document.getElementById('boundariesDisputedCheckbox');
+    if (countriesCheckbox) {
+        countriesCheckbox.addEventListener('change', debouncedUpdatePermalink);
+    }
+    if (disputedCheckbox) {
+        disputedCheckbox.addEventListener('change', debouncedUpdatePermalink);
     }
 }

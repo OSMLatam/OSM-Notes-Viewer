@@ -4,17 +4,23 @@ import { analytics } from '../utils/analytics.js';
 
 export class LanguageSelector {
     constructor(container) {
+        if (!container) {
+            console.warn('LanguageSelector: container is required');
+            return;
+        }
         this.container = container;
         this.currentLang = i18n.getCurrentLanguage();
         this.init();
     }
 
     init() {
+        if (!this.container) return;
         this.render();
         this.setupEventListeners();
     }
 
     render() {
+        if (!this.container) return;
         const currentLangData = SUPPORTED_LANGUAGES[this.currentLang];
 
         this.container.innerHTML = `
@@ -165,9 +171,6 @@ export class LanguageSelector {
         }, 3000);
     }
 }
-
-// Export singleton instance
-export const languageSelector = new LanguageSelector();
 
 // Initialize language selector when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {

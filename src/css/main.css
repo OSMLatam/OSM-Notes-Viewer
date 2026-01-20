@@ -1695,27 +1695,36 @@ main .container section + section {
 }
 
 /* === About Page Specific Styles === */
-/* Ensure proper spacing between sections */
+/* About page container */
+main .about-container {
+    max-width: 800px;
+    padding: 3rem 20px;
+}
+
+/* Ensure proper spacing between sections - reduced for consistency */
 main .container > section {
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 main .container > section:first-of-type {
     margin-top: 0;
 }
 
-/* Spacing for main headings (h2, h3) */
+/* Spacing for main headings (h2, h3) - reduced since sections already have spacing */
 main .container h2,
 main .container h3 {
-    margin-top: 2rem;
-    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
 }
 
+/* All h2/h3 that are first child of a section should have no top margin */
 main .container h2:first-child,
 main .container > section:first-child h2,
-main .container > section:first-child h3 {
-    margin-top: 0;
+main .container > section:first-child h3,
+main .container section > h2:first-child,
+main .container section > h3:first-child {
+    margin-top: 0 !important;
 }
 
 /* Spacing for h4 subheadings */
@@ -1724,9 +1733,41 @@ main .container h4 {
     margin-bottom: 0.75rem;
 }
 
+/* First h4 after h3 in any section should have reduced top margin */
+main .container section h3 + h4 {
+    margin-top: 1rem;
+}
+
+/* Monitoring button styles */
+.monitoring-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #0066cc;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.monitoring-description {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.footer-author {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
 main .container p {
     margin-bottom: 1rem;
     margin-top: 0;
+}
+
+/* Reduce margin-bottom of last paragraph in sections to prevent extra spacing before next section */
+main .container section p:last-child {
+    margin-bottom: 0;
 }
 
 /* List alignment and spacing */

@@ -1,4 +1,6 @@
 // Interactive Statistics Page
+import { apiClient } from '../api/apiClient.js';
+
 let barChart, pieChart, comparisonChart, animatedChart;
 let usersData = [];
 let countriesData = [];
@@ -14,13 +16,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Load data
 async function loadData() {
     try {
-        const usersResponse = await fetch('/data/indexes/users.json');
-        usersData = await usersResponse.json();
+        // Use apiClient to respect API configuration (production vs development)
+        usersData = await apiClient.getUserIndex();
+        countriesData = await apiClient.getCountryIndex();
 
-        const countriesResponse = await fetch('/data/indexes/countries.json');
-        countriesData = await countriesResponse.json();
-
-        console.log('Data loaded:', { users: usersData.length, countries: countriesData.length });
+        // Count users with >= 10 opened notes
+        const usersWith10Plus = usersData.filter(user => (user.history_whole_open ?? 0) >= 10).length;
+        console.log('Data loaded:', { 
+            users: usersData.length, 
+            countries: countriesData.length,
+            usersWith10PlusNotes: usersWith10Plus
+        });
     } catch (error) {
         console.error('Error loading data:', error);
     }
@@ -49,7 +55,7 @@ function updateCharts() {
 
     updateBarChart(processedData);
     updatePieChart(processedData);
-    updateComparisonChart(processedData);
+    updateComparisonChart(processedData, type, data, dataset, metric);
 }
 
 // Process data based on filters
@@ -186,26 +192,83 @@ function updatePieChart(data) {
 }
 
 // Update comparison chart
-function updateComparisonChart(data) {
+function updateComparisonChart(data, type, originalData, dataset, metric) {
     const ctx = document.getElementById('comparisonChart');
 
     if (comparisonChart) comparisonChart.destroy();
 
+    // Show/hide note about filtering
+    const comparisonNote = document.getElementById('comparisonNote');
+    if (comparisonNote) {
+        comparisonNote.style.display = type === 'users' ? 'block' : 'none';
+    }
+
+    // Filter users with less than 10 opened notes for comparison chart
+    let filteredData = data;
+    if (type === 'users') {
+        // Filter original data to exclude users with less than 10 opened notes
+        // Handle null values: treat null as 0 (no notes opened)
+        const filteredUsers = originalData.filter(user => {
+            const openedNotes = user.history_whole_open ?? 0;
+            return openedNotes >= 10;
+        });
+        console.log(`Comparison chart: Filtered ${originalData.length} users to ${filteredUsers.length} users (>= 10 opened notes)`);
+        
+        // For comparison chart, always sort by opened notes (descending) to show users with most opened notes
+        // This ensures we see users with significant opened note activity regardless of the selected metric
+        let sorted = [...filteredUsers].sort((a, b) => {
+            const aOpen = a.history_whole_open ?? 0;
+            const bOpen = b.history_whole_open ?? 0;
+            return bOpen - aOpen;
+        });
+        
+        // Apply dataset limit if specified
+        // For comparison chart, limit "all" to top 100 for readability
+        if (dataset === 'top10') sorted = sorted.slice(0, 10);
+        else if (dataset === 'top20') sorted = sorted.slice(0, 20);
+        else if (dataset === 'top50') sorted = sorted.slice(0, 50);
+        else if (dataset === 'all') sorted = sorted.slice(0, 100); // Limit to top 100 for comparison chart readability
+        
+        // Get labels and values
+        const labels = sorted.map(item => {
+            if ('username' in item) return item.username;
+            if ('country_name_en' in item) return item.country_name_en;
+            return 'Unknown';
+        });
+        
+        const openValues = sorted.map(item => item.history_whole_open ?? 0);
+        const closedValues = sorted.map(item => item.history_whole_closed ?? 0);
+        
+        filteredData = { labels, openValues, closedValues };
+        console.log(`Comparison chart: After processing, showing ${filteredData.labels.length} users`);
+        console.log(`Comparison chart: Dataset selected: ${dataset}, Total filtered users available: ${filteredUsers.length}`);
+        
+        // Log sample of users with most opened notes
+        if (sorted.length > 0) {
+            const topUsers = sorted.slice(0, 5).map(u => ({
+                username: u.username,
+                opened: u.history_whole_open ?? 0,
+                closed: u.history_whole_closed ?? 0
+            }));
+            console.log('Comparison chart: Top 5 users by opened notes:', topUsers);
+        }
+    }
+
     comparisonChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: data.labels,
+            labels: filteredData.labels,
             datasets: [
                 {
                     label: 'Opened',
-                    data: data.openValues,
+                    data: filteredData.openValues,
                     backgroundColor: 'rgba(126, 188, 111, 0.6)',
                     borderColor: 'rgba(126, 188, 111, 1)',
                     borderWidth: 1
                 },
                 {
                     label: 'Closed',
-                    data: data.closedValues,
+                    data: filteredData.closedValues,
                     backgroundColor: 'rgba(74, 144, 226, 0.6)',
                     borderColor: 'rgba(74, 144, 226, 1)',
                     borderWidth: 1
