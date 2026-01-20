@@ -90,7 +90,7 @@ graph TD
 
     B -->|Recent data| E{Has valid User-Agent?}
     E -->|No| F[Error: User-Agent required]
-    E -->|Sí| G[Access to REST API]
+    E -->|Yes| G[Access to REST API]
     G --> H[Real-time data]
 
     G --> I{Specific functionality?}
