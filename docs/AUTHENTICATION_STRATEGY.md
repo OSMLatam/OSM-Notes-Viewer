@@ -1,6 +1,6 @@
 # Hybrid Authentication Strategy
 
-**Purpose**: This document describes the hybrid authentication strategy for OSM Notes Viewer, aligned with the model proposed in [OSM-Notes-API](https://github.com/OSMLatam/OSM-Notes-API), where historical data is publicly accessible while recent data requires a valid User-Agent (OAuth optional for specific functionalities).
+**Purpose**: This document describes the hybrid authentication strategy for OSM Notes Viewer, aligned with the model proposed in [OSM-Notes-API](https://github.com/OSM-Notes/OSM-Notes-API), where historical data is publicly accessible while recent data requires a valid User-Agent (OAuth optional for specific functionalities).
 
 **Last Updated**: 2025-01-27
 
@@ -209,7 +209,7 @@ User-Agent: <AppName>/<Version> (<Contact>)
 
 **Valid Examples**:
 ```
-User-Agent: OSMNotesViewer/1.0 (https://github.com/OSMLatam/OSM-Notes-Viewer)
+User-Agent: OSMNotesViewer/1.0 (https://github.com/OSM-Notes/OSM-Notes-Viewer)
 User-Agent: MyOSMApp/2.1 (contact@example.com)
 User-Agent: ResearchTool/0.5 (researcher@university.edu)
 ```
@@ -266,7 +266,7 @@ sequenceDiagram
 const APP_CONFIG = {
     name: 'OSMNotesViewer',
     version: '1.0.0',
-    contact: 'https://github.com/OSMLatam/OSM-Notes-Viewer'
+    contact: 'https://github.com/OSM-Notes/OSM-Notes-Viewer'
 };
 
 // Helper function to get valid User-Agent

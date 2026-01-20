@@ -8,28 +8,35 @@
     <link rel="stylesheet" href="../css/main.css">
 </head>
 <body>
-    <header class="header">
+    <header class="header" role="banner">
         <div class="container">
             <h1 class="logo">
-                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
+                <a href="../index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;" aria-label="OSM Notes Viewer - Home">
                     <img src="../images/logo.svg" alt="OSM Notes Viewer" style="height: 2.5rem;" />
                 </a>
             </h1>
-            <nav class="nav">
-                <a href="../index.html" class="nav-link">Home</a>
-                <a href="explore.html" class="nav-link">Explore</a>
-                <a href="stats.html" class="nav-link">Stats</a>
-                <a href="map.html" class="nav-link">Map</a>
-                <a href="about.html" class="nav-link active">About</a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div id="languageSelector"></div>
+                <button class="theme-toggle" aria-label="Toggle dark mode" id="themeToggle" data-i18n-aria-label="theme.toggle">
+                    🌙 <span data-i18n="theme.dark">Dark</span>
+                </button>
+            </div>
+            <nav class="nav" role="navigation" aria-label="Main navigation" data-i18n-aria-label="a11y.mainNavigation">
+                <a href="../index.html" class="nav-link" data-i18n="nav.home">Home</a>
+                <a href="explore.html" class="nav-link" data-i18n="nav.explore">Explore</a>
+                <a href="stats.html" class="nav-link" data-i18n="nav.stats">Stats</a>
+                <a href="map.html" class="nav-link" data-i18n="nav.map">Map</a>
+                <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
+                <a href="about.html" class="nav-link active" aria-current="page" data-i18n="nav.about">About</a>
             </nav>
         </div>
     </header>
 
     <main class="main">
-        <div class="container" style="max-width: 800px; padding: 3rem 20px;">
+        <div class="container about-container">
             <h2 data-i18n="about.title">About OSM Notes Viewer</h2>
 
-            <section style="margin: 2rem 0;">
+            <section>
                 <h3 data-i18n="about.whatIsThis">What is this?</h3>
                 <p data-i18n="about.whatIsThis.description1">
                     OSM Notes Viewer is an interactive web application that visualizes analytics and statistics
@@ -41,10 +48,10 @@
                 </p>
             </section>
 
-            <section id="manifesto" style="margin: 2rem -20px; padding: 2rem 20px; background: var(--bg-secondary, #f5f5f5); border-radius: 8px;" aria-labelledby="manifesto-title">
-                <h2 id="manifesto-title" style="margin-top: 0;" data-i18n="about.manifesto.title">Manifesto: Our Perspective on OSM Notes</h2>
+            <section id="manifesto" aria-labelledby="manifesto-title">
+                <h3 id="manifesto-title" data-i18n="about.manifesto.title">Manifesto: Our Perspective on OSM Notes</h3>
 
-                <h3 data-i18n="about.manifesto.importance.title">The Importance of Notes in OpenStreetMap</h3>
+                <h4 data-i18n="about.manifesto.importance.title">The Importance of Notes in OpenStreetMap</h4>
                 <p data-i18n="about.manifesto.importance.p1">
                     OpenStreetMap Notes are a fundamental mechanism for community collaboration and quality improvement.
                     They serve as a bridge between mappers and the real world, allowing anyone to report issues,
@@ -62,7 +69,7 @@
                     creates a continuous feedback loop that ensures the map reflects the real world as accurately as possible.
                 </p>
 
-                <h3 data-i18n="about.manifesto.mission.title">Our Mission</h3>
+                <h4 data-i18n="about.manifesto.mission.title">Our Mission</h4>
                 <p data-i18n="about.manifesto.mission.p">
                     Our mission is to make OSM Notes more accessible, understandable, and actionable. We believe that
                     by providing better tools and insights, we can:
@@ -74,7 +81,9 @@
                     <li data-i18n="about.manifesto.mission.item4">Support research and analysis of mapping patterns and trends</li>
                     <li data-i18n="about.manifesto.mission.item5">Foster collaboration within the OpenStreetMap community</li>
                 </ul>
+            </section>
 
+            <section>
                 <h3 data-i18n="about.community.title">The Latin American Community</h3>
                 <p data-i18n="about.community.p1">
                     There is a dedicated community in Latin America focused on resolving OSM Notes. This community
@@ -90,7 +99,9 @@
                 <p data-i18n="about.community.p2">
                     This project is part of that effort, providing tools and insights to support the community's work.
                 </p>
+            </section>
 
+            <section>
                 <h3 data-i18n="about.history.title">Project History</h3>
                 <p data-i18n="about.history.p1">
                     This project began in 2020, during the pandemic, when Andrés Gómez started reviewing notes in Colombia,
@@ -156,7 +167,9 @@
                     why it must be given good context to focus it. That's why all these repos are full of documentation, so that
                     any future improvement is documented, and any AI can improve the code.
                 </p>
+            </section>
 
+            <section>
                 <h3 data-i18n="about.built.title">What We've Built</h3>
                 <p data-i18n="about.built.p1">
                     This project is part of a comprehensive ecosystem consisting of 8 repositories and 2 databases working together
@@ -167,7 +180,7 @@
                 <p data-i18n="about.built.p2">For detailed information about each component, see the <a href="#ecosystem-architecture">Ecosystem Architecture</a> section below.</p>
             </section>
 
-            <section id="ecosystem-architecture" style="margin: 2rem 0;" aria-labelledby="ecosystem-title">
+            <section id="ecosystem-architecture" aria-labelledby="ecosystem-title">
                 <h3 id="ecosystem-title" data-i18n="about.architecture.title">Ecosystem Architecture</h3>
                 <p data-i18n="about.architecture.p">
                     This viewer is part of a comprehensive ecosystem of 8 repositories and 2 databases working together
@@ -177,36 +190,36 @@
                 <h4 data-i18n="about.architecture.repositories">Repositories</h4>
                 <ol>
                     <li>
-                        <strong><a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank">OSM-Notes-Ingestion</a>:</strong>
+                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Ingestion" target="_blank">OSM-Notes-Ingestion</a>:</strong>
                         Downloads and maintains OSM notes data from Planet dumps and API. Handles incremental updates and data synchronization.
                     </li>
                     <li>
-                        <strong><a href="https://github.com/OSMLatam/OSM-Notes-Common" target="_blank">OSM-Notes-Common</a>:</strong>
+                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Common" target="_blank">OSM-Notes-Common</a>:</strong>
                         Shared libraries and utilities used across all projects. Includes validation functions, error handling, and common Bash scripts.
                     </li>
                     <li>
-                        <strong><a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>:</strong>
+                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Analytics" target="_blank">OSM-Notes-Analytics</a>:</strong>
                         Data warehouse and ETL system that processes the ingested data and generates statistics. Creates datamarts and exports JSON/CSV files.
                         Includes ML-powered recommendations for note actions (close, comment, map).
                     </li>
                     <li>
-                        <strong><a href="https://github.com/OSMLatam/OSM-Notes-Viewer" target="_blank">OSM-Notes-Viewer</a>:</strong>
+                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Viewer" target="_blank">OSM-Notes-Viewer</a>:</strong>
                         This web application that visualizes the analytics data. Provides user profiles, country statistics, and interactive visualizations.
                     </li>
                     <li>
-                        <strong><a href="https://github.com/OSMLatam/OSM-Notes-Data" target="_blank">OSM-Notes-Data</a>:</strong>
+                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Data" target="_blank">OSM-Notes-Data</a>:</strong>
                         Data repository serving pre-generated JSON files via GitHub Pages/CDN. Contains user profiles, country statistics, and indexes.
                     </li>
                     <li>
-                        <strong><a href="https://github.com/OSMLatam/OSM-Notes-API" target="_blank">OSM-Notes-API</a>:</strong>
+                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-API" target="_blank">OSM-Notes-API</a>:</strong>
                         REST API providing dynamic data access. Handles individual note details, hashtag statistics, ML recommendations, and note search.
                     </li>
                     <li>
-                        <strong><a href="https://github.com/OSMLatam/OSM-Notes-Monitoring" target="_blank">OSM-Notes-Monitoring</a>:</strong>
+                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-Monitoring" target="_blank">OSM-Notes-Monitoring</a>:</strong>
                         Monitoring and observability system. Provides Grafana dashboards, Prometheus metrics, and system health monitoring for the entire ecosystem.
                     </li>
                     <li>
-                        <strong><a href="https://github.com/OSMLatam/OSM-Notes-WMS" target="_blank">OSM-Notes-WMS</a>:</strong>
+                        <strong><a href="https://github.com/OSM-Notes/OSM-Notes-WMS" target="_blank">OSM-Notes-WMS</a>:</strong>
                         GeoServer configuration and WMS (Web Map Service) setup. Contains GeoServer workspace configuration, layer definitions, and styling for map visualization services.
                     </li>
                 </ol>
@@ -261,7 +274,7 @@
                 </p>
             </section>
 
-            <section style="margin: 2rem 0;">
+            <section>
                 <h3 data-i18n="about.dataOrigins.title">Data Origins</h3>
                 <p data-i18n="about.dataOrigins.p1">All data displayed in this viewer originates from <strong>OpenStreetMap (OSM)</strong>, including both cartographic data and notes data. The cartographic information is used for geographic visualization and mapping, while the notes data provides the statistics and analytics shown throughout the application.</p>
                 <p data-i18n="about.dataOrigins.p2">To improve the accuracy of maritime zones representation, data from <a href="https://www.marineregions.org/downloads.php" target="_blank" rel="noopener noreferrer">Marine Regions</a> was used as a reference. This allowed us to enhance the maritime boundaries and zones when attempting to replicate the information from that portal using OSM data, ensuring better alignment with recognized maritime boundaries and Exclusive Economic Zones (EEZs).</p>
@@ -271,7 +284,7 @@
                 </p>
             </section>
 
-            <section style="margin: 2rem 0;">
+            <section>
                 <h3 data-i18n="about.features.title">Features</h3>
                 <ul>
                     <li data-i18n="about.features.item1">🔍 Search users and countries</li>
@@ -284,7 +297,7 @@
                 </ul>
             </section>
 
-            <section style="margin: 2rem 0;">
+            <section>
                 <h3 data-i18n="about.tech.title">Technology</h3>
                 <p data-i18n="about.tech.p1">
                     This is a fully static web application built with vanilla HTML, CSS, and JavaScript.
@@ -299,11 +312,11 @@
                 </ul>
             </section>
 
-            <section style="margin: 2rem 0;">
+            <section>
                 <h3 data-i18n="about.openSource.title">Open Source</h3>
                 <p data-i18n="about.openSource.p1">
                     All 8 repositories in the OSM Notes ecosystem are open source and available on GitHub under the
-                    <a href="https://github.com/OSMLatam" target="_blank" rel="noopener noreferrer">OSMLatam organization</a>.
+                    <a href="https://github.com/OSM-Notes" target="_blank" rel="noopener noreferrer">OSM-Notes organization</a>.
                     We believe in transparency, collaboration, and community-driven development.
                 </p>
                 <p data-i18n="about.openSource.p2">
@@ -316,7 +329,7 @@
                 </p>
             </section>
 
-            <section style="margin: 2rem 0;">
+            <section>
                 <h3 data-i18n="about.contact.title">Contact</h3>
                 <p data-i18n="about.contact.p">
                     For questions, suggestions, or collaboration opportunities:
@@ -328,7 +341,7 @@
                     </li>
                     <li>
                         <strong>GitHub:</strong>
-                        <a href="https://github.com/OSMLatam" target="_blank">github.com/OSMLatam</a>
+                        <a href="https://github.com/OSM-Notes" target="_blank">github.com/OSM-Notes</a>
                     </li>
                     <li>
                         <strong data-i18n="about.contact.telegram.label">Telegram:</strong>
@@ -341,26 +354,25 @@
                 </ul>
             </section>
 
-            <section style="margin: 2rem 0;">
+            <section>
                 <h3 data-i18n="about.monitoring.title">Monitoring & Status</h3>
                 <p data-i18n="about.monitoring.p">
                     Monitor system health, performance metrics, and data processing status:
                 </p>
                 <p>
                     <a href="https://notes_mon.osm.lat" target="_blank" rel="noopener noreferrer"
-                       style="display: inline-block; padding: 0.75rem 1.5rem; background: #0066cc; color: white;
-                              text-decoration: none; border-radius: 4px; font-weight: bold;"
+                       class="monitoring-button"
                        data-i18n="about.monitoring.button">
                         📊 View Monitoring Dashboard (Grafana)
                     </a>
                 </p>
-                <p style="font-size: 0.9em; color: #666; margin-top: 0.5rem;" data-i18n="about.monitoring.description">
+                <p class="monitoring-description" data-i18n="about.monitoring.description">
                     The dashboard provides real-time metrics on data processing, API performance,
                     database status, and system health. Powered by Grafana and Prometheus.
                 </p>
             </section>
 
-            <section style="margin: 2rem 0;">
+            <section>
                 <h3 data-i18n="about.contributing.title">Contributing</h3>
                 <p data-i18n="about.contributing.p">
                     Contributions are welcome! Feel free to:
@@ -374,7 +386,7 @@
                 </ul>
             </section>
 
-            <section style="margin: 2rem 0;">
+            <section>
                 <h3 data-i18n="about.acknowledgments.title">Acknowledgments</h3>
                 <p data-i18n="about.acknowledgments.p">
                     Special thanks to the OpenStreetMap community and all contributors who make notes data available.
@@ -388,22 +400,24 @@
             <p>
                 <span>Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
                 | <span>Processed by</span>
-                <a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
-                & <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
+                <a href="https://github.com/OSM-Notes/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
+                & <a href="https://github.com/OSM-Notes/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
             </p>
             <p>
-                <a href="https://github.com/OSMLatam/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                <a href="https://github.com/OSM-Notes/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
                 | <span>Version</span> 1.0.0
             </p>
             <p class="footer-copyright">
                 © 2025 OSM Latam Community | <span>Made with</span> ❤️ <span>for OSM</span>
             </p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            <p class="footer-author">
                 <span>Made by</span> <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
             </p>
         </div>
     </footer>
     <script type="module" src="../js/analytics-init.js"></script>
+    <script type="module" src="../js/components/languageSelector.js"></script>
+    <script type="module" src="../js/components/darkMode.js"></script>
     <script type="module">
         import { i18n } from '../js/utils/i18n.js';
 

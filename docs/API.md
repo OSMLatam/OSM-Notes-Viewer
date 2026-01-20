@@ -368,7 +368,7 @@ Future REST API endpoints for **recent data** (updated every 15 minutes) will re
 
 **User-Agent Format Required**: `AppName/Version (Contact)`
 
-**Example**: `OSMNotesViewer/1.0 (https://github.com/OSMLatam/OSM-Notes-Viewer)`
+**Example**: `OSMNotesViewer/1.0 (https://github.com/OSM-Notes/OSM-Notes-Viewer)`
 
 **Benefits**:
 - Control access to real-time data

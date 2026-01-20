@@ -169,6 +169,7 @@
                 <a href="explore.html" class="nav-link">Explore</a>
                 <a href="stats.html" class="nav-link active">Stats</a>
                 <a href="map.html" class="nav-link">Map</a>
+                <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
                 <a href="about.html" class="nav-link">About</a>
             </nav>
         </div>
@@ -226,6 +227,9 @@
 
             <div class="comparison-container">
                 <h3>⚖️ Comparison Chart</h3>
+                <p id="comparisonNote" style="text-align: center; color: var(--text-light); margin-bottom: 1rem; font-size: 0.9rem; display: none;">
+                    Note: Users with less than 10 opened notes are excluded from this analysis.
+                </p>
                 <div class="comparison-wrapper">
                     <canvas id="comparisonChart"></canvas>
                 </div>
@@ -257,11 +261,11 @@
             <p>
                 <span>Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
                 | <span>Processed by</span>
-                <a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
-                & <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
+                <a href="https://github.com/OSM-Notes/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
+                & <a href="https://github.com/OSM-Notes/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
             </p>
             <p>
-                <a href="https://github.com/OSMLatam/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                <a href="https://github.com/OSM-Notes/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
                 | <span>Version</span> 1.0.0
             </p>
             <p class="footer-copyright">

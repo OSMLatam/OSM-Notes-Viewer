@@ -214,8 +214,8 @@ GET /api/v1/countries/rankings?metric={field}&limit={count}
 
 - **[AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md)**: Hybrid authentication strategy (public historical data, recent data with User-Agent)
 - **[API.md](API.md)**: Complete endpoint documentation and data structure
-- **[API Proposal](https://github.com/OSMLatam/OSM-Notes-Analytics/blob/main/docs/API_Proposal.md)**: API design and endpoints (when implemented)
-- **[Metric Definitions](https://github.com/OSMLatam/OSM-Notes-Analytics/blob/main/docs/Metric_Definitions.md)**: Business definitions for all metrics
+- **[API Proposal](https://github.com/OSM-Notes/OSM-Notes-Analytics/blob/main/docs/API_Proposal.md)**: API design and endpoints (when implemented)
+- **[Metric Definitions](https://github.com/OSM-Notes/OSM-Notes-Analytics/blob/main/docs/Metric_Definitions.md)**: Business definitions for all metrics
 
 ---
 

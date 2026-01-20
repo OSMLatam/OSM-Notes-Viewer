@@ -82,7 +82,7 @@ This viewer is part of a larger system for processing and visualizing OSM Notes:
 
 ### Shared Libraries
 
-- **[OSM-Notes-Common](https://github.com/OSMLatam/OSM-Notes-Common)** - Shared utilities and libraries used across all projects
+- **[OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common)** - Shared utilities and libraries used across all projects
   - Common Bash functions
   - Logging utilities
   - Error handling

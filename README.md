@@ -4,7 +4,7 @@ Interactive web viewer for OpenStreetMap Notes analytics data.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![OpenStreetMap](https://img.shields.io/badge/OpenStreetMap-%23E7352B?logo=openstreetmap&logoColor=white)](https://www.openstreetmap.org/)
-[![Build Status](https://github.com/OSMLatam/OSM-Notes-Viewer/workflows/CI/badge.svg)](https://github.com/OSMLatam/OSM-Notes-Viewer/actions)
+[![Build Status](https://github.com/OSM-Notes/OSM-Notes-Viewer/workflows/CI/badge.svg)](https://github.com/OSM-Notes/OSM-Notes-Viewer/actions)
 
 🌐 **Live Demo**: [View on notes.osm.lat](https://notes.osm.lat/)
 
@@ -126,9 +126,9 @@ The script will:
 
 This viewer is part of a larger ecosystem of projects for processing and visualizing OSM Notes:
 
-- **[OSM-Notes-Ingestion](https://github.com/OSMLatam/OSM-Notes-Ingestion)** - Downloads and maintains a local copy of OSM notes data from the Planet dump and API
-- **[OSM-Notes-Common](https://github.com/OSMLatam/OSM-Notes-Common)** - Shared libraries and utilities used across all OSM Notes projects
-- **[OSM-Notes-Analytics](https://github.com/OSMLatam/OSM-Notes-Analytics)** - Data warehouse and ETL processes that generate analytics from the ingested notes
+- **[OSM-Notes-Ingestion](https://github.com/OSM-Notes/OSM-Notes-Ingestion)** - Downloads and maintains a local copy of OSM notes data from the Planet dump and API
+- **[OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common)** - Shared libraries and utilities used across all OSM Notes projects
+- **[OSM-Notes-Analytics](https://github.com/OSM-Notes/OSM-Notes-Analytics)** - Data warehouse and ETL processes that generate analytics from the ingested notes
 - **OSM-Notes-Viewer** (this project) - Web interface for visualizing the analytics data
 
 ### Data Flow
@@ -188,7 +188,7 @@ For more details, see [docs/DATA_CONTRACT.md](docs/DATA_CONTRACT.md) and [lib/OS
 
 ```bash
 # Clone the repository
-git clone https://github.com/OSMLatam/OSM-Notes-Viewer.git
+git clone https://github.com/OSM-Notes/OSM-Notes-Viewer.git
 cd OSM-Notes-Viewer
 
 # Install dependencies (optional, for development)
@@ -225,7 +225,7 @@ npm run preview
 
 The application is deployed via GitHub Pages using GitHub Actions. Configuration files:
 - `.github/workflows/deploy-pages.yml` - Deployment workflow
-- Data is served from a separate repository: [OSM-Notes-Data](https://github.com/OSMLatam/OSM-Notes-Data)
+- Data is served from a separate repository: [OSM-Notes-Data](https://github.com/OSM-Notes/OSM-Notes-Data)
 
 ## Configuration
 
@@ -299,9 +299,9 @@ Contributions are welcome! Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) f
 
 ## Related Projects
 
-- [OSM-Notes-Ingestion](https://github.com/OSMLatam/OSM-Notes-Ingestion) - Data ingestion from OSM Planet
-- [OSM-Notes-Common](https://github.com/OSMLatam/OSM-Notes-Common) - Shared libraries and utilities
-- [OSM-Notes-Analytics](https://github.com/OSMLatam/OSM-Notes-Analytics) - Data processing backend
+- [OSM-Notes-Ingestion](https://github.com/OSM-Notes/OSM-Notes-Ingestion) - Data ingestion from OSM Planet
+- [OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common) - Shared libraries and utilities
+- [OSM-Notes-Analytics](https://github.com/OSM-Notes/OSM-Notes-Analytics) - Data processing backend
 
 ## License
 
@@ -315,4 +315,4 @@ MIT License - see [LICENSE](LICENSE) file for details
 
 ## Contact
 
-For issues and questions, please use [GitHub Issues](https://github.com/OSMLatam/OSM-Notes-Viewer/issues).
+For issues and questions, please use [GitHub Issues](https://github.com/OSM-Notes/OSM-Notes-Viewer/issues).

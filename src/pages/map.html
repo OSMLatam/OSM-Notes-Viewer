@@ -27,6 +27,7 @@
                 <a href="explore.html" class="nav-link">Explore</a>
                 <a href="stats.html" class="nav-link">Stats</a>
                 <a href="map.html" class="nav-link active" aria-current="page">Map</a>
+                <a href="note.html" class="nav-link" data-i18n="nav.note">Note</a>
                 <a href="about.html" class="nav-link">About</a>
             </nav>
         </div>
@@ -42,11 +43,10 @@
                     <span class="tab-icon" aria-hidden="true">📍</span>
                     <span class="tab-label" data-i18n="map.tabs.openNotes">Open Notes</span>
                 </button>
-                <!-- Closed Notes tab disabled - causing issues with open notes display -->
-                <!-- <button class="map-tab" data-tab="closed-notes" role="tab" aria-selected="false" aria-controls="closed-notes-map" id="tab-closed-notes">
+                <button class="map-tab" data-tab="closed-notes" role="tab" aria-selected="false" aria-controls="closed-notes-map" id="tab-closed-notes">
                     <span class="tab-icon" aria-hidden="true">🔒</span>
                     <span class="tab-label" data-i18n="map.tabs.closedNotes">Closed Notes</span>
-                </button> -->
+                </button>
                 <button class="map-tab" data-tab="boundaries" role="tab" aria-selected="false" aria-controls="boundaries-map" id="tab-boundaries">
                     <span class="tab-icon" aria-hidden="true">🌍</span>
                     <span class="tab-label" data-i18n="map.tabs.boundaries">Boundaries</span>
@@ -58,8 +58,8 @@
                 <!-- Map 1: Open Notes -->
                 <div id="open-notes-map" class="map-container active" role="tabpanel" aria-labelledby="tab-open-notes" tabindex="0"></div>
 
-                <!-- Map 2: Closed Notes - DISABLED -->
-                <!-- <div id="closed-notes-map" class="map-container" role="tabpanel" aria-labelledby="tab-closed-notes" tabindex="0"></div> -->
+                <!-- Map 2: Closed Notes -->
+                <div id="closed-notes-map" class="map-container" role="tabpanel" aria-labelledby="tab-closed-notes" tabindex="0"></div>
 
                 <!-- Map 3: Boundaries -->
                 <div id="boundaries-map" class="map-container" role="tabpanel" aria-labelledby="tab-boundaries" tabindex="0"></div>
@@ -96,6 +96,9 @@
                     <button id="resetViewBtn" class="control-btn" data-i18n-aria-label="map.controls.resetView" aria-label="Reset map to initial view">
                         <span aria-hidden="true">🔄</span> <span data-i18n="map.controls.resetView">Reset View</span>
                     </button>
+                    <button id="permalinkBtn" class="control-btn" data-i18n-aria-label="map.controls.permalink" aria-label="Copy permalink">
+                        <span aria-hidden="true">🔗</span> <span data-i18n="map.controls.permalink">Permalink</span>
+                    </button>
                 </div>
 
                 <!-- Loading Indicator -->
@@ -121,12 +124,11 @@
                             <code id="wmsOpenUrl" class="wms-url" data-i18n-aria-label="map.wms.openNotes" aria-label="WMS URL for open notes">Loading...</code>
                             <button class="copy-btn" data-copy="wmsOpenUrl" data-i18n-aria-label="map.wms.copy" aria-label="Copy open notes WMS URL" data-i18n="map.wms.copy">Copy</button>
                         </div>
-                        <!-- Closed Notes endpoint disabled - causing issues -->
-                        <!-- <div class="wms-endpoint" role="listitem">
+                        <div class="wms-endpoint" role="listitem">
                             <h4 data-i18n="map.wms.closedNotes">Closed Notes</h4>
                             <code id="wmsClosedUrl" class="wms-url" data-i18n-aria-label="map.wms.closedNotes" aria-label="WMS URL for closed notes">Loading...</code>
                             <button class="copy-btn" data-copy="wmsClosedUrl" data-i18n-aria-label="map.wms.copy" aria-label="Copy closed notes WMS URL" data-i18n="map.wms.copy">Copy</button>
-                        </div> -->
+                        </div>
                         <div class="wms-endpoint" role="listitem">
                             <h4 data-i18n="map.wms.boundariesCountries">Boundaries (Countries)</h4>
                             <code id="wmsCountriesUrl" class="wms-url" data-i18n-aria-label="map.wms.boundariesCountries" aria-label="WMS URL for country boundaries">Loading...</code>
@@ -189,11 +191,11 @@
                     <span>Data from</span> <a href="https://www.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
                     <br>
                     <span>Processed by</span>
-                    <a href="https://github.com/OSMLatam/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
-                    & <a href="https://github.com/OSMLatam/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
+                    <a href="https://github.com/OSM-Notes/OSM-Notes-Ingestion" target="_blank" rel="noopener noreferrer">OSM-Notes-Ingestion</a>
+                    & <a href="https://github.com/OSM-Notes/OSM-Notes-Analytics" target="_blank" rel="noopener noreferrer">OSM-Notes-Analytics</a>
                 </div>
                 <div class="footer-section">
-                    <a href="https://github.com/OSMLatam/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                    <a href="https://github.com/OSM-Notes/OSM-Notes-Viewer" target="_blank" rel="noopener noreferrer">View on GitHub</a>
                 </div>
                 <div class="footer-section">
                     <span>Made by</span> <a href="https://github.com/AngocA" target="_blank" rel="noopener noreferrer">AngocA</a>
