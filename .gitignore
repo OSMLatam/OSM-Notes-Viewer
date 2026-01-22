@@ -32,9 +32,12 @@ coverage/
 *.lcov
 
 # Test data (local development)
-data/
+# Note: data/ directory contains sample test files (committed to repo)
+# Only src/data/ is ignored (not used)
 src/data/
 *.json.bak
+
+# But keep data/ directory (contains test files for validation)
 
 # Temporary documentation
 test-data.html

@@ -18,3 +18,7 @@ tmp/
 
 # Ignore submodules
 lib/OSM-Notes-Common/
+
+# Ignore JSONL files (New Line Delimited JSON) - these are data files, not formatted JSON
+data/countries/*.json
+data/users/*.json
