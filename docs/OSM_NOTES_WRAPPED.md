@@ -1,3 +1,19 @@
+---
+title: "OSM Notes Wrapped - Development Plan"
+description: "Development plan for implementing OSM Notes Wrapped functionality, similar to OSM Wrapped but focused on OpenStreetMap notes metrics, allowing users to generate and share visual summaries of their contributions"
+version: "1.0.0"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "development-plan"
+  - "features"
+audience:
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
+
 # OSM Notes Wrapped - Plan de Desarrollo
 
 ## 📋 Resumen Ejecutivo

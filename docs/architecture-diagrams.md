@@ -1,3 +1,18 @@
+---
+title: "Architecture Diagrams"
+description: "This diagram shows the data flow from OpenStreetMap ingestion through analytics to the web viewer."
+version: "1.0.0"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "architecture"
+audience:
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
+
 # Architecture Diagrams
 
 ## Component Flow Diagram

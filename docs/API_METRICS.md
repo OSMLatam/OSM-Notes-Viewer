@@ -1,3 +1,20 @@
+---
+title: "API Metrics"
+description: "List of all metrics that must be obtained from the REST API when implemented, instead of static JSON files"
+version: "1.0.0"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "performance"
+  - "api"
+  - "metrics"
+audience:
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
+
 # API Metrics
 
 **Purpose**: This document lists all metrics that must be obtained from the REST API when

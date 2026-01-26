@@ -1,3 +1,18 @@
+---
+title: "Components Documentation"
+description: "This document describes all the components used in OSM Notes Viewer."
+version: "1.0.0"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "architecture"
+audience:
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
+
 # Components Documentation
 
 This document describes all the components used in OSM Notes Viewer.

@@ -1,3 +1,18 @@
+---
+title: "Progressive Web App (PWA) Setup"
+description: "OSM Notes Viewer is now a Progressive Web App that can be installed on devices and works offline."
+version: "1.0.0"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "documentation"
+audience:
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
+
 # Progressive Web App (PWA) Setup
 
 ## Overview

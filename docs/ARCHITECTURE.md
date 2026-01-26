@@ -1,3 +1,18 @@
+---
+title: "Architecture Overview"
+description: "This viewer is part of the , consisting of 8 interconnected projects:"
+version: "1.0.0"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "architecture"
+audience:
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
+
 # Architecture Overview
 
 ## System Architecture

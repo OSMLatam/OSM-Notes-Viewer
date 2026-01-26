@@ -1,3 +1,19 @@
+---
+title: "Hybrid Authentication Strategy"
+description: "Hybrid authentication strategy for OSM Notes Viewer, aligned with OSM-Notes-API model, where historical data is publicly accessible while recent data requires valid User-Agent"
+version: "1.0.0"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "security"
+  - "authentication"
+audience:
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
+
 # Hybrid Authentication Strategy
 
 **Purpose**: This document describes the hybrid authentication strategy for OSM Notes Viewer,

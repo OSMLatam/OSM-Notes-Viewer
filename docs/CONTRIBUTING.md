@@ -1,3 +1,18 @@
+---
+title: "Contributing to OSM Notes Viewer"
+description: "Thank you for your interest in contributing! This document provides guidelines for contributing to"
+version: "1.0.0"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "documentation"
+audience:
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
+
 # Contributing to OSM Notes Viewer
 
 Thank you for your interest in contributing! This document provides guidelines for contributing to

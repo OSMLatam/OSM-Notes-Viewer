@@ -1,3 +1,18 @@
+---
+title: "Data Validation Guide"
+description: "This document explains how to validate data files against JSON schemas to ensure data integrity"
+version: "1.0.0"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "validation"
+audience:
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
+
 # Data Validation Guide
 
 This document explains how to validate data files against JSON schemas to ensure data integrity

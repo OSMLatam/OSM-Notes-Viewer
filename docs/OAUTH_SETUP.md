@@ -1,3 +1,19 @@
+---
+title: "OAuth Setup Guide"
+description: "OAuth is required for users to perform actions on notes:"
+version: "1.0.0"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "security"
+  - "installation"
+audience:
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
+
 # OAuth Setup Guide
 
 This guide explains how to set up OAuth 2.0 authentication with OpenStreetMap for the OSM Notes
