@@ -14,73 +14,72 @@ status: "active"
 ---
 
 
-# OSM Notes Wrapped - Plan de Desarrollo
+# OSM Notes Wrapped - Development Plan
 
-## 📋 Resumen Ejecutivo
+## 📋 Executive Summary
 
-Este documento describe el plan de desarrollo para implementar una funcionalidad similar a "OSM
-Wrapped" (https://osmwrapped.com/) pero enfocada en métricas de notas de OpenStreetMap. La
-funcionalidad permitirá a los usuarios generar y compartir un resumen visual de sus contribuciones a
-las notas de OSM.
+This document describes the development plan to implement functionality similar to "OSM Wrapped"
+(https://osmwrapped.com/) but focused on OpenStreetMap notes metrics. The functionality will allow
+users to generate and share a visual summary of their contributions to OSM notes.
 
-**Objetivo:** Crear una experiencia compartible en redes sociales que celebre las contribuciones de
-los usuarios a las notas de OSM y ayude a difundir el proyecto.
-
----
-
-## 🎯 Objetivos
-
-1. **Generar resúmenes visuales** de las contribuciones anuales de usuarios
-2. **Crear imágenes compartibles** optimizadas para redes sociales
-3. **Aumentar la visibilidad** del proyecto OSM Notes Viewer
-4. **Motivar a más usuarios** a resolver notas de OSM
+**Goal:** Create a shareable social media experience that celebrates users' contributions to OSM notes
+and helps spread awareness of the project.
 
 ---
 
-## 📊 Datos Disponibles
+## 🎯 Objectives
 
-### Fuentes de Datos
+1. **Generate visual summaries** of users' annual contributions
+2. **Create shareable images** optimized for social media
+3. **Increase visibility** of the OSM Notes Viewer project
+4. **Motivate more users** to resolve OSM notes
 
-1. **JSON de Analytics** (proyecto hermano OSM-Notes-Analytics)
-   - Archivo: `/api/users/{user_id}.json`
-   - Contiene todas las métricas necesarias
+---
 
-2. **API de OSM** (opcional, para datos adicionales)
+## 📊 Available Data
+
+### Data Sources
+
+1. **Analytics JSON** (sibling project OSM-Notes-Analytics)
+   - File: `/api/users/{user_id}.json`
+   - Contains all necessary metrics
+
+2. **OSM API** (optional, for additional data)
    - Avatar: `https://www.openstreetmap.org/api/0.6/user/{user_id}.json`
-   - Información del usuario
+   - User information
 
-### Métricas Disponibles en JSON
+### Metrics Available in JSON
 
 ```json
 {
   "user_id": 12345,
   "username": "example_user",
 
-  // Totales (lifetime)
+  // Totals (lifetime)
   "history_whole_open": 542,
   "history_whole_closed": 234,
   "history_whole_commented": 123,
   "history_whole_reopened": 12,
 
-  // Año actual
+  // Current year
   "history_year_open": 45,
   "history_year_closed": 23,
   "history_year_commented": 10,
   "history_year_reopened": 2,
 
-  // Mes actual
+  // Current month
   "history_month_open": 5,
   "history_month_closed": 3,
 
-  // Día actual
+  // Current day
   "history_day_open": 0,
   "history_day_closed": 1,
 
-  // Fechas importantes
+  // Important dates
   "date_starting_creating_notes": "2015-03-20",
   "date_starting_solving_notes": "2015-04-15",
 
-  // Días más activos
+  // Most active days
   "dates_most_open": [
     {"rank": 1, "date": "2024-03-15", "quantity": 45}
   ],
@@ -88,7 +87,7 @@ los usuarios a las notas de OSM y ayude a difundir el proyecto.
     {"rank": 1, "date": "2024-06-10", "quantity": 23}
   ],
 
-  // Países
+  // Countries
   "countries_open_notes": [
     {"rank": 1, "country": "Colombia", "quantity": 150}
   ],
@@ -101,266 +100,266 @@ los usuarios a las notas de OSM y ayude a difundir el proyecto.
     {"rank": 1, "hashtag": "#mapathon", "quantity": 45}
   ],
 
-  // Patrones de trabajo
+  // Work patterns
   "working_hours_of_week_opening": [...],
   "working_hours_of_week_closing": [...],
 
-  // Heatmap del año (371 caracteres)
+  // Year heatmap (371 characters)
   "last_year_activity": "001002003..."
 }
 ```
 
-### Métricas que Necesitan Cálculo
+### Metrics that Need Calculation
 
-1. **Longest Streak** (días consecutivos)
-   - Calcular desde `last_year_activity` o `dates_most_*`
-   - Algoritmo: buscar secuencia más larga de días con actividad
+1. **Longest Streak** (consecutive days)
+   - Calculate from `last_year_activity` or `dates_most_*`
+   - Algorithm: find longest sequence of days with activity
 
-2. **Most Active Month** del año
-   - Agregar datos de `last_year_activity` por mes
-   - O usar `dates_most_*` agrupados por mes
+2. **Most Active Month** of the year
+   - Aggregate data from `last_year_activity` by month
+   - Or use `dates_most_*` grouped by month
 
-3. **Percentiles** (comparación con otros usuarios)
-   - Requiere datos del índice de usuarios
-   - Calcular posición relativa
+3. **Percentiles** (comparison with other users)
+   - Requires data from user index
+   - Calculate relative position
 
 ---
 
-## 🏗️ Arquitectura
+## 🏗️ Architecture
 
-### Opción Recomendada: Integrado en User Profile
+### Recommended Option: Integrated in User Profile
 
 ```
 /user.html?username=xxx&wrapped=true
 ```
 
-**Ventajas:**
+**Advantages:**
 
-- Reutiliza infraestructura existente
-- Acceso directo desde perfil de usuario
-- No requiere nueva página
+- Reuses existing infrastructure
+- Direct access from user profile
+- No new page required
 
-**Flujo:**
+**Flow:**
 
-1. Usuario visita su perfil
-2. Botón "Generate My Wrapped" visible
-3. Click genera slides interactivos
-4. Opción de descargar/compartir cada slide
+1. User visits their profile
+2. "Generate My Wrapped" button visible
+3. Click generates interactive slides
+4. Option to download/share each slide
 
-### Alternativa: Página Dedicada
+### Alternative: Dedicated Page
 
 ```
 /wrapped.html?username=xxx
 ```
 
-**Ventajas:**
+**Advantages:**
 
-- Más control sobre diseño
-- Puede incluir animaciones/video
-- Experiencia más inmersiva
+- More control over design
+- Can include animations/video
+- More immersive experience
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 🛠️ Technology Stack
 
-### Dependencias Nuevas
+### New Dependencies
 
 ```json
 {
   "dependencies": {
-    "html2canvas": "^1.4.1", // Generación de imágenes
-    "dom-to-image": "^2.6.0" // Alternativa más ligera
+    "html2canvas": "^1.4.1", // Image generation
+    "dom-to-image": "^2.6.0" // Lighter alternative
   }
 }
 ```
 
-**Recomendación:** `html2canvas` es más maduro y tiene mejor soporte.
+**Recommendation:** `html2canvas` is more mature and has better support.
 
-### Herramientas Existentes (Reutilizar)
+### Existing Tools (Reuse)
 
-- ✅ `Chart.js` - Para gráficos
-- ✅ SVG heatmaps - Para visualizaciones
-- ✅ `apiClient.js` - Para obtener datos
-- ✅ `formatter.js` - Para formatear números/fechas
-- ✅ `share.js` - Para compartir
-- ✅ `i18n.js` - Para internacionalización
+- ✅ `Chart.js` - For charts
+- ✅ SVG heatmaps - For visualizations
+- ✅ `apiClient.js` - To fetch data
+- ✅ `formatter.js` - To format numbers/dates
+- ✅ `share.js` - To share
+- ✅ `i18n.js` - For internationalization
 
 ---
 
-## 📐 Diseño de Slides
+## 📐 Slide Design
 
-### Slide 1: Portada
+### Slide 1: Cover
 
 ```
 ┌─────────────────────────────────┐
-│   🎉 Tu Año en OSM Notes 🎉   │
+│   🎉 Your Year in OSM Notes 🎉 │
 │                                 │
 │        @username                │
 │                                 │
-│    [Avatar del usuario]         │
+│    [User avatar]                │
 │                                 │
-│    Año 2024                     │
+│    Year 2024                    │
 └─────────────────────────────────┘
 ```
 
-**Datos:**
+**Data:**
 
 - `username`
-- Avatar de OSM API
-- Año actual
+- Avatar from OSM API
+- Current year
 
 ---
 
-### Slide 2: Resumen del Año
+### Slide 2: Year Summary
 
 ```
 ┌─────────────────────────────────┐
-│   Tu Resumen del Año            │
+│   Your Year Summary             │
 │                                 │
-│   📝 Notas Cerradas: 234       │
-│   💬 Comentarios: 123           │
-│   🔄 Reabiertas: 12             │
+│   📝 Notes Closed: 234          │
+│   💬 Comments: 123              │
+│   🔄 Reopened: 12               │
 │                                 │
-│   vs Año Anterior: +45% ⬆️      │
+│   vs Previous Year: +45% ⬆️     │
 └─────────────────────────────────┘
 ```
 
-**Datos:**
+**Data:**
 
 - `history_year_closed`
 - `history_year_commented`
 - `history_year_reopened`
-- Comparación con año anterior (si disponible)
+- Comparison with previous year (if available)
 
 ---
 
-### Slide 3: Tu Mejor Día
+### Slide 3: Your Best Day
 
 ```
 ┌─────────────────────────────────┐
-│   Tu Día Más Productivo         │
+│   Your Most Productive Day      │
 │                                 │
-│   📅 15 de Marzo, 2024          │
+│   📅 March 15, 2024             │
 │                                 │
-│   Cerraste 45 notas en un día!  │
+│   You closed 45 notes in a day! │
 │                                 │
-│   🏆 Récord Personal            │
+│   🏆 Personal Record            │
 └─────────────────────────────────┘
 ```
 
-**Datos:**
+**Data:**
 
 - `dates_most_closed[0]`
-- Formato: fecha legible
-- Cantidad
+- Format: readable date
+- Quantity
 
 ---
 
-### Slide 4: Países donde Contribuiste
+### Slide 4: Countries Where You Contributed
 
 ```
 ┌─────────────────────────────────┐
-│   Países donde Contribuiste     │
+│   Countries Where You Contributed│
 │                                 │
-│   🗺️ Top 3 Países:              │
+│   🗺️ Top 3 Countries:           │
 │                                 │
-│   1. 🇨🇴 Colombia - 80 notas    │
-│   2. 🇪🇨 Ecuador - 45 notas     │
-│   3. 🇵🇪 Perú - 23 notas        │
+│   1. 🇨🇴 Colombia - 80 notes    │
+│   2. 🇪🇨 Ecuador - 45 notes     │
+│   3. 🇵🇪 Perú - 23 notes        │
 │                                 │
-│   Total: 5 países               │
+│   Total: 5 countries            │
 └─────────────────────────────────┘
 ```
 
-**Datos:**
+**Data:**
 
 - `countries_solving_notes` (top 3)
-- Total de países únicos
-- Banderas (usar `countryFlags.js` existente)
+- Total unique countries
+- Flags (use existing `countryFlags.js`)
 
 ---
 
-### Slide 5: Tu Racha Más Larga
+### Slide 5: Your Longest Streak
 
 ```
 ┌─────────────────────────────────┐
-│   Tu Racha de Contribución      │
+│   Your Contribution Streak      │
 │                                 │
-│   🔥 15 días consecutivos       │
+│   🔥 15 consecutive days         │
 │                                 │
-│   Del 1 al 15 de Junio          │
+│   From June 1 to June 15        │
 │                                 │
-│   ¡Increíble consistencia!      │
+│   Incredible consistency!       │
 └─────────────────────────────────┘
 ```
 
-**Datos:**
+**Data:**
 
-- Calcular desde `last_year_activity`
-- Fechas de inicio y fin
+- Calculate from `last_year_activity`
+- Start and end dates
 
 ---
 
-### Slide 6: Horas de Trabajo
+### Slide 6: Working Hours
 
 ```
 ┌─────────────────────────────────┐
-│   Tus Horas de Actividad        │
+│   Your Activity Hours           │
 │                                 │
 │   [Heatmap 24x7]                │
 │                                 │
-│   Hora más activa: 14:00         │
-│   Día más activo: Viernes       │
+│   Most active hour: 14:00       │
+│   Most active day: Friday       │
 └─────────────────────────────────┘
 ```
 
-**Datos:**
+**Data:**
 
 - `working_hours_of_week_closing`
-- Reutilizar componente `workingHoursHeatmap.js`
-- Calcular hora/día más activo
+- Reuse `workingHoursHeatmap.js` component
+- Calculate most active hour/day
 
 ---
 
-### Slide 7: Heatmap del Año
+### Slide 7: Year Heatmap
 
 ```
 ┌─────────────────────────────────┐
-│   Tu Actividad Durante el Año   │
+│   Your Activity During the Year │
 │                                 │
-│   [GitHub-style heatmap]       │
+│   [GitHub-style heatmap]        │
 │                                 │
-│   234 días activos              │
-│   131 días sin actividad        │
+│   234 active days               │
+│   131 inactive days             │
 └─────────────────────────────────┘
 ```
 
-**Datos:**
+**Data:**
 
 - `last_year_activity`
-- Reutilizar componente `activityHeatmap.js`
-- Calcular días activos vs inactivos
+- Reuse `activityHeatmap.js` component
+- Calculate active vs inactive days
 
 ---
 
-### Slide 8: Hashtags Favoritos
+### Slide 8: Favorite Hashtags
 
 ```
 ┌─────────────────────────────────┐
-│   Tus Hashtags Más Usados       │
+│   Your Most Used Hashtags       │
 │                                 │
-│   #mapathon - 45 veces          │
-│   #survey - 23 veces             │
-│   #fixme - 12 veces              │
+│   #mapathon - 45 times          │
+│   #survey - 23 times             │
+│   #fixme - 12 times              │
 │                                 │
-│   Total: 8 hashtags únicos      │
+│   Total: 8 unique hashtags      │
 └─────────────────────────────────┘
 ```
 
-**Datos:**
+**Data:**
 
 - `hashtags` (top 3)
-- Total de hashtags únicos
+- Total unique hashtags
 
 ---
 
@@ -368,18 +367,18 @@ los usuarios a las notas de OSM y ayude a difundir el proyecto.
 
 ```
 ┌─────────────────────────────────┐
-│   Logros y Milestones           │
+│   Achievements and Milestones   │
 │                                 │
-│   🎯 Primera nota: 2015-03-20   │
-│   ✅ Primera resuelta: 2015-04-15│
+│   🎯 First note: 2015-03-20     │
+│   ✅ First solved: 2015-04-15   │
 │                                 │
 │   📊 Total lifetime:            │
-│   • 542 notas abiertas          │
-│   • 234 notas cerradas          │
+│   • 542 notes opened            │
+│   • 234 notes closed            │
 └─────────────────────────────────┘
 ```
 
-**Datos:**
+**Data:**
 
 - `date_starting_creating_notes`
 - `date_starting_solving_notes`
@@ -388,53 +387,53 @@ los usuarios a las notas de OSM y ayude a difundir el proyecto.
 
 ---
 
-### Slide 10: Cierre y Compartir
+### Slide 10: Closing and Share
 
 ```
 ┌─────────────────────────────────┐
-│   ¡Gracias por Contribuir!      │
+│   Thanks for Contributing!       │
 │                                 │
-│   Sigue resolviendo notas        │
-│   y ayudando a mejorar OSM      │
+│   Keep resolving notes          │
+│   and helping improve OSM       │
 │                                 │
-│   [Logo del proyecto]           │
+│   [Project logo]                │
 │                                 │
-│   Ver perfil completo:          │
+│   View full profile:            │
 │   notes.osm.lat/...             │
 └─────────────────────────────────┘
 ```
 
-**Datos:**
+**Data:**
 
-- Link al perfil completo
-- Branding del proyecto
+- Link to full profile
+- Project branding
 
 ---
 
-## 💻 Implementación Técnica
+## 💻 Technical Implementation
 
-### Estructura de Archivos
+### File Structure
 
 ```
 src/
 ├── js/
 │   ├── pages/
-│   │   └── wrapped.js          # Lógica principal del wrapped
+│   │   └── wrapped.js          # Main wrapped logic
 │   ├── components/
-│   │   ├── wrappedSlides.js    # Generador de slides
-│   │   ├── wrappedImage.js     # Generador de imágenes
-│   │   └── wrappedShare.js     # Compartir wrapped
+│   │   ├── wrappedSlides.js    # Slide generator
+│   │   ├── wrappedImage.js     # Image generator
+│   │   └── wrappedShare.js     # Share wrapped
 │   └── utils/
-│       └── streakCalculator.js # Calcular rachas
+│       └── streakCalculator.js # Calculate streaks
 ├── css/
-│   └── wrapped.css             # Estilos para slides
+│   └── wrapped.css             # Styles for slides
 └── pages/
-    └── wrapped.html            # Página del wrapped (opcional)
+    └── wrapped.html            # Wrapped page (optional)
 ```
 
 ---
 
-### 1. Componente Principal: `wrapped.js`
+### 1. Main Component: `wrapped.js`
 
 ```javascript
 // src/js/pages/wrapped.js
@@ -453,16 +452,16 @@ export class WrappedPage {
 
   async init(username) {
     try {
-      // 1. Cargar datos del usuario
+      // 1. Load user data
       this.userData = await this.loadUserData(username);
 
-      // 2. Calcular métricas adicionales
+      // 2. Calculate additional metrics
       this.calculatedMetrics = this.calculateMetrics(this.userData);
 
-      // 3. Generar slides
+      // 3. Generate slides
       this.slides = this.generateSlides(this.userData, this.calculatedMetrics);
 
-      // 4. Renderizar
+      // 4. Render
       this.render();
     } catch (error) {
       console.error('Error loading wrapped:', error);
@@ -471,7 +470,7 @@ export class WrappedPage {
   }
 
   async loadUserData(username) {
-    // Si tenemos username, buscar user_id
+    // If we have username, find user_id
     if (isNaN(username)) {
       const userIndex = await apiClient.getUserIndex();
       const user = userIndex.find((u) => u.username.toLowerCase() === username.toLowerCase());
@@ -479,7 +478,7 @@ export class WrappedPage {
       username = user.user_id;
     }
 
-    // Cargar perfil completo
+    // Load full profile
     return await apiClient.getUser(username);
   }
 
@@ -530,7 +529,7 @@ export class WrappedPage {
 
 ---
 
-### 2. Generador de Slides: `wrappedSlides.js`
+### 2. Slide Generator: `wrappedSlides.js`
 
 ```javascript
 // src/js/components/wrappedSlides.js
@@ -554,13 +553,13 @@ export class WrappedSlides {
                     ${this.slides.map((slide, index) => this.renderSlide(slide, index)).join('')}
                 </div>
                 <div class="wrapped-controls">
-                    <button class="wrapped-prev">← Anterior</button>
+                    <button class="wrapped-prev">← Previous</button>
                     <span class="wrapped-counter">1 / ${this.slides.length}</span>
-                    <button class="wrapped-next">Siguiente →</button>
+                    <button class="wrapped-next">Next →</button>
                 </div>
                 <div class="wrapped-actions">
-                    <button class="wrapped-download">📥 Descargar Slide</button>
-                    <button class="wrapped-share">🔗 Compartir</button>
+                    <button class="wrapped-download">📥 Download Slide</button>
+                    <button class="wrapped-share">🔗 Share</button>
                 </div>
             </div>
         `;
@@ -586,12 +585,12 @@ export class WrappedSlides {
     return `
             <div class="wrapped-slide ${isActive}" data-slide-index="${index}">
                 <div class="wrapped-slide-content">
-                    <h1 class="wrapped-title">🎉 Tu Año en OSM Notes 🎉</h1>
+                    <h1 class="wrapped-title">🎉 Your Year in OSM Notes 🎉</h1>
                     <div class="wrapped-username">@${data.username}</div>
                     <div class="wrapped-avatar">
                         <img src="${data.avatarUrl}" alt="${data.username}">
                     </div>
-                    <div class="wrapped-year">Año ${data.year}</div>
+                    <div class="wrapped-year">Year ${data.year}</div>
                 </div>
             </div>
         `;
@@ -601,21 +600,21 @@ export class WrappedSlides {
     return `
             <div class="wrapped-slide ${isActive}" data-slide-index="${index}">
                 <div class="wrapped-slide-content">
-                    <h2>Tu Resumen del Año</h2>
+                    <h2>Your Year Summary</h2>
                     <div class="wrapped-stats">
                         <div class="wrapped-stat">
                             <span class="wrapped-stat-icon">📝</span>
-                            <span class="wrapped-stat-label">Notas Cerradas</span>
+                            <span class="wrapped-stat-label">Notes Closed</span>
                             <span class="wrapped-stat-value">${data.closed}</span>
                         </div>
                         <div class="wrapped-stat">
                             <span class="wrapped-stat-icon">💬</span>
-                            <span class="wrapped-stat-label">Comentarios</span>
+                            <span class="wrapped-stat-label">Comments</span>
                             <span class="wrapped-stat-value">${data.commented}</span>
                         </div>
                         <div class="wrapped-stat">
                             <span class="wrapped-stat-icon">🔄</span>
-                            <span class="wrapped-stat-label">Reabiertas</span>
+                            <span class="wrapped-stat-label">Reopened</span>
                             <span class="wrapped-stat-value">${data.reopened}</span>
                         </div>
                     </div>
@@ -624,10 +623,10 @@ export class WrappedSlides {
         `;
   }
 
-  // ... más métodos renderSlide
+  // ... more renderSlide methods
 
   attachEventListeners() {
-    // Navegación
+    // Navigation
     document.querySelector('.wrapped-next').addEventListener('click', () => {
       this.nextSlide();
     });
@@ -636,12 +635,12 @@ export class WrappedSlides {
       this.prevSlide();
     });
 
-    // Descargar
+    // Download
     document.querySelector('.wrapped-download').addEventListener('click', () => {
       this.downloadCurrentSlide();
     });
 
-    // Compartir
+    // Share
     document.querySelector('.wrapped-share').addEventListener('click', () => {
       this.shareCurrentSlide();
     });
@@ -668,12 +667,12 @@ export class WrappedSlides {
   }
 
   updateSlide() {
-    // Ocultar slide actual
+    // Hide current slide
     document.querySelectorAll('.wrapped-slide').forEach((slide, index) => {
       slide.classList.toggle('active', index === this.currentIndex);
     });
 
-    // Actualizar contador
+    // Update counter
     document.querySelector('.wrapped-counter').textContent =
       `${this.currentIndex + 1} / ${this.slides.length}`;
   }
@@ -707,9 +706,9 @@ import html2canvas from 'html2canvas';
 export class WrappedImageGenerator {
   constructor() {
     this.imageConfig = {
-      width: 1200, // Ancho estándar para redes sociales
-      height: 630, // Alto estándar (Twitter/Facebook)
-      scale: 2, // Para mejor calidad
+      width: 1200, // Standard width for social media
+      height: 630, // Standard height (Twitter/Facebook)
+      scale: 2, // For better quality
       backgroundColor: '#ffffff',
       useCORS: true,
       logging: false,
@@ -718,23 +717,23 @@ export class WrappedImageGenerator {
 
   async downloadSlide(slideElement) {
     try {
-      // Mostrar loading
+      // Show loading
       this.showLoading();
 
-      // Generar canvas
+      // Generate canvas
       const canvas = await html2canvas(slideElement, this.imageConfig);
 
-      // Convertir a blob
+      // Convert to blob
       canvas.toBlob(
         (blob) => {
-          // Crear link de descarga
+          // Create download link
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
           link.download = `osm-notes-wrapped-slide-${Date.now()}.png`;
           link.click();
 
-          // Limpiar
+          // Cleanup
           URL.revokeObjectURL(url);
           this.hideLoading();
         },
@@ -743,7 +742,7 @@ export class WrappedImageGenerator {
       );
     } catch (error) {
       console.error('Error generating image:', error);
-      this.showError('Error al generar imagen. Intenta de nuevo.');
+      this.showError('Error generating image. Please try again.');
     }
   }
 
@@ -760,10 +759,10 @@ export class WrappedImageGenerator {
   }
 
   showLoading() {
-    // Mostrar spinner o mensaje
+    // Show spinner or message
     const loading = document.createElement('div');
     loading.className = 'wrapped-loading';
-    loading.textContent = 'Generando imagen...';
+    loading.textContent = 'Generating image...';
     document.body.appendChild(loading);
   }
 
@@ -781,7 +780,7 @@ export class WrappedImageGenerator {
 
 ---
 
-### 4. Calculador de Rachas: `streakCalculator.js`
+### 4. Streak Calculator: `streakCalculator.js`
 
 ```javascript
 // src/js/utils/streakCalculator.js
@@ -892,7 +891,7 @@ export function countActiveDays(activityString) {
 
 ---
 
-### 5. Estilos CSS: `wrapped.css`
+### 5. CSS Styles: `wrapped.css`
 
 ```css
 /* src/css/wrapped.css */
@@ -1079,14 +1078,14 @@ export function countActiveDays(activityString) {
 
 ---
 
-## 🔧 Integración con el Proyecto Existente
+## 🔧 Integration with Existing Project
 
-### Modificar `userProfile.js`
+### Modify `userProfile.js`
 
-Agregar botón para generar wrapped:
+Add button to generate wrapped:
 
 ```javascript
-// En userProfile.js, después de cargar el perfil
+// In userProfile.js, after loading profile
 
 function addWrappedButton(user) {
   const actionsSection = document.getElementById('profileActions');
@@ -1094,7 +1093,7 @@ function addWrappedButton(user) {
 
   const wrappedButton = document.createElement('button');
   wrappedButton.className = 'wrapped-button';
-  wrappedButton.innerHTML = '🎉 Generar Mi Wrapped';
+  wrappedButton.innerHTML = '🎉 Generate My Wrapped';
   wrappedButton.onclick = () => {
     window.location.href = `/pages/wrapped.html?username=${encodeURIComponent(user.username)}`;
   };
@@ -1103,7 +1102,7 @@ function addWrappedButton(user) {
 }
 ```
 
-### Agregar a `package.json`
+### Add to `package.json`
 
 ```json
 {
@@ -1113,7 +1112,7 @@ function addWrappedButton(user) {
 }
 ```
 
-### Instalación
+### Installation
 
 ```bash
 npm install html2canvas
@@ -1121,26 +1120,26 @@ npm install html2canvas
 
 ---
 
-## 📱 Optimización para Redes Sociales
+## 📱 Social Media Optimization
 
-### Dimensiones de Imagen
+### Image Dimensions
 
 - **Twitter:** 1200x630px (ratio 1.91:1)
 - **Facebook:** 1200x630px
 - **LinkedIn:** 1200x627px
-- **Instagram:** 1080x1080px (cuadrado)
+- **Instagram:** 1080x1080px (square)
 
-### Metadatos Open Graph
+### Open Graph Metadata
 
-Agregar a `wrapped.html`:
+Add to `wrapped.html`:
 
 ```html
-<meta property="og:title" content="Mi OSM Notes Wrapped 2024" />
+<meta property="og:title" content="My OSM Notes Wrapped 2024" />
 <meta
   property="og:description"
-  content="Descubre mis contribuciones a las notas de OpenStreetMap"
+  content="Discover my contributions to OpenStreetMap notes"
 />
-<meta property="og:image" content="[URL de imagen generada]" />
+<meta property="og:image" content="[Generated image URL]" />
 <meta property="og:type" content="website" />
 ```
 
@@ -1148,89 +1147,89 @@ Agregar a `wrapped.html`:
 
 ## 🧪 Testing
 
-### Casos de Prueba
+### Test Cases
 
-1. **Usuario con datos completos**
-   - Verificar que todos los slides se generen
-   - Verificar cálculos de métricas
+1. **User with complete data**
+   - Verify all slides are generated
+   - Verify metric calculations
 
-2. **Usuario con datos mínimos**
-   - Verificar manejo de datos faltantes
-   - Verificar mensajes apropiados
+2. **User with minimal data**
+   - Verify handling of missing data
+   - Verify appropriate messages
 
-3. **Generación de imágenes**
-   - Verificar calidad de imagen
-   - Verificar tamaño de archivo
-   - Verificar formato PNG
+3. **Image generation**
+   - Verify image quality
+   - Verify file size
+   - Verify PNG format
 
-4. **Navegación**
-   - Verificar botones anterior/siguiente
-   - Verificar teclado (flechas)
-   - Verificar contador de slides
+4. **Navigation**
+   - Verify previous/next buttons
+   - Verify keyboard (arrows)
+   - Verify slide counter
 
-5. **Compartir**
-   - Verificar links de compartir
-   - Verificar descarga de imágenes
+5. **Sharing**
+   - Verify sharing links
+   - Verify image download
 
 ---
 
-## 🚀 Roadmap de Implementación
+## 🚀 Implementation Roadmap
 
-### Fase 1: MVP (2 semanas)
+### Phase 1: MVP (2 weeks)
 
-- [ ] Estructura básica de slides
-- [ ] 3-4 slides principales
-- [ ] Navegación básica
-- [ ] Generación de imágenes simple
+- [ ] Basic slide structure
+- [ ] 3-4 main slides
+- [ ] Basic navigation
+- [ ] Simple image generation
 
-### Fase 2: Funcionalidad Completa (2 semanas)
+### Phase 2: Complete Functionality (2 weeks)
 
-- [ ] Todos los slides (10 slides)
-- [ ] Cálculo de rachas
-- [ ] Integración con perfil de usuario
-- [ ] Compartir en redes sociales
+- [ ] All slides (10 slides)
+- [ ] Streak calculation
+- [ ] Integration with user profile
+- [ ] Social media sharing
 
-### Fase 3: Mejoras (1 semana)
+### Phase 3: Improvements (1 week)
 
-- [ ] Animaciones y transiciones
-- [ ] Optimización de imágenes
-- [ ] Internacionalización (i18n)
+- [ ] Animations and transitions
+- [ ] Image optimization
+- [ ] Internationalization (i18n)
 - [ ] Tests
 
-### Fase 4: Polish (1 semana)
+### Phase 4: Polish (1 week)
 
-- [ ] Diseño visual refinado
+- [ ] Refined visual design
 - [ ] Performance optimization
-- [ ] Documentación
-- [ ] Lanzamiento
+- [ ] Documentation
+- [ ] Launch
 
 ---
 
-## 📝 Consideraciones Adicionales
+## 📝 Additional Considerations
 
 ### Performance
 
-- **Lazy loading:** Cargar slides solo cuando se necesiten
-- **Image optimization:** Comprimir imágenes generadas
-- **Caching:** Cachear datos del usuario
+- **Lazy loading:** Load slides only when needed
+- **Image optimization:** Compress generated images
+- **Caching:** Cache user data
 
-### Accesibilidad
+### Accessibility
 
-- **Keyboard navigation:** Ya implementado
-- **Screen readers:** Agregar ARIA labels
-- **Contrast:** Verificar contraste de colores
+- **Keyboard navigation:** Already implemented
+- **Screen readers:** Add ARIA labels
+- **Contrast:** Verify color contrast
 
-### Privacidad
+### Privacy
 
-- **Datos del usuario:** Solo mostrar datos públicos
-- **Imágenes:** No almacenar imágenes generadas
-- **Tracking:** Opcional, con consentimiento
+- **User data:** Only show public data
+- **Images:** Don't store generated images
+- **Tracking:** Optional, with consent
 
 ---
 
-## 🔗 Referencias
+## 🔗 References
 
-- [OSM Wrapped](https://osmwrapped.com/) - Inspiración
+- [OSM Wrapped](https://osmwrapped.com/) - Inspiration
 - [html2canvas Documentation](https://html2canvas.hertzen.com/)
 - [OpenStreetMap API](https://wiki.openstreetmap.org/wiki/API)
 - [Twitter Card Validator](https://cards-dev.twitter.com/validator)
@@ -1238,18 +1237,18 @@ Agregar a `wrapped.html`:
 
 ---
 
-## 📄 Licencia
+## 📄 License
 
-Este documento es parte del proyecto OSM Notes Viewer y está bajo la misma licencia del proyecto
+This document is part of the OSM Notes Viewer project and is under the same license as the project
 (MIT).
 
 ---
 
-## 🔍 Información Adicional para Implementación
+## 🔍 Additional Implementation Information
 
-### Estructura HTML de Ejemplo
+### Example HTML Structure
 
-Basado en la estructura de `user.html`, el HTML para `wrapped.html` debería seguir el mismo patrón:
+Based on the structure of `user.html`, the HTML for `wrapped.html` should follow the same pattern:
 
 ```html
 <!DOCTYPE html>
@@ -1298,11 +1297,11 @@ Basado en la estructura de `user.html`, el HTML para `wrapped.html` debería seg
 </html>
 ```
 
-### Integración con i18n
+### Integration with i18n
 
-El proyecto usa un sistema de i18n. Para agregar traducciones para Wrapped:
+The project uses an i18n system. To add translations for Wrapped:
 
-1. **Agregar traducciones a los archivos de locale:**
+1. **Add translations to locale files:**
 
 ```javascript
 // src/locales/es.js
@@ -1340,13 +1339,13 @@ export default {
 ```javascript
 import { t } from '../utils/i18n.js';
 
-// En lugar de texto hardcodeado
+// Instead of hardcoded text
 const title = t('wrapped.slideCover');
 ```
 
-### Modificar vite.config.js
+### Modify vite.config.js
 
-Agregar `wrapped.html` al input de Rollup:
+Add `wrapped.html` to Rollup input:
 
 ```javascript
 // vite.config.js
@@ -1357,18 +1356,18 @@ rollupOptions: {
         country: resolve(__dirname, 'src/pages/country.html'),
         explore: resolve(__dirname, 'src/pages/explore.html'),
         about: resolve(__dirname, 'src/pages/about.html'),
-        wrapped: resolve(__dirname, 'src/pages/wrapped.html'), // ← Agregar esta línea
+        wrapped: resolve(__dirname, 'src/pages/wrapped.html'), // ← Add this line
     },
     // ...
 }
 ```
 
-### Manejo de Errores
+### Error Handling
 
-Seguir el patrón existente del proyecto:
+Follow the existing project pattern:
 
 ```javascript
-// Similar a userProfile.js
+// Similar to userProfile.js
 function showError(message) {
   const errorDiv = document.getElementById('wrappedError');
   const loading = document.getElementById('wrappedLoading');
@@ -1380,85 +1379,84 @@ function showError(message) {
   }
 }
 
-// En el catch
+// In catch
 try {
-  // ... código
+  // ... code
 } catch (error) {
   console.error('Error loading wrapped:', error);
   showError(`Failed to load wrapped: ${error.message}`);
 }
 ```
 
-### Componentes Reutilizables
+### Reusable Components
 
-El proyecto ya tiene componentes que se pueden reutilizar:
+The project already has components that can be reused:
 
 1. **Activity Heatmap:**
 
 ```javascript
 import { renderActivityHeatmap } from '../components/activityHeatmap.js';
-// Usar directamente en el slide del heatmap
+// Use directly in heatmap slide
 ```
 
 2. **Working Hours Heatmap:**
 
 ```javascript
 import { renderWorkingHoursSection } from '../components/workingHoursHeatmap.js';
-// Usar en el slide de horas de trabajo
+// Use in working hours slide
 ```
 
 3. **Country Flags:**
 
 ```javascript
 import { getCountryFlag } from '../utils/countryFlags.js';
-// Para mostrar banderas en el slide de países
+// To show flags in countries slide
 ```
 
 4. **User Avatar:**
 
 ```javascript
 import { getUserAvatar, loadOSMAvatarInBackground } from '../utils/userAvatar.js';
-// Para el slide de portada
+// For cover slide
 ```
 
 5. **Formatters:**
 
 ```javascript
 import { formatNumber, formatDate } from '../utils/formatter.js';
-// Para formatear números y fechas
+// To format numbers and dates
 ```
 
-### Ejemplo de JSON Real
+### Real JSON Example
 
-Para entender mejor la estructura, sería útil ver un ejemplo real. El documento asume la estructura
-basada en `API.md`, pero tener un ejemplo real ayudaría a:
+To better understand the structure, it would be useful to see a real example. The document assumes
+the structure based on `API.md`, but having a real example would help to:
 
-- Verificar campos opcionales vs requeridos
-- Entender valores null/undefined
-- Ver formatos de fecha reales
-- Verificar estructura de arrays anidados
+- Verify optional vs required fields
+- Understand null/undefined values
+- See real date formats
+- Verify nested array structure
 
-**Recomendación:** Antes de implementar, obtener un JSON real de un usuario para validar la
-estructura.
+**Recommendation:** Before implementing, get a real JSON from a user to validate the structure.
 
-### Testing con Datos Reales
+### Testing with Real Data
 
-1. **Usuario con datos completos:** Probar con un usuario activo
-2. **Usuario nuevo:** Probar con datos mínimos
-3. **Usuario sin actividad reciente:** Verificar manejo de `last_year_activity` vacío
-4. **Usuario sin países:** Verificar `countries_solving_notes` vacío
-5. **Usuario sin hashtags:** Verificar `hashtags` vacío
+1. **User with complete data:** Test with an active user
+2. **New user:** Test with minimal data
+3. **User without recent activity:** Verify handling of empty `last_year_activity`
+4. **User without countries:** Verify empty `countries_solving_notes`
+5. **User without hashtags:** Verify empty `hashtags`
 
-### Consideraciones de Performance
+### Performance Considerations
 
-1. **Lazy loading de slides:** No renderizar todos los slides a la vez
-2. **Image generation:** Puede ser lento, mostrar loading
-3. **Caching:** Reutilizar datos ya cargados del perfil si vienen desde ahí
-4. **Mobile:** `html2canvas` puede ser pesado en móviles, considerar timeout
+1. **Lazy loading of slides:** Don't render all slides at once
+2. **Image generation:** Can be slow, show loading
+3. **Caching:** Reuse data already loaded from profile if coming from there
+4. **Mobile:** `html2canvas` can be heavy on mobile, consider timeout
 
 ### Debugging
 
-Agregar logging similar al proyecto existente:
+Add logging similar to existing project:
 
 ```javascript
 console.log('Loading wrapped for user:', username);
@@ -1469,53 +1467,53 @@ console.log('Generated slides:', slides.length);
 
 ---
 
-## ✅ Checklist de Implementación
+## ✅ Implementation Checklist
 
-### Fase 1: Setup
+### Phase 1: Setup
 
-- [ ] Instalar `html2canvas`: `npm install html2canvas`
-- [ ] Crear `src/pages/wrapped.html`
-- [ ] Crear `src/css/wrapped.css`
-- [ ] Crear `src/js/pages/wrapped.js`
-- [ ] Agregar `wrapped.html` a `vite.config.js`
-- [ ] Agregar traducciones a archivos de locale
+- [ ] Install `html2canvas`: `npm install html2canvas`
+- [ ] Create `src/pages/wrapped.html`
+- [ ] Create `src/css/wrapped.css`
+- [ ] Create `src/js/pages/wrapped.js`
+- [ ] Add `wrapped.html` to `vite.config.js`
+- [ ] Add translations to locale files
 
-### Fase 2: Componentes Base
+### Phase 2: Base Components
 
-- [ ] Crear `src/js/components/wrappedSlides.js`
-- [ ] Crear `src/js/components/wrappedImage.js`
-- [ ] Crear `src/js/utils/streakCalculator.js`
-- [ ] Implementar carga de datos de usuario
-- [ ] Implementar cálculo de métricas
+- [ ] Create `src/js/components/wrappedSlides.js`
+- [ ] Create `src/js/components/wrappedImage.js`
+- [ ] Create `src/js/utils/streakCalculator.js`
+- [ ] Implement user data loading
+- [ ] Implement metric calculation
 
-### Fase 3: Slides
+### Phase 3: Slides
 
-- [ ] Slide 1: Portada
-- [ ] Slide 2: Resumen
-- [ ] Slide 3: Mejor día
-- [ ] Slide 4: Países
-- [ ] Slide 5: Racha
-- [ ] Slide 6: Horas de trabajo
+- [ ] Slide 1: Cover
+- [ ] Slide 2: Summary
+- [ ] Slide 3: Best day
+- [ ] Slide 4: Countries
+- [ ] Slide 5: Streak
+- [ ] Slide 6: Working hours
 - [ ] Slide 7: Heatmap
 - [ ] Slide 8: Hashtags
 - [ ] Slide 9: Milestones
-- [ ] Slide 10: Cierre
+- [ ] Slide 10: Closing
 
-### Fase 4: Funcionalidad
+### Phase 4: Functionality
 
-- [ ] Navegación entre slides
-- [ ] Generación de imágenes
-- [ ] Descarga de imágenes
-- [ ] Compartir en redes sociales
-- [ ] Integración con perfil de usuario
+- [ ] Navigation between slides
+- [ ] Image generation
+- [ ] Image download
+- [ ] Social media sharing
+- [ ] Integration with user profile
 
-### Fase 5: Polish
+### Phase 5: Polish
 
-- [ ] Animaciones y transiciones
+- [ ] Animations and transitions
 - [ ] Responsive design
-- [ ] Optimización de imágenes
-- [ ] Testing con datos reales
-- [ ] Documentación
+- [ ] Image optimization
+- [ ] Testing with real data
+- [ ] Documentation
 
 ---
 
