@@ -4,7 +4,7 @@
 
 ### Complete Ecosystem
 
-This viewer is part of a larger system for processing and visualizing OSM Notes:
+This viewer is part of the **OSM-Notes ecosystem**, consisting of 8 interconnected projects:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -15,39 +15,56 @@ This viewer is part of a larger system for processing and visualizing OSM Notes:
                               │ Download
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                   OSM-Notes-Ingestion                          │
+│              OSM-Notes-Ingestion (Base Project)                │
 │                  (Data Ingestion Layer)                        │
 │  - Downloads Planet dumps                                      │
 │  - Syncs via OSM API                                          │
 │  - Stores raw notes in PostgreSQL                              │
 │  - Handles incremental updates                                 │
 └─────────────────────────────────────────────────────────────────┘
-                              │
-                              │ Raw Notes Data
-                              ▼
+         │                                    │
+         │ Raw Notes Data                     │ Same Database
+         ▼                                    ▼
+┌──────────────────────────┐    ┌──────────────────────────────┐
+│  OSM-Notes-Analytics     │    │    OSM-Notes-WMS              │
+│ (ETL + Data Warehouse)   │    │  (Web Map Service)           │
+│  - Processes raw notes   │    │  - Geographic visualization  │
+│  - Creates data warehouse│    │  - WMS layers                │
+│  - Generates statistics  │    └──────────────────────────────┘
+│  - Exports to JSON files │
+└──────────────────────────┘
+         │
+         │ JSON Export
+         ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                   OSM-Notes-Analytics                          │
-│                 (ETL + Data Warehouse)                         │
-│  - Processes raw notes data                                    │
-│  - Creates data warehouse (dwh schema)                        │
-│  - Generates statistics and profiles                           │
-│  - Exports to JSON files                                       │
+│                   OSM-Notes-Data                               │
+│              (JSON Files - GitHub Pages)                      │
+│  - User profiles JSON                                          │
+│  - Country profiles JSON                                       │
+│  - Index files                                                 │
 └─────────────────────────────────────────────────────────────────┘
+         │                                    │
+         │ JSON Files                         │ Reads DWH
+         ▼                                    ▼
+┌──────────────────────────┐    ┌──────────────────────────────┐
+│  OSM-Notes-Viewer        │    │    OSM-Notes-API             │
+│  (Static Web App)        │    │  (REST API)                  │
+│  - This project          │    │  - Dynamic queries           │
+│  - Consumes Data         │    │  - Reads from Analytics      │
+└──────────────────────────┘    └──────────────────────────────┘
+         │                                    │
+         │                                    │
+         └────────────────────────────────────┘
                               │
-                              │ Pre-generated JSON
+                              │ Monitors All
                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                      CDN / Storage                             │
-│                  (JSON Files Serving)                          │
-│  - S3 / CloudFront / GitHub Pages                               │
-│  - Static file hosting                                         │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              │ Fetch JSON
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                   OSM-Notes-Viewer                            │
-│                    (Static Web App)                            │
+                    ┌──────────────────────────┐
+                    │ OSM-Notes-Monitoring     │
+                    │ (Monitoring & Alerting)   │
+                    └──────────────────────────┘
+
+Note: OSM-Notes-Common (shared libraries) is used as Git submodule by
+      Ingestion, Analytics, WMS, and Monitoring (not by Viewer or API).
 │  - User profiles                                               │
 │  - Country statistics                                          │
 │  - Interactive visualizations                                 │
@@ -80,14 +97,20 @@ This viewer is part of a larger system for processing and visualizing OSM Notes:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Shared Libraries
+### OSM Notes Ecosystem (8 Projects)
 
-- **[OSM-Notes-Common](https://github.com/OSM-Notes/OSM-Notes-Common)** - Shared utilities and
-  libraries used across all projects
-  - Common Bash functions
-  - Logging utilities
-  - Error handling
-  - Validation functions
+1. **OSM-Notes-Ingestion** (base project) - Data ingestion from Planet/API
+2. **OSM-Notes-Analytics** - ETL and data warehouse (generates Data)
+3. **OSM-Notes-Data** - JSON files served via GitHub Pages (consumed by Viewer)
+4. **OSM-Notes-Viewer** (this project) - Web application consuming Data
+5. **OSM-Notes-API** - REST API (complementary to Viewer, reads from Analytics)
+6. **OSM-Notes-WMS** - Web Map Service (geographic visualization)
+7. **OSM-Notes-Monitoring** - Monitors all ecosystem components
+8. **OSM-Notes-Common** - Shared libraries (Git submodule, used by Ingestion, Analytics, WMS, Monitoring)
+
+**Note**: Viewer primarily consumes static JSON from OSM-Notes-Data (GitHub Pages), which is generated by OSM-Notes-Analytics. Viewer can also use OSM-Notes-API for dynamic queries and OSM-Notes-WMS for map layers.
+
+See the main [README.md](../../README.md) for complete ecosystem overview.
 
 ## Frontend Architecture
 
