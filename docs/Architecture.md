@@ -453,7 +453,7 @@ osm_notes_country_456       → countries/456.json
 - **Rate limiting** - Per IP + User-Agent limits for API access
 - **Usage analytics** - Track and analyze API usage patterns by application (User-Agent)
 
-This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs/API_Proposal.md).
+This approach is aligned with the [OSM-Notes-API proposal](../../OSM-Notes-API/docs/API_Proposal.md).
 For detailed information about the authentication strategy, see
 [AUTHENTICATION_STRATEGY.md](Authentication_Strategy.md).
 

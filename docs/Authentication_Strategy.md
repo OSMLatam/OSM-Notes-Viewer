@@ -24,7 +24,7 @@ optional for specific functionalities).
 **Last Updated**: 2025-01-27
 
 **Reference**: This strategy is aligned with
-[API_Proposal.md](../OSM-Notes-API/docs/API_Proposal.md) from the OSM-Notes-API project.
+[API_Proposal.md](../../OSM-Notes-API/docs/API_Proposal.md) from the OSM-Notes-API project.
 
 ---
 
@@ -1296,7 +1296,7 @@ If functionalities that require OSM identity are implemented:
 
 ### OSM-Notes-API Project References
 
-- **[API_Proposal.md](../OSM-Notes-API/docs/API_Proposal.md)**: Aligned authentication model
+- **[API_Proposal.md](../../OSM-Notes-API/docs/API_Proposal.md)**: Aligned authentication model
   (User-Agent required, OAuth optional)
 - **Authentication Section**: Lines 1487-1700 of API_Proposal.md
 

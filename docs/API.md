@@ -411,7 +411,7 @@ Future REST API endpoints for **recent data** (updated every 15 minutes) will re
 **OAuth with OSM**: Optional, only required for specific endpoints that need user identity (e.g.,
 `/api/v1/users/me/*`)
 
-This approach is aligned with the [OSM-Notes-API proposal](../OSM-Notes-API/docs/API_Proposal.md).
+This approach is aligned with the [OSM-Notes-API proposal](../../OSM-Notes-API/docs/API_Proposal.md).
 
 **Client-Side Protection**: The viewer implements client-side rate limiting, aggressive caching, and
 abuse detection to prevent overloading the server. See
