@@ -1400,7 +1400,7 @@ HDYC by Neis Pascal implements OAuth with OSM:
 ## 📚 Related References
 
 - **[API.md](API.md)**: Endpoint documentation and data structure
-- **[API_METRICS.md](API_METRICS.md)**: Metrics that require REST API
+- **[API_METRICS.md](API_Metrics.md)**: Metrics that require REST API
 
 ---
 

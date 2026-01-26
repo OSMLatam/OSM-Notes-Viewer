@@ -357,7 +357,7 @@ defaults to English.
 
 ## Getting Help
 
-- **Documentation**: Check the [Architecture Documentation](ARCHITECTURE.md) for technical details
+- **Documentation**: Check the [Architecture Documentation](Architecture.md) for technical details
 - **GitHub Issues**: Report bugs or request features on GitHub
 - **Community**: Join the OSM Latam community discussions
 

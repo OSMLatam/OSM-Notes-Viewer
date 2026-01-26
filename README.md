@@ -152,10 +152,10 @@ The script will:
 For shared documentation of the complete ecosystem, see:
 
 - **[OSM Notes Ecosystem](https://github.com/OSM-Notes/OSM-Notes)** - Ecosystem landing page
-- **[Global Glossary](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/GLOSSARY.md)** - Terms and definitions
-- **[Complete Installation Guide](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/INSTALLATION.md)** - Step-by-step installation of all projects
-- **[End-to-End Data Flow](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/DATA_FLOW.md)** - Complete data flow
-- **[Decision Guide](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/DECISION_GUIDE.md)** - Which project do I need?
+- **[Global Glossary](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/Glossary.md)** - Terms and definitions
+- **[Complete Installation Guide](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/Installation.md)** - Step-by-step installation of all projects
+- **[End-to-End Data Flow](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/Data_Flow.md)** - Complete data flow
+- **[Decision Guide](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/Decision_Guide.md)** - Which project do I need?
 
 ---
 
@@ -336,20 +336,20 @@ The backend generates the following JSON files:
 ### For Developers
 
 1. **Foundation** (30 min)
-   - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - System architecture (20 min)
-   - [docs/FEATURES.md](docs/FEATURES.md) - Feature documentation (10 min)
+   - [docs/ARCHITECTURE.md](docs/Architecture.md) - System architecture (20 min)
+   - [docs/FEATURES.md](docs/Features.md) - Feature documentation (10 min)
 
 2. **Setup and Development** (30 min)
    - Quick Start section below - Local development setup (15 min)
-   - [docs/BUILD.md](docs/BUILD.md) - Building the project (15 min)
+   - [docs/BUILD.md](docs/Build.md) - Building the project (15 min)
 
 3. **Data and API** (20 min)
    - [docs/API.md](docs/API.md) - API endpoints and data structure (10 min)
-   - [docs/DATA_CONTRACT.md](docs/DATA_CONTRACT.md) - Data contract with Analytics (10 min)
+   - [docs/DATA_CONTRACT.md](docs/Data_Contract.md) - Data contract with Analytics (10 min)
 
 4. **Deep Dive** (as needed)
-   - [docs/COMPONENTS.md](docs/COMPONENTS.md) - Component documentation
-   - [docs/AUTHENTICATION_STRATEGY.md](docs/AUTHENTICATION_STRATEGY.md) - Authentication approach
+   - [docs/COMPONENTS.md](docs/Components.md) - Component documentation
+   - [docs/AUTHENTICATION_STRATEGY.md](docs/Authentication_Strategy.md) - Authentication approach
    - [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) - Contribution guidelines
 
 **Total time: ~1.5 hours** for complete developer overview.
@@ -444,7 +444,7 @@ npm install -g ajv-cli
 ajv -s lib/OSM-Notes-Common/schemas/user-profile.schema.json -d src/data/users/*.json
 ```
 
-For more details, see [docs/DATA_CONTRACT.md](docs/DATA_CONTRACT.md) and
+For more details, see [docs/DATA_CONTRACT.md](docs/Data_Contract.md) and
 [lib/OSM-Notes-Common/schemas/README.md](lib/OSM-Notes-Common/schemas/README.md).
 
 ## 🚀 Quick Start
@@ -542,13 +542,13 @@ OSM-Notes-Viewer/
 
 ## 📚 Documentation
 
-- [Architecture](docs/ARCHITECTURE.md) - System architecture overview
-- [Components](docs/COMPONENTS.md) - Component documentation
+- [Architecture](docs/Architecture.md) - System architecture overview
+- [Components](docs/Components.md) - Component documentation
 - [API](docs/API.md) - API endpoints and data structure
-- [Authentication Strategy](docs/AUTHENTICATION_STRATEGY.md) - Hybrid authentication approach
+- [Authentication Strategy](docs/Authentication_Strategy.md) - Hybrid authentication approach
   (User-Agent required, OAuth optional) including client-side protection
-- [Features](docs/FEATURES.md) - Feature documentation
-- [Build Guide](docs/BUILD.md) - Building the project
+- [Features](docs/Features.md) - Feature documentation
+- [Build Guide](docs/Build.md) - Building the project
 - [Contributing](docs/CONTRIBUTING.md) - Contribution guidelines
 
 ## 🤝 Contributing

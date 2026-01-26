@@ -363,6 +363,6 @@ Component behavior can be configured in:
 ## 📚 Related Documentation
 
 - [API Documentation](API.md) - Data structure and endpoints
-- [Architecture](ARCHITECTURE.md) - System architecture
-- [Features](FEATURES.md) - Feature documentation
+- [Architecture](Architecture.md) - System architecture
+- [Features](Features.md) - Feature documentation
 - [Contributing](CONTRIBUTING.md) - Development guidelines

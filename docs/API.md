@@ -419,7 +419,7 @@ abuse detection to prevent overloading the server. See
 for details.
 
 For detailed information about the authentication strategy, see
-[AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md).
+[AUTHENTICATION_STRATEGY.md](Authentication_Strategy.md).
 
 ---
 
@@ -493,4 +493,4 @@ GET /api/v1/compare/countries?ids={id1,id2,id3}
 
 All dynamic query endpoints require a valid User-Agent header. OAuth is optional.
 
-For complete details on which metrics require API access, see [API_METRICS.md](API_METRICS.md).
+For complete details on which metrics require API access, see [API_METRICS.md](API_Metrics.md).

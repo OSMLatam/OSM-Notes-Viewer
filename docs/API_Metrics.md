@@ -32,7 +32,7 @@ once per day).
 
 **⚠️ User-Agent Required**: All REST API endpoints listed here **require a valid User-Agent**
 (format: `AppName/Version (Contact)`). OAuth with OSM is optional and only required for specific
-functionalities. See [AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md) for details on the
+functionalities. See [AUTHENTICATION_STRATEGY.md](Authentication_Strategy.md) for details on the
 hybrid authentication strategy.
 
 ---
@@ -246,7 +246,7 @@ GET /api/v1/countries/rankings?metric={field}&limit={count}
 
 ## References
 
-- **[AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md)**: Hybrid authentication strategy
+- **[AUTHENTICATION_STRATEGY.md](Authentication_Strategy.md)**: Hybrid authentication strategy
   (public historical data, recent data with User-Agent)
 - **[API.md](API.md)**: Complete endpoint documentation and data structure
 - **[API Proposal](https://github.com/OSM-Notes/OSM-Notes-Analytics/blob/main/docs/API_Proposal.md)**:
@@ -290,7 +290,7 @@ specific OSM users, such as:
 - User's personal activity
 - Premium features specific to users
 
-For more information, see [AUTHENTICATION_STRATEGY.md](AUTHENTICATION_STRATEGY.md).
+For more information, see [AUTHENTICATION_STRATEGY.md](Authentication_Strategy.md).
 
 ---
 
