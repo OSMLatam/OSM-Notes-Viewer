@@ -58,25 +58,24 @@ The strategy divides data access into two levels:
 
 ### Data Model
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    OSM Notes Viewer                         │
-└─────────────────────────────────────────────────────────────┘
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        │                     │                     │
-        ▼                     ▼                     ▼
-┌───────────────┐    ┌──────────────────┐   ┌──────────────┐
-│ Historical    │    │ REST API         │   │ Authentication│
-│ Data          │    │ (Recent Data)    │   │ (Optional)   │
-│ (JSON)        │    │                  │   │              │
-├───────────────┤    ├──────────────────┤   ├──────────────┤
-│ ✅ Public     │    │ ⚠️ User-Agent    │   │ • OAuth 2.0  │
-│ ✅ No Auth    │    │    Required      │   │   (Optional) │
-│ ✅ Static     │    │ ⚡ Rate Limited  │   │ • Only for   │
-│ ✅ Daily      │    │ ✅ Real-Time     │   │   specific   │
-│               │    │ ✅ 15 min update │   │   functions  │
-└───────────────┘    └──────────────────┘   └──────────────┘
+```mermaid
+graph TD
+    VIEWER[OSM Notes Viewer]
+    
+    HISTORICAL[Historical Data JSON<br/>✅ Public<br/>✅ No Auth<br/>✅ Static<br/>✅ Daily]
+    
+    REST_API[REST API Recent Data<br/>⚠️ User-Agent Required<br/>⚡ Rate Limited<br/>✅ Real-Time<br/>✅ 15 min update]
+    
+    AUTH[Authentication Optional<br/>• OAuth 2.0 Optional<br/>• Only for specific functions]
+    
+    VIEWER --> HISTORICAL
+    VIEWER --> REST_API
+    VIEWER --> AUTH
+    
+    style VIEWER fill:#DDA0DD
+    style HISTORICAL fill:#90EE90
+    style REST_API fill:#FFE4B5
+    style AUTH fill:#FFB6C1
 ```
 
 ### Access Flow

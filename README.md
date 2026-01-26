@@ -1,3 +1,20 @@
+---
+title: "OSM Notes Viewer"
+description: "Interactive web viewer for OpenStreetMap Notes analytics data"
+version: "latest"
+last_updated: "2026-01-25"
+author: "AngocA"
+tags:
+  - "viewer"
+  - "web-app"
+  - "visualization"
+audience:
+  - "users"
+  - "developers"
+project: "OSM-Notes-Viewer"
+status: "active"
+---
+
 # OSM Notes Viewer 🗺️
 
 Interactive web viewer for OpenStreetMap Notes analytics data.
@@ -133,6 +150,18 @@ The script will:
 1. Export JSON files from the analytics database
 2. Push them to the OSM-Notes-Data repository
 3. GitHub Pages automatically updates within 1-2 minutes
+
+## 📚 Ecosystem Documentation
+
+For shared documentation of the complete ecosystem, see:
+
+- **[OSM Notes Ecosystem](https://github.com/OSM-Notes/OSM-Notes)** - Ecosystem landing page
+- **[Global Glossary](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/GLOSSARY.md)** - Terms and definitions
+- **[Complete Installation Guide](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/INSTALLATION.md)** - Step-by-step installation of all projects
+- **[End-to-End Data Flow](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/DATA_FLOW.md)** - Complete data flow
+- **[Decision Guide](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/DECISION_GUIDE.md)** - Which project do I need?
+
+---
 
 ## OSM-Notes Ecosystem
 

@@ -6,96 +6,58 @@
 
 This viewer is part of the **OSM-Notes ecosystem**, consisting of 8 interconnected projects:
 
+```mermaid
+graph TB
+    subgraph External["External Sources"]
+        OSM[OpenStreetMap Planet<br/>XML Dump + API Endpoints]
+    end
+    
+    subgraph Ingestion["Data Ingestion Layer"]
+        INGESTION[OSM-Notes-Ingestion<br/>Base Project<br/>- Downloads Planet dumps<br/>- Syncs via OSM API<br/>- Stores raw notes in PostgreSQL<br/>- Handles incremental updates]
+        BASE_DB[(PostgreSQL<br/>Base Database)]
+    end
+    
+    subgraph Processing["Processing Layer"]
+        ANALYTICS[OSM-Notes-Analytics<br/>ETL + Data Warehouse<br/>- Processes raw notes<br/>- Creates data warehouse<br/>- Generates statistics<br/>- Exports to JSON files]
+        WMS[OSM-Notes-WMS<br/>Web Map Service<br/>- Geographic visualization<br/>- WMS layers]
+    end
+    
+    subgraph Data["Data Repository"]
+        DATA[OSM-Notes-Data<br/>JSON Files - GitHub Pages<br/>- User profiles JSON<br/>- Country profiles JSON<br/>- Index files]
+    end
+    
+    subgraph Delivery["Delivery Layer"]
+        VIEWER[OSM-Notes-Viewer<br/>Static Web App<br/>This project<br/>Consumes Data]
+        API[OSM-Notes-API<br/>REST API<br/>- Dynamic queries<br/>- Reads from Analytics]
+    end
+    
+    subgraph Monitoring["Monitoring Layer"]
+        MONITORING[OSM-Notes-Monitoring<br/>Monitoring & Alerting<br/>Monitors All]
+    end
+    
+    OSM -->|Download| INGESTION
+    INGESTION -->|Stores| BASE_DB
+    BASE_DB -->|Raw Notes Data| ANALYTICS
+    BASE_DB -->|Same Database| WMS
+    ANALYTICS -->|JSON Export| DATA
+    ANALYTICS -->|Reads DWH| API
+    DATA -->|JSON Files| VIEWER
+    MONITORING -.->|Monitors| INGESTION
+    MONITORING -.->|Monitors| ANALYTICS
+    MONITORING -.->|Monitors| API
+    
+    style OSM fill:#ADD8E6
+    style INGESTION fill:#90EE90
+    style BASE_DB fill:#90EE90
+    style ANALYTICS fill:#FFFFE0
+    style WMS fill:#FFE4B5
+    style DATA fill:#E0F6FF
+    style VIEWER fill:#DDA0DD
+    style API fill:#FFB6C1
+    style MONITORING fill:#F0E68C
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    OpenStreetMap Planet                        │
-│              (XML Dump + API Endpoints)                        │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              │ Download
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│              OSM-Notes-Ingestion (Base Project)                │
-│                  (Data Ingestion Layer)                        │
-│  - Downloads Planet dumps                                      │
-│  - Syncs via OSM API                                          │
-│  - Stores raw notes in PostgreSQL                              │
-│  - Handles incremental updates                                 │
-└─────────────────────────────────────────────────────────────────┘
-         │                                    │
-         │ Raw Notes Data                     │ Same Database
-         ▼                                    ▼
-┌──────────────────────────┐    ┌──────────────────────────────┐
-│  OSM-Notes-Analytics     │    │    OSM-Notes-WMS              │
-│ (ETL + Data Warehouse)   │    │  (Web Map Service)           │
-│  - Processes raw notes   │    │  - Geographic visualization  │
-│  - Creates data warehouse│    │  - WMS layers                │
-│  - Generates statistics  │    └──────────────────────────────┘
-│  - Exports to JSON files │
-└──────────────────────────┘
-         │
-         │ JSON Export
-         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                   OSM-Notes-Data                               │
-│              (JSON Files - GitHub Pages)                      │
-│  - User profiles JSON                                          │
-│  - Country profiles JSON                                       │
-│  - Index files                                                 │
-└─────────────────────────────────────────────────────────────────┘
-         │                                    │
-         │ JSON Files                         │ Reads DWH
-         ▼                                    ▼
-┌──────────────────────────┐    ┌──────────────────────────────┐
-│  OSM-Notes-Viewer        │    │    OSM-Notes-API             │
-│  (Static Web App)        │    │  (REST API)                  │
-│  - This project          │    │  - Dynamic queries           │
-│  - Consumes Data         │    │  - Reads from Analytics      │
-└──────────────────────────┘    └──────────────────────────────┘
-         │                                    │
-         │                                    │
-         └────────────────────────────────────┘
-                              │
-                              │ Monitors All
-                              ▼
-                    ┌──────────────────────────┐
-                    │ OSM-Notes-Monitoring     │
-                    │ (Monitoring & Alerting)   │
-                    └──────────────────────────┘
 
-Note: OSM-Notes-Common (shared libraries) is used as Git submodule by
-      Ingestion, Analytics, WMS, and Monitoring (not by Viewer or API).
-│  - User profiles                                               │
-│  - Country statistics                                          │
-│  - Interactive visualizations                                 │
-│  - Individual note viewer                                      │
-│  - Hashtag browsing                                            │
-│  - WMS map integration                                         │
-│  - ML recommendations integration                              │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              │ REST API Calls
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                   OSM-Notes-API                                │
-│                    (REST API)                                  │
-│  - Individual note details                                     │
-│  - Hashtag statistics                                          │
-│  - Note search and filtering                                   │
-│  - ML recommendations                                          │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              │ WMS Requests
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                   GeoServer WMS                                │
-│                    (Map Service)                                │
-│  - Open notes layer                                            │
-│  - Closed notes layer                                          │
-│  - Country boundaries                                          │
-│  - Disputed areas                                              │
-└─────────────────────────────────────────────────────────────────┘
-```
+**Note:** OSM-Notes-Common (shared libraries) is used as Git submodule by Ingestion, Analytics, WMS, and Monitoring (not by Viewer or API).
 
 ### OSM Notes Ecosystem (8 Projects)
 
@@ -116,196 +78,197 @@ See the main [README.md](../../README.md) for complete ecosystem overview.
 
 ### Layer Structure
 
-```
-┌────────────────────────────────────────┐
-│         Presentation Layer             │
-│    (HTML Pages + CSS Styling)          │
-└────────────────────────────────────────┘
-              ▲
-              │
-┌────────────────────────────────────────┐
-│        Component Layer                 │
-│   (Reusable UI Components)             │
-│   - activityHeatmap.js                 │
-│   - workingHoursHeatmap.js             │
-└────────────────────────────────────────┘
-              ▲
-              │
-┌────────────────────────────────────────┐
-│         Business Logic                 │
-│    (Page Controllers)                  │
-│   - main.js                            │
-│   - userProfile.js                     │
-│   - countryProfile.js                  │
-│   - noteViewer.js                       │
-│   - hashtagViewer.js                    │
-│   - mapViewer.js                        │
-└────────────────────────────────────────┘
-              ▲
-              │
-┌────────────────────────────────────────┐
-│         Data Layer                     │
-│   - apiClient.js (Static JSON API)     │
-│   - REST API calls (OSM-Notes-API)     │
-│   - WMS layer integration (GeoServer)  │
-│   - cache.js (LocalStorage)            │
-│   - formatter.js (Utilities)           │
-└────────────────────────────────────────┘
-              ▲
-              │
-┌────────────────────────────────────────┐
-│      Configuration                     │
-│   - api-config.js (Static JSON)        │
-│   - REST API endpoints (OSM-Notes-API)  │
-│   - WMS configuration (GeoServer)      │
-└────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Presentation["Presentation Layer"]
+        HTML[HTML Pages + CSS Styling]
+    end
+    
+    subgraph Components["Component Layer"]
+        COMP1[activityHeatmap.js]
+        COMP2[workingHoursHeatmap.js]
+        COMP_DESC[Reusable UI Components]
+    end
+    
+    subgraph Business["Business Logic"]
+        MAIN[main.js]
+        USER[userProfile.js]
+        COUNTRY[countryProfile.js]
+        NOTE[noteViewer.js]
+        HASHTAG[hashtagViewer.js]
+        MAP[mapViewer.js]
+        DESC[Page Controllers]
+    end
+    
+    subgraph Data["Data Layer"]
+        API_CLIENT[apiClient.js<br/>Static JSON API]
+        REST_API[REST API calls<br/>OSM-Notes-API]
+        WMS_INTEG[WMS layer integration<br/>GeoServer]
+        CACHE[cache.js<br/>LocalStorage]
+        FORMATTER[formatter.js<br/>Utilities]
+    end
+    
+    Business -->|Uses| Components
+    Components -->|Renders| Presentation
+    Business -->|Uses| Data
+    Data -->|Provides Data| Business
+    
+    subgraph Config["Configuration"]
+        API_CONFIG[api-config.js<br/>Static JSON]
+        REST_CONFIG[REST API endpoints<br/>OSM-Notes-API]
+        WMS_CONFIG[WMS configuration<br/>GeoServer]
+    end
+    
+    Business -->|Uses| Components
+    Components -->|Renders| Presentation
+    Business -->|Uses| Data
+    Data -->|Provides Data| Business
+    Config -->|Configures| Data
+    
+    style Presentation fill:#DDA0DD
+    style Components fill:#FFE4B5
+    style Business fill:#FFFFE0
+    style Data fill:#E0F6FF
+    style Config fill:#F0E68C
 ```
 
 ## Data Flow
 
 ### 1. Initial Page Load
 
-```
-User visits page
-    ↓
-Load HTML/CSS/JS
-    ↓
-main.js initializes
-    ↓
-Check localStorage cache
-    │
-    ├─ Cache valid → Use cached data
-    │
-    └─ Cache invalid or missing
-        ↓
-    Fetch from API
-        ↓
-    Store in cache
-        ↓
-    Render UI
+```mermaid
+flowchart TD
+    START[User visits page]
+    START --> LOAD[Load HTML/CSS/JS]
+    LOAD --> INIT[main.js initializes]
+    INIT --> CHECK_CACHE{Check localStorage<br/>cache}
+    
+    CHECK_CACHE -->|Cache valid| USE_CACHE[Use cached data]
+    CHECK_CACHE -->|Cache invalid<br/>or missing| FETCH[Fetch from API]
+    
+    FETCH --> STORE[Store in cache]
+    STORE --> RENDER[Render UI]
+    USE_CACHE --> RENDER
+    
+    style START fill:#90EE90
+    style RENDER fill:#90EE90
+    style USE_CACHE fill:#E0F6FF
+    style FETCH fill:#FFE4B5
 ```
 
 ### 2. Search Flow
 
-```
-User types in search
-    ↓
-Fetch index.json (users or countries)
-    ↓
-Filter results client-side
-    ↓
-Display matching results
-    ↓
-User clicks result
-    ↓
-Navigate to profile page
+```mermaid
+flowchart TD
+    START[User types in search]
+    START --> FETCH[Fetch index.json<br/>users or countries]
+    FETCH --> FILTER[Filter results<br/>client-side]
+    FILTER --> DISPLAY[Display matching<br/>results]
+    DISPLAY --> CLICK[User clicks result]
+    CLICK --> NAVIGATE[Navigate to profile page]
+    
+    style START fill:#90EE90
+    style NAVIGATE fill:#90EE90
+    style FETCH fill:#FFE4B5
+    style FILTER fill:#FFFFE0
 ```
 
 ### 3. Profile Page Flow
 
+```mermaid
+flowchart TD
+    START[Profile page loads]
+    START --> EXTRACT[Extract ID from<br/>URL params]
+    EXTRACT --> CHECK_CACHE{Check cache}
+    
+    CHECK_CACHE -->|Cache hit| RENDER[Render immediately]
+    CHECK_CACHE -->|Cache miss| FETCH[Fetch /users/id.json<br/>or /countries/id.json]
+    
+    FETCH --> PARSE[Parse JSON]
+    PARSE --> STORE[Store in cache]
+    STORE --> RENDER
+    
+    style START fill:#90EE90
+    style RENDER fill:#90EE90
+    style FETCH fill:#FFE4B5
+    style STORE fill:#E0F6FF
 ```
-Profile page loads
-    ↓
-Extract ID from URL params
-    ↓
-Check cache
-    │
-    ├─ Cache hit → Render immediately
-    │
-    └─ Cache miss
-        ↓
-    Fetch /users/{id}.json or /countries/{id}.json
-        ↓
-    Parse JSON
-        ↓
-    Store in cache
-        ↓
-    Render components
-        ├─ Statistics cards
-        ├─ Activity heatmap
-        ├─ Hashtags
-        ├─ Rankings
-        └─ Working hours
+    RENDER_COMP[Render components<br/>- Statistics cards<br/>- Activity heatmap<br/>- Hashtags<br/>- Rankings<br/>- Working hours]
+    
+    style START fill:#90EE90
+    style RENDER fill:#90EE90
+    style FETCH fill:#FFE4B5
+    style STORE fill:#E0F6FF
+    style RENDER_COMP fill:#DDA0DD
 ```
 
 ### 4. Note Viewer Flow
 
-```
-Note viewer page loads
-    ↓
-Extract note ID from URL params
-    ↓
-Fetch note from OSM-Notes-API
-    GET /api/v1/notes/{noteId}
-    ↓
-Parse note data (GeoJSON format)
-    ↓
-Render note information
-    ├─ Status badge
-    ├─ Map with location
-    ├─ Note content and hashtags
-    ├─ Activity timeline
-    └─ Comment form
-    ↓
-Fetch country info from OSM-Notes-API
-    GET /api/v1/notes/{noteId} (includes country)
-    ↓
-Fetch ML recommendation (if note is open)
-    GET /api/v1/notes/{noteId}/recommendation
-    ↓
-Render ML recommendation
-    ├─ Recommended action
-    ├─ Confidence score
-    └─ JOSM tags (if action is "map")
+```mermaid
+flowchart TD
+    START[Note viewer page loads]
+    START --> EXTRACT[Extract note ID from<br/>URL params]
+    EXTRACT --> FETCH_NOTE[Fetch note from OSM-Notes-API<br/>GET /api/v1/notes/noteId]
+    FETCH_NOTE --> PARSE[Parse note data<br/>GeoJSON format]
+    PARSE --> RENDER_INFO[Render note information<br/>- Status badge<br/>- Map with location<br/>- Note content and hashtags<br/>- Activity timeline<br/>- Comment form]
+    
+    RENDER_INFO --> FETCH_COUNTRY[Fetch country info<br/>from OSM-Notes-API<br/>GET /api/v1/notes/noteId<br/>includes country]
+    
+    FETCH_COUNTRY --> CHECK_OPEN{Note is open?}
+    CHECK_OPEN -->|Yes| FETCH_ML[Fetch ML recommendation<br/>GET /api/v1/notes/noteId/recommendation]
+    CHECK_OPEN -->|No| END[End]
+    
+    FETCH_ML --> RENDER_ML[Render ML recommendation<br/>- Recommended action<br/>- Confidence score<br/>- JOSM tags if action is map]
+    RENDER_ML --> END
+    
+    style START fill:#90EE90
+    style END fill:#90EE90
+    style FETCH_NOTE fill:#FFE4B5
+    style FETCH_COUNTRY fill:#FFE4B5
+    style FETCH_ML fill:#DDA0DD
+    style RENDER_INFO fill:#FFFFE0
+    style RENDER_ML fill:#E0F6FF
 ```
 
 ### 5. Hashtag Viewer Flow
 
-```
-Hashtag viewer page loads
-    ↓
-Extract hashtag from URL params
-    ↓
-Fetch hashtag details from OSM-Notes-API
-    GET /api/v1/hashtags/{hashtag}
-    ↓
-Fetch notes with hashtag
-    GET /api/v1/notes?text=#{hashtag}&page={page}&limit={limit}
-    ↓
-Apply filters (status, date_from, date_to)
-    ↓
-Render hashtag header with stats
-    ↓
-Render notes list with pagination
+```mermaid
+flowchart TD
+    START[Hashtag viewer page loads]
+    START --> EXTRACT[Extract hashtag from<br/>URL params]
+    EXTRACT --> FETCH_DETAILS[Fetch hashtag details<br/>from OSM-Notes-API<br/>GET /api/v1/hashtags/hashtag]
+    FETCH_DETAILS --> FETCH_NOTES[Fetch notes with hashtag<br/>GET /api/v1/notes?text=#hashtag<br/>&page=page&limit=limit]
+    FETCH_NOTES --> APPLY_FILTERS[Apply filters<br/>status, date_from, date_to]
+    APPLY_FILTERS --> RENDER_HEADER[Render hashtag header<br/>with stats]
+    RENDER_HEADER --> RENDER_LIST[Render notes list<br/>with pagination]
+    
+    style START fill:#90EE90
+    style RENDER_LIST fill:#90EE90
+    style FETCH_DETAILS fill:#FFE4B5
+    style FETCH_NOTES fill:#FFE4B5
+    style APPLY_FILTERS fill:#FFFFE0
+    style RENDER_HEADER fill:#E0F6FF
 ```
 
 ### 6. Map Viewer Flow
 
-```
-Map viewer page loads
-    ↓
-Request user geolocation
-    navigator.geolocation.getCurrentPosition()
-    ↓
-Calculate 500km bounding box
-    calculateBbox(lat, lon, 500)
-    ↓
-Initialize Leaflet maps (3 maps)
-    ├─ Open Notes map
-    ├─ Closed Notes map
-    └─ Boundaries map
-    ↓
-Add base layers (OSM, Satellite)
-    ↓
-Add WMS layers from GeoServer
-    ├─ osm_notes:notesopen
-    ├─ osm_notes:notesclosed
-    ├─ osm_notes:countries
-    └─ osm_notes:disputedareas
-    ↓
-Set initial view (500km bbox for notes maps)
-    ↓
-Setup GetFeatureInfo for note popups
+```mermaid
+flowchart TD
+    START[Map viewer page loads]
+    START --> REQUEST_LOC[Request user geolocation<br/>navigator.geolocation.getCurrentPosition]
+    REQUEST_LOC --> CALC_BBOX[Calculate 500km bounding box<br/>calculateBbox lat, lon, 500]
+    CALC_BBOX --> INIT_MAPS[Initialize Leaflet maps<br/>3 maps:<br/>- Open Notes map<br/>- Closed Notes map<br/>- Boundaries map]
+    INIT_MAPS --> ADD_BASE[Add base layers<br/>OSM, Satellite]
+    ADD_BASE --> ADD_WMS[Add WMS layers from GeoServer<br/>- osm_notes:notesopen<br/>- osm_notes:notesclosed<br/>- osm_notes:countries<br/>- osm_notes:disputedareas]
+    ADD_WMS --> SET_VIEW[Set initial view<br/>500km bbox for notes maps]
+    SET_VIEW --> SETUP_POPUP[Setup GetFeatureInfo<br/>for note popups]
+    
+    style START fill:#90EE90
+    style SETUP_POPUP fill:#90EE90
+    style REQUEST_LOC fill:#FFE4B5
+    style CALC_BBOX fill:#FFFFE0
+    style INIT_MAPS fill:#E0F6FF
+    style ADD_WMS fill:#DDA0DD
 ```
 
 ## Component Architecture
