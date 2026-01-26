@@ -19,7 +19,7 @@ status: "active"
 
 Interactive web viewer for OpenStreetMap Notes analytics data.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![OpenStreetMap](https://img.shields.io/badge/OpenStreetMap-%23E7352B?logo=openstreetmap&logoColor=white)](https://www.openstreetmap.org/)
 [![Build Status](https://github.com/OSM-Notes/OSM-Notes-Viewer/workflows/CI/badge.svg)](https://github.com/OSM-Notes/OSM-Notes-Viewer/actions)
 
@@ -586,7 +586,7 @@ For complete information about the OSM-Notes ecosystem and all 8 projects, see t
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details
+This project is licensed under the GNU General Public License v3.0 - see [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
