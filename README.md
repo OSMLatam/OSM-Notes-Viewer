@@ -108,24 +108,20 @@ performance.
 
 ### Architecture
 
-```
-┌────────────────────────────────────────┐
-│  OSM-Notes-Analytics                  │
-│  Generates JSON data                   │
-└──────────────┬─────────────────────────┘
-               │ exportAndPushToGitHub.sh
-               ▼
-┌────────────────────────────────────────┐
-│  OSM-Notes-Data                         │
-│  https://notes.osm.lat/data             │
-│  Serves JSON files                      │
-└──────────────┬─────────────────────────┘
-               │ HTTP Requests
-               ▼
-┌────────────────────────────────────────┐
-│  OSM-Notes-Viewer (GitHub Pages)      │
-│  Web application                        │
-└────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    ANALYTICS[OSM-Notes-Analytics<br/>Generates JSON data]
+    
+    DATA[OSM-Notes-Data<br/>https://notes.osm.lat/data<br/>Serves JSON files]
+    
+    VIEWER[OSM-Notes-Viewer<br/>GitHub Pages<br/>Web application]
+    
+    ANALYTICS -->|exportAndPushToGitHub.sh| DATA
+    DATA -->|HTTP Requests| VIEWER
+    
+    style ANALYTICS fill:#FFFFE0
+    style DATA fill:#E0F6FF
+    style VIEWER fill:#DDA0DD
 ```
 
 ### Benefits
@@ -219,32 +215,71 @@ for all others.
 
 ### Project Relationships
 
-```
-OSM Planet/API
-    ↓
-[OSM-Notes-Ingestion] ← Base project
-    ├─→ [OSM-Notes-Analytics] → ETL → Data Warehouse
-    │       ├─→ [OSM-Notes-Data] → JSON files (GitHub Pages)
-    │       │       └─→ [OSM-Notes-Viewer] → Consumes JSON from Data (this project)
-    │       └─→ [OSM-Notes-API] → REST API (reads from Analytics DWH)
-    └─→ [OSM-Notes-WMS] → WMS layers
+```mermaid
+flowchart TD
+    OSM[OSM Planet/API]
     
-[OSM-Notes-Monitoring] → Monitors all projects
-[OSM-Notes-Common] → Shared libraries (submodule, not used by this Viewer)
+    INGESTION[OSM-Notes-Ingestion<br/>Base project]
+    
+    ANALYTICS[OSM-Notes-Analytics<br/>ETL → Data Warehouse]
+    
+    DATA[OSM-Notes-Data<br/>JSON files<br/>GitHub Pages]
+    
+    VIEWER[OSM-Notes-Viewer<br/>Consumes JSON from Data<br/>this project]
+    
+    API[OSM-Notes-API<br/>REST API<br/>reads from Analytics DWH]
+    
+    WMS[OSM-Notes-WMS<br/>WMS layers]
+    
+    MONITORING[OSM-Notes-Monitoring<br/>Monitors all projects]
+    
+    COMMON[OSM-Notes-Common<br/>Shared libraries<br/>submodule, not used by this Viewer]
+    
+    OSM --> INGESTION
+    INGESTION --> ANALYTICS
+    ANALYTICS --> DATA
+    ANALYTICS --> API
+    DATA --> VIEWER
+    INGESTION --> WMS
+    MONITORING -.->|Monitors| INGESTION
+    MONITORING -.->|Monitors| ANALYTICS
+    MONITORING -.->|Monitors| VIEWER
+    
+    style OSM fill:#ADD8E6
+    style INGESTION fill:#90EE90
+    style ANALYTICS fill:#FFFFE0
+    style DATA fill:#E0F6FF
+    style VIEWER fill:#DDA0DD
+    style API fill:#FFB6C1
+    style WMS fill:#FFE4B5
+    style MONITORING fill:#F0E68C
+    style COMMON fill:#D3D3D3
 ```
 
 ### Data Flow
 
-```
-OSM Planet Dump / API
-    ↓
-[OSM-Notes-Ingestion] → Raw notes data in PostgreSQL
-    ↓
-[OSM-Notes-Analytics] → ETL processes → Data warehouse
-    ↓
-[OSM-Notes-Analytics] → Export to JSON → [OSM-Notes-Data] (GitHub Pages)
-    ↓
-[OSM-Notes-Viewer] → Display in web browser (this project)
+```mermaid
+flowchart TD
+    OSM2[OSM Planet Dump / API]
+    
+    INGESTION2[OSM-Notes-Ingestion<br/>Raw notes data in PostgreSQL]
+    
+    ANALYTICS2[OSM-Notes-Analytics<br/>ETL processes → Data warehouse]
+    
+    DATA2[OSM-Notes-Analytics<br/>Export to JSON → OSM-Notes-Data<br/>GitHub Pages]
+    
+    VIEWER2[OSM-Notes-Viewer<br/>Display in web browser<br/>this project]
+    
+    OSM2 --> INGESTION2
+    INGESTION2 --> ANALYTICS2
+    ANALYTICS2 --> DATA2
+    DATA2 --> VIEWER2
+    
+    style OSM2 fill:#ADD8E6
+    style INGESTION2 fill:#90EE90
+    style ANALYTICS2 fill:#FFFFE0
+    style DATA2 fill:#E0F6FF
+    style VIEWER2 fill:#DDA0DD
 ```
 
 The backend (Analytics) generates the following JSON files in OSM-Notes-Data:
