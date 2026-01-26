@@ -290,6 +290,70 @@ The backend generates the following JSON files:
 
 **Total time: ~1.5 hours** for complete developer overview.
 
+## Entry Points
+
+**Main entry points** for using and developing the Viewer:
+
+### Application Entry Points
+
+1. **Production Access** (GitHub Pages)
+   - **Live URL**: [https://notes.osm.lat/](https://notes.osm.lat/)
+   - **Data Source**: [OSM-Notes-Data](https://github.com/OSM-Notes/OSM-Notes-Data) (GitHub Pages)
+
+2. **Local Development Server**
+   ```bash
+   # Option 1: Vite (recommended, with hot reload)
+   npm run dev
+   
+   # Option 2: Python HTTP server
+   npm run serve
+   # or: python3 -m http.server 8000 --directory src
+   
+   # Option 3: Node.js http-server
+   npx http-server src -p 8000
+   ```
+   Then open: `http://localhost:8000/src/index.html`
+
+### Development Entry Points
+
+1. **Build for Production**
+   ```bash
+   npm run build          # Build static files to dist/
+   npm run preview        # Preview production build locally
+   ```
+
+2. **Testing**
+   ```bash
+   npm test               # Run tests in watch mode
+   npm run test:run       # Run tests once
+   npm run test:coverage  # Run tests with coverage
+   ```
+
+3. **Data Validation**
+   ```bash
+   npm run validate       # Validate data files
+   npm run validate:all   # Validate all data files
+   ```
+
+4. **Create Sample Data** (for local testing)
+   ```bash
+   ./scripts/create-sample-data.sh
+   ```
+
+### Web Entry Points
+
+- **Home Page**: `/src/index.html` - Main application entry point
+- **User Profile**: `/src/index.html#/user/:username` - User profile view
+- **Country Profile**: `/src/index.html#/country/:countryId` - Country profile view
+- **Search**: `/src/index.html#/search` - Search interface
+
+### Configuration Entry Point
+
+- **API Configuration**: `config/api-config.js` - Configure data source URL
+  ```javascript
+  export const API_BASE_URL = 'https://your-cdn.com/api';
+  ```
+
 ### JSON Schema Validation
 
 To ensure data compatibility between the Analytics (producer) and Viewer (consumer) repositories,
