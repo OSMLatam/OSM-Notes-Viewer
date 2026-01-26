@@ -300,6 +300,8 @@ The backend generates the following JSON files:
 
 ## Requirements
 
+For complete installation instructions, see **[Installation and Dependencies Guide](docs/Installation_Dependencies.md)**.
+
 ### Application Requirements
 
 - **Modern web browser**: Chrome, Firefox, Safari, Edge (latest 2 versions)
