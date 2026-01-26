@@ -356,6 +356,12 @@ For complete installation instructions, see **[Installation and Dependencies Gui
 
 **Total time: ~1.5 hours** for complete developer overview.
 
+## Architecture Decision Records
+
+Architecture Decision Records (ADRs) document important architectural decisions made in this project:
+- [View all ADRs](docs/adr/)
+- [Central ADR Index](https://github.com/OSM-Notes/OSM-Notes-Common/blob/main/docs/adr/README.md)
+
 ## Entry Points
 
 **Main entry points** for using and developing the Viewer:
