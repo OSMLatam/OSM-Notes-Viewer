@@ -408,10 +408,12 @@ project:
 2. **Testing**
 
    ```bash
-   npm test               # Run tests in watch mode
+   npm test               # Run tests in watch mode (master test command)
    npm run test:run       # Run tests once
    npm run test:coverage  # Run tests with coverage
    ```
+   
+   **Master Test Command**: `npm test` or `npm run test:run` - Executes all tests using Vitest
 
 3. **Data Validation**
 
