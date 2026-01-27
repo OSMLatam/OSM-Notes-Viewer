@@ -21,49 +21,49 @@
  * });
  */
 export function debounce(fn, delay, options = {}) {
-    const { leading = false, trailing = true } = options;
-    let timeoutId = null;
-    let lastArgs = null;
-    let lastCallTime = null;
+  const { leading = false, trailing = true } = options;
+  let timeoutId = null;
+  let lastArgs = null;
+  let lastCallTime = null;
 
-    const debounced = function(...args) {
-        lastArgs = args;
-        lastCallTime = Date.now();
+  const debounced = function (...args) {
+    lastArgs = args;
+    lastCallTime = Date.now();
 
-        if (leading && timeoutId === null) {
-            fn.apply(this, args);
-        }
+    if (leading && timeoutId === null) {
+      fn.apply(this, args);
+    }
 
-        if (timeoutId !== null) {
-            clearTimeout(timeoutId);
-        }
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+    }
 
-        timeoutId = setTimeout(() => {
-            timeoutId = null;
-            if (trailing && lastCallTime !== null) {
-                fn.apply(this, lastArgs);
-            }
-        }, delay);
-    };
+    timeoutId = setTimeout(() => {
+      timeoutId = null;
+      if (trailing && lastCallTime !== null) {
+        fn.apply(this, lastArgs);
+      }
+    }, delay);
+  };
 
-    debounced.cancel = function() {
-        if (timeoutId !== null) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
-        }
-    };
+  debounced.cancel = function () {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
 
-    debounced.flush = function() {
-        if (timeoutId !== null) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
-            if (lastArgs !== null) {
-                fn.apply(this, lastArgs);
-            }
-        }
-    };
+  debounced.flush = function () {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+      if (lastArgs !== null) {
+        fn.apply(this, lastArgs);
+      }
+    }
+  };
 
-    return debounced;
+  return debounced;
 }
 
 /**
@@ -82,46 +82,49 @@ export function debounce(fn, delay, options = {}) {
  * window.addEventListener('scroll', throttledScroll);
  */
 export function throttle(fn, delay, options = {}) {
-    const { leading = true, trailing = true } = options;
-    let timeoutId = null;
-    let lastArgs = null;
-    let lastCallTime = 0;
+  const { leading = true, trailing = true } = options;
+  let timeoutId = null;
+  let lastArgs = null;
+  let lastCallTime = 0;
 
-    const throttled = function(...args) {
-        const now = Date.now();
-        lastArgs = args;
+  const throttled = function (...args) {
+    const now = Date.now();
+    lastArgs = args;
 
-        if (leading && now - lastCallTime >= delay) {
-            fn.apply(this, args);
-            lastCallTime = now;
-        } else if (trailing) {
-            if (timeoutId !== null) {
-                clearTimeout(timeoutId);
-            }
+    if (leading && now - lastCallTime >= delay) {
+      fn.apply(this, args);
+      lastCallTime = now;
+    } else if (trailing) {
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId);
+      }
 
-            timeoutId = setTimeout(() => {
-                timeoutId = null;
-                lastCallTime = Date.now();
-                fn.apply(this, lastArgs);
-            }, delay - (now - lastCallTime));
-        }
-    };
+      timeoutId = setTimeout(
+        () => {
+          timeoutId = null;
+          lastCallTime = Date.now();
+          fn.apply(this, lastArgs);
+        },
+        delay - (now - lastCallTime)
+      );
+    }
+  };
 
-    throttled.cancel = function() {
-        if (timeoutId !== null) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
-        }
-    };
+  throttled.cancel = function () {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
 
-    throttled.flush = function() {
-        if (timeoutId !== null) {
-            clearTimeout(timeoutId);
-            timeoutId = null;
-            lastCallTime = Date.now();
-            fn.apply(this, lastArgs);
-        }
-    };
+  throttled.flush = function () {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+      lastCallTime = Date.now();
+      fn.apply(this, lastArgs);
+    }
+  };
 
-    return throttled;
+  return throttled;
 }

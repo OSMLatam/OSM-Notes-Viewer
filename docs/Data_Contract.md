@@ -1,17 +1,18 @@
 ---
-title: "Data Contract Between Repositories"
-description: "This document defines the contract between the  (producer) and  (consumer) repositories to ensure data structure compatibility."
-version: "1.0.0"
-last_updated: "2026-01-25"
-author: "AngocA"
+title: 'Data Contract Between Repositories'
+description:
+  'This document defines the contract between the  (producer) and  (consumer) repositories to ensure
+  data structure compatibility.'
+version: '1.0.0'
+last_updated: '2026-01-25'
+author: 'AngocA'
 tags:
-  - "documentation"
+  - 'documentation'
 audience:
-  - "developers"
-project: "OSM-Notes-Viewer"
-status: "active"
+  - 'developers'
+project: 'OSM-Notes-Viewer'
+status: 'active'
 ---
-
 
 # Data Contract Between Repositories
 

@@ -81,7 +81,10 @@ export default defineConfig({
             proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS';
             proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type';
             // If redirected, rewrite location header to use proxy
-            if ((proxyRes.statusCode === 301 || proxyRes.statusCode === 302) && proxyRes.headers['location']) {
+            if (
+              (proxyRes.statusCode === 301 || proxyRes.statusCode === 302) &&
+              proxyRes.headers['location']
+            ) {
               const location = proxyRes.headers['location'];
               // If redirecting to custom domain, ignore it and use GitHub Pages URL directly
               // This handles cases where GitHub Pages redirects to a custom domain that doesn't have the data
@@ -109,4 +112,3 @@ export default defineConfig({
     },
   },
 });
-

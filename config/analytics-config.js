@@ -11,14 +11,13 @@ export const ANALYTICS_ENABLED = GA_MEASUREMENT_ID !== '';
 
 // Privacy settings
 export const ANALYTICS_CONFIG = {
-    // Anonymize IP addresses (GDPR compliance)
-    anonymizeIp: true,
-    
-    // Cookie settings
-    cookieFlags: 'SameSite=None;Secure',
-    
-    // Disable advertising features
-    allowGoogleSignals: false,
-    allowAdPersonalizationSignals: false
-};
+  // Anonymize IP addresses (GDPR compliance)
+  anonymizeIp: true,
 
+  // Cookie settings
+  cookieFlags: 'SameSite=None;Secure',
+
+  // Disable advertising features
+  allowGoogleSignals: false,
+  allowAdPersonalizationSignals: false,
+};

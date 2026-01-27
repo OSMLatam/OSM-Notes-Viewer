@@ -1,18 +1,19 @@
 ---
-title: "Features Documentation"
-description: "Complete list of features and capabilities of OSM Notes Viewer, including global statistics, user profiles, country profiles, and interactive visualizations"
-version: "1.0.0"
-last_updated: "2026-01-25"
-author: "AngocA"
+title: 'Features Documentation'
+description:
+  'Complete list of features and capabilities of OSM Notes Viewer, including global statistics, user
+  profiles, country profiles, and interactive visualizations'
+version: '1.0.0'
+last_updated: '2026-01-25'
+author: 'AngocA'
 tags:
-  - "features"
+  - 'features'
 audience:
-  - "users"
-  - "developers"
-project: "OSM-Notes-Viewer"
-status: "active"
+  - 'users'
+  - 'developers'
+project: 'OSM-Notes-Viewer'
+status: 'active'
 ---
-
 
 # Features Documentation
 

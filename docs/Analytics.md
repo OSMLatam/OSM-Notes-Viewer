@@ -1,17 +1,17 @@
 ---
-title: "Analytics Setup"
-description: "OSM Notes Viewer includes built-in analytics support using Google Analytics 4 (GA4). Analytics"
-version: "1.0.0"
-last_updated: "2026-01-25"
-author: "AngocA"
+title: 'Analytics Setup'
+description:
+  'OSM Notes Viewer includes built-in analytics support using Google Analytics 4 (GA4). Analytics'
+version: '1.0.0'
+last_updated: '2026-01-25'
+author: 'AngocA'
 tags:
-  - "documentation"
+  - 'documentation'
 audience:
-  - "developers"
-project: "OSM-Notes-Viewer"
-status: "active"
+  - 'developers'
+project: 'OSM-Notes-Viewer'
+status: 'active'
 ---
-
 
 # Analytics Setup
 

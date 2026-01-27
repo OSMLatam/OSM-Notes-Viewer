@@ -1,18 +1,19 @@
 ---
-title: "Hybrid Authentication Strategy"
-description: "Hybrid authentication strategy for OSM Notes Viewer, aligned with OSM-Notes-API model, where historical data is publicly accessible while recent data requires valid User-Agent"
-version: "1.0.0"
-last_updated: "2026-01-25"
-author: "AngocA"
+title: 'Hybrid Authentication Strategy'
+description:
+  'Hybrid authentication strategy for OSM Notes Viewer, aligned with OSM-Notes-API model, where
+  historical data is publicly accessible while recent data requires valid User-Agent'
+version: '1.0.0'
+last_updated: '2026-01-25'
+author: 'AngocA'
 tags:
-  - "security"
-  - "authentication"
+  - 'security'
+  - 'authentication'
 audience:
-  - "developers"
-project: "OSM-Notes-Viewer"
-status: "active"
+  - 'developers'
+project: 'OSM-Notes-Viewer'
+status: 'active'
 ---
-
 
 # Hybrid Authentication Strategy
 
@@ -77,17 +78,17 @@ The strategy divides data access into two levels:
 ```mermaid
 graph TD
     VIEWER[OSM Notes Viewer]
-    
+
     HISTORICAL[Historical Data JSON<br/>✅ Public<br/>✅ No Auth<br/>✅ Static<br/>✅ Daily]
-    
+
     REST_API[REST API Recent Data<br/>⚠️ User-Agent Required<br/>⚡ Rate Limited<br/>✅ Real-Time<br/>✅ 15 min update]
-    
+
     AUTH[Authentication Optional<br/>• OAuth 2.0 Optional<br/>• Only for specific functions]
-    
+
     VIEWER --> HISTORICAL
     VIEWER --> REST_API
     VIEWER --> AUTH
-    
+
     style VIEWER fill:#DDA0DD
     style HISTORICAL fill:#90EE90
     style REST_API fill:#FFE4B5

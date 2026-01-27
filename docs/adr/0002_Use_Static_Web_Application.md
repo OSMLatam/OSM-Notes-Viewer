@@ -7,6 +7,7 @@ Accepted
 ## Context
 
 We need to create a web application for viewing OSM Notes analytics. The application should be:
+
 - Fast to load
 - Easy to deploy
 - Low maintenance
@@ -15,7 +16,8 @@ We need to create a web application for viewing OSM Notes analytics. The applica
 
 ## Decision
 
-We will build a static web application using vanilla JavaScript, HTML, and CSS, deployable to GitHub Pages or any static hosting.
+We will build a static web application using vanilla JavaScript, HTML, and CSS, deployable to GitHub
+Pages or any static hosting.
 
 ## Consequences
 

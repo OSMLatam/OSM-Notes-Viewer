@@ -12,52 +12,52 @@ const osmAvatarCache = new Map();
  * @returns {Promise<string>} Avatar URL or empty string
  */
 export async function getOSMUserAvatar(userId) {
-    if (!userId) return '';
+  if (!userId) return '';
 
-    // Check cache first
-    if (osmAvatarCache.has(userId)) {
-        const cached = osmAvatarCache.get(userId);
-        if (cached === null) return ''; // Cached as "no avatar"
-        return cached;
-    }
+  // Check cache first
+  if (osmAvatarCache.has(userId)) {
+    const cached = osmAvatarCache.get(userId);
+    if (cached === null) return ''; // Cached as "no avatar"
+    return cached;
+  }
 
-    try {
-        // Fetch user details from OSM API v0.6 (XML format)
-        const response = await fetch(`https://www.openstreetmap.org/api/0.6/user/${userId}`, {
-            method: 'GET',
-        });
+  try {
+    // Fetch user details from OSM API v0.6 (XML format)
+    const response = await fetch(`https://www.openstreetmap.org/api/0.6/user/${userId}`, {
+      method: 'GET',
+    });
 
-        if (response.ok) {
-            const text = await response.text();
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(text, 'text/xml');
+    if (response.ok) {
+      const text = await response.text();
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(text, 'text/xml');
 
-            // OSM API returns XML like this:
-            // <osm version="0.6">
-            //   <user id="..." display_name="..." account_created="...">
-            //     <img href="https://..." />
-            //   </user>
-            // </osm>
+      // OSM API returns XML like this:
+      // <osm version="0.6">
+      //   <user id="..." display_name="..." account_created="...">
+      //     <img href="https://..." />
+      //   </user>
+      // </osm>
 
-            const userElement = xmlDoc.querySelector('user');
-            if (userElement) {
-                const imgElement = userElement.querySelector('img');
-                if (imgElement) {
-                    const href = imgElement.getAttribute('href');
-                    if (href && href.startsWith('http')) {
-                        osmAvatarCache.set(userId, href);
-                        return href;
-                    }
-                }
-            }
+      const userElement = xmlDoc.querySelector('user');
+      if (userElement) {
+        const imgElement = userElement.querySelector('img');
+        if (imgElement) {
+          const href = imgElement.getAttribute('href');
+          if (href && href.startsWith('http')) {
+            osmAvatarCache.set(userId, href);
+            return href;
+          }
         }
-    } catch (error) {
-        console.debug('Could not fetch OSM avatar:', error);
+      }
     }
+  } catch (error) {
+    console.debug('Could not fetch OSM avatar:', error);
+  }
 
-    // Cache null to avoid retrying
-    osmAvatarCache.set(userId, null);
-    return '';
+  // Cache null to avoid retrying
+  osmAvatarCache.set(userId, null);
+  return '';
 }
 
 /**
@@ -68,11 +68,11 @@ export async function getOSMUserAvatar(userId) {
  * @returns {string} Avatar URL
  */
 export function generateAvatarFromUsername(username, size = 200) {
-    if (!username) return '';
+  if (!username) return '';
 
-    // Use UI Avatars service to generate avatar from username
-    const encodedUsername = encodeURIComponent(username);
-    return `https://ui-avatars.com/api/?name=${encodedUsername}&size=${size}&background=random&color=fff&bold=true&format=svg`;
+  // Use UI Avatars service to generate avatar from username
+  const encodedUsername = encodeURIComponent(username);
+  return `https://ui-avatars.com/api/?name=${encodedUsername}&size=${size}&background=random&color=fff&bold=true&format=svg`;
 }
 
 /**
@@ -83,22 +83,22 @@ export function generateAvatarFromUsername(username, size = 200) {
  * @returns {Promise<string>} Avatar URL
  */
 export async function getUserAvatar(user, size = 200) {
-    if (!user) return '';
+  if (!user) return '';
 
-    // Try to get OSM avatar
-    if (user.user_id) {
-        const osmAvatar = await getOSMUserAvatar(user.user_id);
-        if (osmAvatar) {
-            return osmAvatar;
-        }
+  // Try to get OSM avatar
+  if (user.user_id) {
+    const osmAvatar = await getOSMUserAvatar(user.user_id);
+    if (osmAvatar) {
+      return osmAvatar;
     }
+  }
 
-    // Fallback: simple avatar generator based on username
-    if (user.username) {
-        return generateAvatarFromUsername(user.username, size);
-    }
+  // Fallback: simple avatar generator based on username
+  if (user.username) {
+    return generateAvatarFromUsername(user.username, size);
+  }
 
-    return '';
+  return '';
 }
 
 /**
@@ -109,18 +109,18 @@ export async function getUserAvatar(user, size = 200) {
  * @returns {string} Avatar URL
  */
 export function getUserAvatarSync(user, size = 200) {
-    if (!user || !user.username) return '';
+  if (!user || !user.username) return '';
 
-    // First check cache for OSM avatar
-    if (user.user_id && osmAvatarCache.has(user.user_id)) {
-        const cached = osmAvatarCache.get(user.user_id);
-        if (cached && cached.startsWith('http')) {
-            return cached;
-        }
+  // First check cache for OSM avatar
+  if (user.user_id && osmAvatarCache.has(user.user_id)) {
+    const cached = osmAvatarCache.get(user.user_id);
+    if (cached && cached.startsWith('http')) {
+      return cached;
     }
+  }
 
-    // Return generated avatar as fallback
-    return generateAvatarFromUsername(user.username, size);
+  // Return generated avatar as fallback
+  return generateAvatarFromUsername(user.username, size);
 }
 
 /**
@@ -130,19 +130,18 @@ export function getUserAvatarSync(user, size = 200) {
  * @returns {void}
  */
 export async function loadOSMAvatarInBackground(user, imgElement) {
-    if (!user || !user.user_id || !imgElement) return;
+  if (!user || !user.user_id || !imgElement) return;
 
-    try {
-        const osmAvatar = await getOSMUserAvatar(user.user_id);
-        if (osmAvatar && imgElement.src) {
-            // Only update if the current image is still the generated one
-            if (imgElement.src.includes('ui-avatars.com')) {
-                imgElement.src = osmAvatar;
-            }
-        }
-    } catch (error) {
-        // Silently fail, keep generated avatar
-        console.debug('Failed to load OSM avatar in background:', error);
+  try {
+    const osmAvatar = await getOSMUserAvatar(user.user_id);
+    if (osmAvatar && imgElement.src) {
+      // Only update if the current image is still the generated one
+      if (imgElement.src.includes('ui-avatars.com')) {
+        imgElement.src = osmAvatar;
+      }
     }
+  } catch (error) {
+    // Silently fail, keep generated avatar
+    console.debug('Failed to load OSM avatar in background:', error);
+  }
 }
-

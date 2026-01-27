@@ -1,18 +1,19 @@
 ---
-title: "Build Process Documentation"
-description: "Build process and deployment guide for OSM Notes Viewer using Vite as the build tool for optimized production builds"
-version: "1.0.0"
-last_updated: "2026-01-25"
-author: "AngocA"
+title: 'Build Process Documentation'
+description:
+  'Build process and deployment guide for OSM Notes Viewer using Vite as the build tool for
+  optimized production builds'
+version: '1.0.0'
+last_updated: '2026-01-25'
+author: 'AngocA'
 tags:
-  - "build"
-  - "deployment"
+  - 'build'
+  - 'deployment'
 audience:
-  - "developers"
-project: "OSM-Notes-Viewer"
-status: "active"
+  - 'developers'
+project: 'OSM-Notes-Viewer'
+status: 'active'
 ---
-
 
 # Build Process Documentation
 

@@ -8,64 +8,65 @@ import { getUserAvatarSync, loadOSMAvatarInBackground } from '../utils/userAvata
 
 // Helper function to format username with special styling
 function formatUsernameWithStyle(username) {
-    if (username === 'NeisBot') {
-        return `<span class="bot-username" title="Automated bot account">🤖 ${username}</span>`;
-    }
-    return username;
+  if (username === 'NeisBot') {
+    return `<span class="bot-username" title="Automated bot account">🤖 ${username}</span>`;
+  }
+  return username;
 }
 
 // Import pagination function from main.js
 function createPagination(page, totalPages, onPageChange, type) {
-    if (totalPages <= 1) return '';
+  if (totalPages <= 1) return '';
 
-    // Show always 5 pages when possible
-    let startPage = Math.max(1, page - 2);
-    let endPage = Math.min(totalPages, startPage + 4);
+  // Show always 5 pages when possible
+  let startPage = Math.max(1, page - 2);
+  let endPage = Math.min(totalPages, startPage + 4);
 
-    // Adjust start if we're near the end
-    if (endPage - startPage < 4) {
-        startPage = Math.max(1, endPage - 4);
+  // Adjust start if we're near the end
+  if (endPage - startPage < 4) {
+    startPage = Math.max(1, endPage - 4);
+  }
+
+  let html =
+    '<div class="pagination" style="display: flex; gap: 0.5rem; justify-content: center; margin: 1rem 0; flex-wrap: wrap;">';
+
+  // Previous button
+  if (page > 1) {
+    html += `<button onclick="applyFiltersAndDisplay('${type}', ${page - 1})" class="pagination-btn" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">← Anterior</button>`;
+  }
+
+  // Always show page 1 if not in range
+  if (startPage > 1) {
+    html += `<button onclick="applyFiltersAndDisplay('${type}', 1)" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">1</button>`;
+    if (startPage > 2) {
+      html += `<span style="padding: 0.5rem 0.25rem; color: var(--text-light);">...</span>`;
     }
+  }
 
-    let html = '<div class="pagination" style="display: flex; gap: 0.5rem; justify-content: center; margin: 1rem 0; flex-wrap: wrap;">';
-
-    // Previous button
-    if (page > 1) {
-        html += `<button onclick="applyFiltersAndDisplay('${type}', ${page - 1})" class="pagination-btn" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">← Anterior</button>`;
+  // Page numbers
+  for (let i = startPage; i <= endPage; i++) {
+    if (i === page) {
+      html += `<span style="padding: 0.5rem 1rem; background: var(--primary-color); color: white; border-radius: 4px;">${i}</span>`;
+    } else {
+      html += `<button onclick="applyFiltersAndDisplay('${type}', ${i})" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">${i}</button>`;
     }
+  }
 
-    // Always show page 1 if not in range
-    if (startPage > 1) {
-        html += `<button onclick="applyFiltersAndDisplay('${type}', 1)" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">1</button>`;
-        if (startPage > 2) {
-            html += `<span style="padding: 0.5rem 0.25rem; color: var(--text-light);">...</span>`;
-        }
+  // Always show last page if not in range
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      html += `<span style="padding: 0.5rem 0.25rem; color: var(--text-light);">...</span>`;
     }
+    html += `<button onclick="applyFiltersAndDisplay('${type}', ${totalPages})" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">${totalPages}</button>`;
+  }
 
-    // Page numbers
-    for (let i = startPage; i <= endPage; i++) {
-        if (i === page) {
-            html += `<span style="padding: 0.5rem 1rem; background: var(--primary-color); color: white; border-radius: 4px;">${i}</span>`;
-        } else {
-            html += `<button onclick="applyFiltersAndDisplay('${type}', ${i})" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">${i}</button>`;
-        }
-    }
+  // Next button
+  if (page < totalPages) {
+    html += `<button onclick="applyFiltersAndDisplay('${type}', ${page + 1})" class="pagination-btn" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">Siguiente →</button>`;
+  }
 
-    // Always show last page if not in range
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            html += `<span style="padding: 0.5rem 0.25rem; color: var(--text-light);">...</span>`;
-        }
-        html += `<button onclick="applyFiltersAndDisplay('${type}', ${totalPages})" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">${totalPages}</button>`;
-    }
-
-    // Next button
-    if (page < totalPages) {
-        html += `<button onclick="applyFiltersAndDisplay('${type}', ${page + 1})" class="pagination-btn" style="padding: 0.5rem 1rem; border: 1px solid #ddd; background: white; cursor: pointer; border-radius: 4px;">Siguiente →</button>`;
-    }
-
-    html += '</div>';
-    return html;
+  html += '</div>';
+  return html;
 }
 
 // State management
@@ -84,143 +85,140 @@ const MAX_COUNTRIES_PAGES = 50; // Show up to 10,000 countries (200 per page)
 
 // Filter and sort state
 const filters = {
-    users: {
-        sortBy: 'notes_closed', // notes_open, notes_closed, alphabetical_asc, alphabetical_desc
-        limit: MAX_USERS_PAGES
-    },
-    countries: {
-        sortBy: 'notes_closed',
-        limit: MAX_COUNTRIES_PAGES
-    }
+  users: {
+    sortBy: 'notes_closed', // notes_open, notes_closed, alphabetical_asc, alphabetical_desc
+    limit: MAX_USERS_PAGES,
+  },
+  countries: {
+    sortBy: 'notes_closed',
+    limit: MAX_COUNTRIES_PAGES,
+  },
 };
 
 // Make filters available globally
 window.exploreFilters = filters;
 
 // Global functions for sort buttons
-window.setUserSort = function(sortBy) {
-    filters.users.sortBy = sortBy;
-    applyFiltersAndDisplay('users', 1);
+window.setUserSort = function (sortBy) {
+  filters.users.sortBy = sortBy;
+  applyFiltersAndDisplay('users', 1);
 };
 
-window.setCountrySort = function(sortBy) {
-    filters.countries.sortBy = sortBy;
-    applyFiltersAndDisplay('countries', 1);
+window.setCountrySort = function (sortBy) {
+  filters.countries.sortBy = sortBy;
+  applyFiltersAndDisplay('countries', 1);
 };
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadAllData();
-    setupEventListeners();
+  await loadAllData();
+  setupEventListeners();
 });
 
 async function loadAllData() {
-    await Promise.all([
-        loadAllUsers(),
-        loadAllCountries()
-    ]);
+  await Promise.all([loadAllUsers(), loadAllCountries()]);
 }
 
 async function loadAllUsers() {
-    const container = document.getElementById('allUsers');
-    showLoading(container, 'Loading users...');
+  const container = document.getElementById('allUsers');
+  showLoading(container, 'Loading users...');
 
-    try {
-        allUsers = await apiClient.getUserIndex();
-        console.log('Loaded users:', allUsers.length);
+  try {
+    allUsers = await apiClient.getUserIndex();
+    console.log('Loaded users:', allUsers.length);
 
-        filteredUsers = [...allUsers];
-        applyFiltersAndDisplay('users');
-    } catch (error) {
-        console.error('Error loading users:', error);
-        showError(container, 'Failed to load users: ' + error.message);
-    }
+    filteredUsers = [...allUsers];
+    applyFiltersAndDisplay('users');
+  } catch (error) {
+    console.error('Error loading users:', error);
+    showError(container, 'Failed to load users: ' + error.message);
+  }
 }
 
 async function loadAllCountries() {
-    const container = document.getElementById('allCountries');
-    showLoading(container, 'Loading countries...');
+  const container = document.getElementById('allCountries');
+  showLoading(container, 'Loading countries...');
 
-    try {
-        allCountries = await apiClient.getCountryIndex();
-        console.log('Loaded countries:', allCountries.length);
+  try {
+    allCountries = await apiClient.getCountryIndex();
+    console.log('Loaded countries:', allCountries.length);
 
-        filteredCountries = [...allCountries];
-        applyFiltersAndDisplay('countries');
-    } catch (error) {
-        console.error('Error loading countries:', error);
-        showError(container, 'Failed to load countries: ' + error.message);
-    }
+    filteredCountries = [...allCountries];
+    applyFiltersAndDisplay('countries');
+  } catch (error) {
+    console.error('Error loading countries:', error);
+    showError(container, 'Failed to load countries: ' + error.message);
+  }
 }
 
 function setupEventListeners() {
-    // Event listeners are now handled inline via onclick in the buttons
-    // This function is kept for consistency but is essentially a no-op now
+  // Event listeners are now handled inline via onclick in the buttons
+  // This function is kept for consistency but is essentially a no-op now
 }
 
 function applyFiltersAndDisplay(type, page = 1) {
-    if (type === 'users') {
-        currentUsersPage = page;
-        const sorted = sortData(filteredUsers, filters.users.sortBy);
-        const totalPages = Math.min(MAX_USERS_PAGES, Math.ceil(sorted.length / USERS_PER_PAGE));
-        const startIndex = (page - 1) * USERS_PER_PAGE;
-        const endIndex = startIndex + USERS_PER_PAGE;
-        const limited = sorted.slice(startIndex, endIndex);
-        displayUsers(limited, page, totalPages);
-    } else if (type === 'countries') {
-        currentCountriesPage = page;
-        const sorted = sortData(filteredCountries, filters.countries.sortBy);
-        const totalPages = Math.min(MAX_COUNTRIES_PAGES, Math.ceil(sorted.length / COUNTRIES_PER_PAGE));
-        const startIndex = (page - 1) * COUNTRIES_PER_PAGE;
-        const endIndex = startIndex + COUNTRIES_PER_PAGE;
-        const limited = sorted.slice(startIndex, endIndex);
-        displayCountries(limited, page, totalPages);
-    }
+  if (type === 'users') {
+    currentUsersPage = page;
+    const sorted = sortData(filteredUsers, filters.users.sortBy);
+    const totalPages = Math.min(MAX_USERS_PAGES, Math.ceil(sorted.length / USERS_PER_PAGE));
+    const startIndex = (page - 1) * USERS_PER_PAGE;
+    const endIndex = startIndex + USERS_PER_PAGE;
+    const limited = sorted.slice(startIndex, endIndex);
+    displayUsers(limited, page, totalPages);
+  } else if (type === 'countries') {
+    currentCountriesPage = page;
+    const sorted = sortData(filteredCountries, filters.countries.sortBy);
+    const totalPages = Math.min(MAX_COUNTRIES_PAGES, Math.ceil(sorted.length / COUNTRIES_PER_PAGE));
+    const startIndex = (page - 1) * COUNTRIES_PER_PAGE;
+    const endIndex = startIndex + COUNTRIES_PER_PAGE;
+    const limited = sorted.slice(startIndex, endIndex);
+    displayCountries(limited, page, totalPages);
+  }
 }
 
 // Make applyFiltersAndDisplay available globally for onclick handlers
 window.applyFiltersAndDisplay = applyFiltersAndDisplay;
 
 function sortData(data, sortBy) {
-    const sorted = [...data];
+  const sorted = [...data];
 
-    switch (sortBy) {
-        case 'notes_open':
-            // Sort by open notes (descending)
-            return sorted.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
+  switch (sortBy) {
+    case 'notes_open':
+      // Sort by open notes (descending)
+      return sorted.sort((a, b) => (b.history_whole_open || 0) - (a.history_whole_open || 0));
 
-        case 'notes_closed':
-            // Sort by closed notes (descending)
-            return sorted.sort((a, b) => (b.history_whole_closed || 0) - (a.history_whole_closed || 0));
+    case 'notes_closed':
+      // Sort by closed notes (descending)
+      return sorted.sort((a, b) => (b.history_whole_closed || 0) - (a.history_whole_closed || 0));
 
-        case 'alphabetical_asc':
-            return sorted.sort((a, b) => {
-                const aName = a.username || a.country_name_en || a.country_name || '';
-                const bName = b.username || b.country_name_en || b.country_name || '';
-                return aName.localeCompare(bName);
-            });
+    case 'alphabetical_asc':
+      return sorted.sort((a, b) => {
+        const aName = a.username || a.country_name_en || a.country_name || '';
+        const bName = b.username || b.country_name_en || b.country_name || '';
+        return aName.localeCompare(bName);
+      });
 
-        case 'alphabetical_desc':
-            return sorted.sort((a, b) => {
-                const aName = a.username || a.country_name_en || a.country_name || '';
-                const bName = b.username || b.country_name_en || b.country_name || '';
-                return bName.localeCompare(aName);
-            });
+    case 'alphabetical_desc':
+      return sorted.sort((a, b) => {
+        const aName = a.username || a.country_name_en || a.country_name || '';
+        const bName = b.username || b.country_name_en || b.country_name || '';
+        return bName.localeCompare(aName);
+      });
 
-        default:
-            return sorted;
-    }
+    default:
+      return sorted;
+  }
 }
 
 function displayUsers(users, page = 1, totalPages = 1) {
-    const container = document.getElementById('allUsers');
+  const container = document.getElementById('allUsers');
 
-    if (users.length === 0) {
-        showEmpty(container, 'No users found');
-        return;
-    }
+  if (users.length === 0) {
+    showEmpty(container, 'No users found');
+    return;
+  }
 
-    const html = `
+  const html = `
         <div class="filters-container">
             <div class="filter-group" style="display: flex; gap: 0.5rem; align-items: center;">
                 <span style="font-weight: 600; color: var(--text-color);">Ordenar:</span>
@@ -251,7 +249,8 @@ function displayUsers(users, page = 1, totalPages = 1) {
         </div>
         ${createPagination(page, totalPages, (p) => applyFiltersAndDisplay('users', p), 'users')}
         <div class="explore-grid">
-            ${users.map(user => {
+            ${users
+              .map((user) => {
                 const avatarUrl = getUserAvatarSync(user, 40);
                 const osmProfileUrl = `https://www.openstreetmap.org/user/${encodeURIComponent(user.username)}`;
                 const hdycProfileUrl = `https://hdyc.neis-one.org/?${encodeURIComponent(user.username)}`;
@@ -268,41 +267,44 @@ function displayUsers(users, page = 1, totalPages = 1) {
                             <span style="font-size: 0.9rem;">⚡</span>
                         </a>
                     </div>
-                    <span class="explore-value">${filters.users.sortBy === 'notes_open'
+                    <span class="explore-value">${
+                      filters.users.sortBy === 'notes_open'
                         ? formatNumber(user.history_whole_open || 0) + ' notas abiertas'
-                        : formatNumber(user.history_whole_closed || 0) + ' notas cerradas'}</span>
+                        : formatNumber(user.history_whole_closed || 0) + ' notas cerradas'
+                    }</span>
                 </div>
             `;
-            }).join('')}
+              })
+              .join('')}
         </div>
     `;
 
-    container.innerHTML = html;
+  container.innerHTML = html;
 
-    // Load OSM avatars in background
-    const imgElements = container.querySelectorAll('img[data-user-id]');
-    imgElements.forEach((img) => {
-        const userId = parseInt(img.getAttribute('data-user-id'));
-        const username = img.alt;
-        if (userId && username) {
-            const userObj = { username, user_id: userId };
-            loadOSMAvatarInBackground(userObj, img);
-        }
-    });
+  // Load OSM avatars in background
+  const imgElements = container.querySelectorAll('img[data-user-id]');
+  imgElements.forEach((img) => {
+    const userId = parseInt(img.getAttribute('data-user-id'));
+    const username = img.alt;
+    if (userId && username) {
+      const userObj = { username, user_id: userId };
+      loadOSMAvatarInBackground(userObj, img);
+    }
+  });
 
-    // Re-attach event listeners
-    setupEventListeners();
+  // Re-attach event listeners
+  setupEventListeners();
 }
 
 function displayCountries(countries, page = 1, totalPages = 1) {
-    const container = document.getElementById('allCountries');
+  const container = document.getElementById('allCountries');
 
-    if (countries.length === 0) {
-        showEmpty(container, 'No countries found');
-        return;
-    }
+  if (countries.length === 0) {
+    showEmpty(container, 'No countries found');
+    return;
+  }
 
-    const html = `
+  const html = `
         <div class="filters-container">
             <div class="filter-group" style="display: flex; gap: 0.5rem; align-items: center;">
                 <span style="font-weight: 600; color: var(--text-color);">Ordenar:</span>
@@ -333,7 +335,8 @@ function displayCountries(countries, page = 1, totalPages = 1) {
         </div>
         ${createPagination(page, totalPages, (p) => applyFiltersAndDisplay('countries', p), 'countries')}
         <div class="explore-grid">
-            ${countries.map(country => {
+            ${countries
+              .map((country) => {
                 const countryName = country.country_name_en || country.country_name;
                 const countryFlag = getCountryFlagFromObject(country);
                 return `
@@ -341,18 +344,20 @@ function displayCountries(countries, page = 1, totalPages = 1) {
                     <div style="display: flex; align-items: center; gap: 0.75rem; min-height: 32px;">
                         <span class="explore-name">${countryFlag ? `${countryFlag} ` : ''}${countryName}</span>
                     </div>
-                    <span class="explore-value">${filters.countries.sortBy === 'notes_open'
+                    <span class="explore-value">${
+                      filters.countries.sortBy === 'notes_open'
                         ? formatNumber(country.history_whole_open || 0) + ' notas abiertas'
-                        : formatNumber(country.history_whole_closed || 0) + ' notas cerradas'}</span>
+                        : formatNumber(country.history_whole_closed || 0) + ' notas cerradas'
+                    }</span>
                 </div>
             `;
-            }).join('')}
+              })
+              .join('')}
         </div>
     `;
 
-    container.innerHTML = html;
+  container.innerHTML = html;
 
-    // Re-attach event listeners
-    setupEventListeners();
+  // Re-attach event listeners
+  setupEventListeners();
 }
-

@@ -9,15 +9,7 @@ export default defineConfig({
       enabled: false, // Disable for now due to Node 18 compatibility
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
-      exclude: [
-        'node_modules/',
-        'tests/',
-        'dist/',
-        '**/*.config.js',
-        '**/*.html'
-      ]
-    }
-  }
+      exclude: ['node_modules/', 'tests/', 'dist/', '**/*.config.js', '**/*.html'],
+    },
+  },
 });
-
-

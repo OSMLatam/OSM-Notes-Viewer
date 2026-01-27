@@ -13,17 +13,17 @@
  * getUserSubdir(23670762) // Returns "f/e/a"
  */
 export function getUserSubdir(userId) {
-    // Convert to number if string
-    const id = typeof userId === 'string' ? parseInt(userId, 10) : userId;
+  // Convert to number if string
+  const id = typeof userId === 'string' ? parseInt(userId, 10) : userId;
 
-    // Modulo 4096 for uniform distribution
-    const mod = id % 4096;
+  // Modulo 4096 for uniform distribution
+  const mod = id % 4096;
 
-    // Convert to hexadecimal with 3 digits (pad with zeros)
-    const hexMod = mod.toString(16).padStart(3, '0');
+  // Convert to hexadecimal with 3 digits (pad with zeros)
+  const hexMod = mod.toString(16).padStart(3, '0');
 
-    // Divide into 3 levels: first char, second char, third char
-    return `${hexMod[0]}/${hexMod[1]}/${hexMod[2]}`;
+  // Divide into 3 levels: first char, second char, third char
+  return `${hexMod[0]}/${hexMod[1]}/${hexMod[2]}`;
 }
 
 /**
@@ -35,8 +35,8 @@ export function getUserSubdir(userId) {
  * getUserPath(23670762) // Returns "/users/f/e/a/23670762.json"
  */
 export function getUserPath(userId) {
-    const subdir = getUserSubdir(userId);
-    return `/users/${subdir}/${userId}.json`;
+  const subdir = getUserSubdir(userId);
+  return `/users/${subdir}/${userId}.json`;
 }
 
 /**
@@ -48,5 +48,5 @@ export function getUserPath(userId) {
  * getUserUrl(12345, '/data') // Returns "/data/users/0/3/9/12345.json"
  */
 export function getUserUrl(userId, baseUrl = '') {
-    return `${baseUrl}${getUserPath(userId)}`;
+  return `${baseUrl}${getUserPath(userId)}`;
 }

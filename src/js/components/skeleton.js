@@ -6,13 +6,18 @@
  * @returns {string} HTML string
  */
 export function createStatSkeletons(count = 4) {
-    return Array(count).fill(0).map(() => `
+  return Array(count)
+    .fill(0)
+    .map(
+      () => `
         <div class="stat-card skeleton-stat">
             <div class="skeleton-icon"></div>
             <div class="skeleton-value"></div>
             <div class="skeleton-label"></div>
         </div>
-    `).join('');
+    `
+    )
+    .join('');
 }
 
 /**
@@ -21,13 +26,18 @@ export function createStatSkeletons(count = 4) {
  * @returns {string} HTML string
  */
 export function createLeaderboardSkeletons(count = 10) {
-    return Array(count).fill(0).map(() => `
+  return Array(count)
+    .fill(0)
+    .map(
+      () => `
         <div class="leaderboard-item skeleton-leaderboard">
             <div class="skeleton-rank"></div>
             <div class="skeleton-name"></div>
             <div class="skeleton-value"></div>
         </div>
-    `).join('');
+    `
+    )
+    .join('');
 }
 
 /**
@@ -36,12 +46,17 @@ export function createLeaderboardSkeletons(count = 10) {
  * @returns {string} HTML string
  */
 export function createSearchSkeletons(count = 5) {
-    return Array(count).fill(0).map(() => `
+  return Array(count)
+    .fill(0)
+    .map(
+      () => `
         <div class="search-result-item skeleton-search">
             <div class="skeleton-text-full"></div>
             <div class="skeleton-text-small"></div>
         </div>
-    `).join('');
+    `
+    )
+    .join('');
 }
 
 /**
@@ -50,12 +65,17 @@ export function createSearchSkeletons(count = 5) {
  * @returns {string} HTML string
  */
 export function createChartSkeletons(count = 5) {
-    return Array(count).fill(0).map(() => `
+  return Array(count)
+    .fill(0)
+    .map(
+      () => `
         <div class="chart-bar-item skeleton-chart">
             <div class="skeleton-label"></div>
             <div class="skeleton-bar"></div>
         </div>
-    `).join('');
+    `
+    )
+    .join('');
 }
 
 /**
@@ -63,7 +83,7 @@ export function createChartSkeletons(count = 5) {
  * @returns {string} HTML string
  */
 export function createProfileSkeleton() {
-    return `
+  return `
         <div class="skeleton-profile">
             <div class="skeleton-profile-header">
                 <div class="skeleton-avatar"></div>
@@ -80,10 +100,9 @@ export function createProfileSkeleton() {
 }
 
 export default {
-    createStatSkeletons,
-    createLeaderboardSkeletons,
-    createSearchSkeletons,
-    createChartSkeletons,
-    createProfileSkeleton
+  createStatSkeletons,
+  createLeaderboardSkeletons,
+  createSearchSkeletons,
+  createChartSkeletons,
+  createProfileSkeleton,
 };
-

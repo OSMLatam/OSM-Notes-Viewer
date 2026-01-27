@@ -20,40 +20,40 @@
  * );
  */
 export async function retryWithBackoff(fn, options = {}) {
-    const {
-        maxRetries = 3,
-        initialDelay = 1000,
-        maxDelay = 10000,
-        backoffMultiplier = 2,
-        shouldRetry = () => true
-    } = options;
+  const {
+    maxRetries = 3,
+    initialDelay = 1000,
+    maxDelay = 10000,
+    backoffMultiplier = 2,
+    shouldRetry = () => true,
+  } = options;
 
-    let lastError;
-    let delay = initialDelay;
+  let lastError;
+  let delay = initialDelay;
 
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-        try {
-            return await fn();
-        } catch (error) {
-            lastError = error;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error;
 
-            // Don't retry if we've exhausted attempts or if error shouldn't be retried
-            if (attempt >= maxRetries || !shouldRetry(error)) {
-                throw error;
-            }
+      // Don't retry if we've exhausted attempts or if error shouldn't be retried
+      if (attempt >= maxRetries || !shouldRetry(error)) {
+        throw error;
+      }
 
-            // Don't wait after the last attempt
-            if (attempt < maxRetries) {
-                // Wait before retrying
-                await new Promise(resolve => setTimeout(resolve, delay));
+      // Don't wait after the last attempt
+      if (attempt < maxRetries) {
+        // Wait before retrying
+        await new Promise((resolve) => setTimeout(resolve, delay));
 
-                // Calculate next delay with exponential backoff
-                delay = Math.min(delay * backoffMultiplier, maxDelay);
-            }
-        }
+        // Calculate next delay with exponential backoff
+        delay = Math.min(delay * backoffMultiplier, maxDelay);
+      }
     }
+  }
 
-    throw lastError;
+  throw lastError;
 }
 
 /**
@@ -62,32 +62,33 @@ export async function retryWithBackoff(fn, options = {}) {
  * @returns {boolean} True if error should be retried
  */
 export function isRetryableError(error) {
-    // Network errors (no response)
-    if (error.message && (
-        error.message.includes('Failed to fetch') ||
-        error.message.includes('NetworkError') ||
-        error.message.includes('network')
-    )) {
-        return true;
-    }
-
-    // 5xx server errors
-    if (error.status >= 500 && error.status < 600) {
-        return true;
-    }
-
-    // Rate limiting (429) - retry after delay
-    if (error.status === 429) {
-        return true;
-    }
-
-    // Don't retry client errors (4xx except 429)
-    if (error.status >= 400 && error.status < 500) {
-        return false;
-    }
-
-    // Retry other errors by default
+  // Network errors (no response)
+  if (
+    error.message &&
+    (error.message.includes('Failed to fetch') ||
+      error.message.includes('NetworkError') ||
+      error.message.includes('network'))
+  ) {
     return true;
+  }
+
+  // 5xx server errors
+  if (error.status >= 500 && error.status < 600) {
+    return true;
+  }
+
+  // Rate limiting (429) - retry after delay
+  if (error.status === 429) {
+    return true;
+  }
+
+  // Don't retry client errors (4xx except 429)
+  if (error.status >= 400 && error.status < 500) {
+    return false;
+  }
+
+  // Retry other errors by default
+  return true;
 }
 
 /**
@@ -98,22 +99,22 @@ export function isRetryableError(error) {
  * @returns {Promise<Response>} Fetch response
  */
 export async function fetchWithRetry(url, init = {}, retryOptions = {}) {
-    return retryWithBackoff(
-        async () => {
-            const response = await fetch(url, init);
+  return retryWithBackoff(
+    async () => {
+      const response = await fetch(url, init);
 
-            if (!response.ok) {
-                const error = new Error(`HTTP error! status: ${response.status}`);
-                error.status = response.status;
-                error.response = response;
-                throw error;
-            }
+      if (!response.ok) {
+        const error = new Error(`HTTP error! status: ${response.status}`);
+        error.status = response.status;
+        error.response = response;
+        throw error;
+      }
 
-            return response;
-        },
-        {
-            shouldRetry: isRetryableError,
-            ...retryOptions
-        }
-    );
+      return response;
+    },
+    {
+      shouldRetry: isRetryableError,
+      ...retryOptions,
+    }
+  );
 }

@@ -12,8 +12,8 @@
  * formatNumber(1000000) // Returns "1,000,000"
  */
 export function formatNumber(num) {
-    if (num === null || num === undefined) return '0';
-    return new Intl.NumberFormat('en-US').format(num);
+  if (num === null || num === undefined) return '0';
+  return new Intl.NumberFormat('en-US').format(num);
 }
 
 /**
@@ -24,41 +24,41 @@ export function formatNumber(num) {
  * formatDate("2024-01-15T12:00:00Z") // Returns "Jan 15, 2024, 12:00 PM"
  */
 export function formatDate(dateString) {
-    if (!dateString) return '-';
+  if (!dateString) return '-';
 
-    try {
-        const date = new Date(dateString);
-        const formatted = new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        }).format(date);
-        return formatted;
-    } catch (error) {
-        return dateString;
-    }
+  try {
+    const date = new Date(dateString);
+    const formatted = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+    return formatted;
+  } catch (error) {
+    return dateString;
+  }
 }
 
 export function formatDateWithBreak(dateString) {
-    if (!dateString) return '-';
+  if (!dateString) return '-';
 
-    try {
-        const date = new Date(dateString);
-        const datePart = new Intl.DateTimeFormat('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        }).format(date);
-        const timePart = new Intl.DateTimeFormat('en-US', {
-            hour: '2-digit',
-            minute: '2-digit'
-        }).format(date);
-        return `${datePart}<br>${timePart}`;
-    } catch (error) {
-        return dateString;
-    }
+  try {
+    const date = new Date(dateString);
+    const datePart = new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
+    const timePart = new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+    return `${datePart}<br>${timePart}`;
+  } catch (error) {
+    return dateString;
+  }
 }
 
 /**
@@ -69,25 +69,25 @@ export function formatDateWithBreak(dateString) {
  * formatRelativeTime("2024-01-15T10:00:00Z") // Returns "2 hours ago"
  */
 export function formatRelativeTime(dateString) {
-    if (!dateString) return '-';
+  if (!dateString) return '-';
 
-    try {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMins / 60);
-        const diffDays = Math.floor(diffHours / 24);
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
 
-        if (diffMins < 1) return 'just now';
-        if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-        if (diffDays < 30) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    if (diffDays < 30) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
 
-        return formatDate(dateString);
-    } catch (error) {
-        return dateString;
-    }
+    return formatDate(dateString);
+  } catch (error) {
+    return dateString;
+  }
 }
 
 /**
@@ -99,9 +99,9 @@ export function formatRelativeTime(dateString) {
  * formatPercentage(455, 1000) // Returns "45.5%"
  */
 export function formatPercentage(value, total) {
-    if (!total || total === 0) return '0%';
-    const percent = (value / total) * 100;
-    return `${percent.toFixed(1)}%`;
+  if (!total || total === 0) return '0%';
+  const percent = (value / total) * 100;
+  return `${percent.toFixed(1)}%`;
 }
 
 /**
@@ -113,8 +113,6 @@ export function formatPercentage(value, total) {
  * truncate("This is a very long text", 10) // Returns "This is a..."
  */
 export function truncate(text, maxLength = 50) {
-    if (!text || text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+  if (!text || text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
 }
-
-

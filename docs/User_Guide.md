@@ -1,18 +1,18 @@
 ---
-title: "User Guide"
-description: "OSM Notes Viewer is a web application for exploring and analyzing OpenStreetMap Notes. This guide"
-version: "1.0.0"
-last_updated: "2026-01-25"
-author: "AngocA"
+title: 'User Guide'
+description:
+  'OSM Notes Viewer is a web application for exploring and analyzing OpenStreetMap Notes. This guide'
+version: '1.0.0'
+last_updated: '2026-01-25'
+author: 'AngocA'
 tags:
-  - "guide"
+  - 'guide'
 audience:
-  - "users"
-  - "developers"
-project: "OSM-Notes-Viewer"
-status: "active"
+  - 'users'
+  - 'developers'
+project: 'OSM-Notes-Viewer'
+status: 'active'
 ---
-
 
 # User Guide
 

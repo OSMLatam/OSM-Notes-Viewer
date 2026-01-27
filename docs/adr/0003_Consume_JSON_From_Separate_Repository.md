@@ -7,13 +7,15 @@ Accepted
 ## Context
 
 The Viewer needs to consume analytics data. We need to decide how to structure the data delivery:
+
 - Should data be part of the Viewer repository?
 - Should data be in a separate repository?
 - How should data updates be handled?
 
 ## Decision
 
-We will consume JSON data from a separate repository (OSM-Notes-Data) served via GitHub Pages, rather than bundling data with the Viewer.
+We will consume JSON data from a separate repository (OSM-Notes-Data) served via GitHub Pages,
+rather than bundling data with the Viewer.
 
 ## Consequences
 
@@ -55,7 +57,8 @@ We will consume JSON data from a separate repository (OSM-Notes-Data) served via
 - **Description**: Use static JSON for most data, API for dynamic queries
 - **Pros**: Best of both worlds, performance where needed, flexibility where needed
 - **Cons**: Two data sources to maintain
-- **Why not chosen**: This is actually what we're doing - static JSON for Viewer, API for dynamic needs
+- **Why not chosen**: This is actually what we're doing - static JSON for Viewer, API for dynamic
+  needs
 
 ## References
 

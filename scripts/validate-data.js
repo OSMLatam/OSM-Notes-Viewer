@@ -44,13 +44,16 @@ let totalValidated = 0;
 function loadJSON(filePath) {
   try {
     const content = readFileSync(filePath, 'utf8');
-    
+
     // Try parsing as regular JSON first (single object or array)
     try {
       return JSON.parse(content);
     } catch (parseError) {
       // If that fails, try parsing as JSONL (one object per line)
-      const lines = content.trim().split('\n').filter(line => line.trim());
+      const lines = content
+        .trim()
+        .split('\n')
+        .filter((line) => line.trim());
       if (lines.length > 1) {
         // JSONL format: return array of objects
         return lines.map((line, index) => {
@@ -78,7 +81,10 @@ function loadSchema(schemaPath) {
     const schema = loadJSON(schemaPath);
     return ajv.compile(schema);
   } catch (error) {
-    console.error(`${colors.red}✗ Error loading schema ${schemaPath}:${colors.reset}`, error.message);
+    console.error(
+      `${colors.red}✗ Error loading schema ${schemaPath}:${colors.reset}`,
+      error.message
+    );
     throw error;
   }
 }
@@ -117,10 +123,14 @@ function validateMetadata() {
   console.log(`${colors.blue}Validating metadata...${colors.reset}`);
 
   const metadataPath = join(DATA_DIR, 'metadata.json');
-  
+
   if (!statSync(DATA_DIR).isDirectory() || !existsSync(metadataPath)) {
-    console.log(`${colors.yellow}! No metadata.json found (skipping - local test data not required)${colors.reset}`);
-    console.log(`${colors.blue}  Note: Production uses GitHub Pages data, local files are optional${colors.reset}`);
+    console.log(
+      `${colors.yellow}! No metadata.json found (skipping - local test data not required)${colors.reset}`
+    );
+    console.log(
+      `${colors.blue}  Note: Production uses GitHub Pages data, local files are optional${colors.reset}`
+    );
     console.log('');
     return;
   }
@@ -145,8 +155,12 @@ function validateIndex(indexFile, schemaFile, indexType) {
   console.log(`${colors.blue}Validating ${indexType} index...${colors.reset}`);
 
   if (!existsSync(indexFile)) {
-    console.log(`${colors.yellow}! No ${indexType} index found (skipping - local test data not required)${colors.reset}`);
-    console.log(`${colors.blue}  Note: Production uses GitHub Pages data, local files are optional${colors.reset}`);
+    console.log(
+      `${colors.yellow}! No ${indexType} index found (skipping - local test data not required)${colors.reset}`
+    );
+    console.log(
+      `${colors.blue}  Note: Production uses GitHub Pages data, local files are optional${colors.reset}`
+    );
     console.log('');
     return;
   }
@@ -168,7 +182,9 @@ function validateIndex(indexFile, schemaFile, indexType) {
         console.error(`  (${schema.errors.length} total issues - showing first)`);
       }
     }
-    console.log(`${colors.blue}  Note: This is test data, some validation issues are acceptable${colors.reset}`);
+    console.log(
+      `${colors.blue}  Note: This is test data, some validation issues are acceptable${colors.reset}`
+    );
     // Don't increment totalErrors for test data validation issues
     totalValidated++;
     console.log('');
@@ -177,7 +193,9 @@ function validateIndex(indexFile, schemaFile, indexType) {
 
   // If it's an array, show count
   if (Array.isArray(data)) {
-    console.log(`${colors.green}✓ All ${data.length} ${indexType} entries are valid${colors.reset}`);
+    console.log(
+      `${colors.green}✓ All ${data.length} ${indexType} entries are valid${colors.reset}`
+    );
   } else {
     console.log(`${colors.green}✓ ${indexType} index is valid${colors.reset}`);
   }
@@ -190,28 +208,38 @@ function validateIndex(indexFile, schemaFile, indexType) {
  * Validate profile files (users or countries)
  */
 function validateProfiles(profilesDir, schemaFile, profileType, sampleSize = null) {
-  console.log(`${colors.blue}Validating ${profileType} profiles${sampleSize ? ` (sample of ${sampleSize})` : ''}...${colors.reset}`);
+  console.log(
+    `${colors.blue}Validating ${profileType} profiles${sampleSize ? ` (sample of ${sampleSize})` : ''}...${colors.reset}`
+  );
 
   const schema = loadSchema(schemaFile);
 
   try {
     // Check if directory exists
     if (!existsSync(profilesDir)) {
-      console.log(`${colors.yellow}! No ${profileType} profiles directory found (skipping - local test data not required)${colors.reset}`);
-      console.log(`${colors.blue}  Note: Production uses GitHub Pages data, local files are optional${colors.reset}`);
+      console.log(
+        `${colors.yellow}! No ${profileType} profiles directory found (skipping - local test data not required)${colors.reset}`
+      );
+      console.log(
+        `${colors.blue}  Note: Production uses GitHub Pages data, local files are optional${colors.reset}`
+      );
       console.log('');
       return;
     }
 
     const files = readdirSync(profilesDir)
-      .filter(f => f.endsWith('.json'))
-      .map(f => join(profilesDir, f));
+      .filter((f) => f.endsWith('.json'))
+      .map((f) => join(profilesDir, f));
 
     const filesToCheck = sampleSize ? files.slice(0, sampleSize) : files;
 
     if (filesToCheck.length === 0) {
-      console.log(`${colors.yellow}! No ${profileType} profile files found (skipping - local test data not required)${colors.reset}`);
-      console.log(`${colors.blue}  Note: Production uses GitHub Pages data, local files are optional${colors.reset}`);
+      console.log(
+        `${colors.yellow}! No ${profileType} profile files found (skipping - local test data not required)${colors.reset}`
+      );
+      console.log(
+        `${colors.blue}  Note: Production uses GitHub Pages data, local files are optional${colors.reset}`
+      );
       totalValidated++;
       console.log('');
       return;
@@ -240,9 +268,13 @@ function validateProfiles(profilesDir, schemaFile, profileType, sampleSize = nul
     });
 
     if (errorCount === 0) {
-      console.log(`${colors.green}✓ All ${filesToCheck.length} ${profileType} profiles are valid${colors.reset}`);
+      console.log(
+        `${colors.green}✓ All ${filesToCheck.length} ${profileType} profiles are valid${colors.reset}`
+      );
     } else {
-      console.error(`${colors.red}✗ ${errorCount} out of ${filesToCheck.length} profiles failed validation${colors.reset}`);
+      console.error(
+        `${colors.red}✗ ${errorCount} out of ${filesToCheck.length} profiles failed validation${colors.reset}`
+      );
       totalErrors += errorCount;
     }
 
@@ -325,4 +357,3 @@ function main() {
 
 // Run main function
 main();
-

@@ -8,119 +8,121 @@ import { i18n } from '../utils/i18n.js';
  * @param {string} title - Title for the heatmap
  */
 export function renderWorkingHoursHeatmap(workingHours, container, title = 'Working Hours') {
-    if (!workingHours || workingHours.length === 0) {
-        container.innerHTML = '<p class="text-light">No working hours data available</p>';
-        return;
-    }
+  if (!workingHours || workingHours.length === 0) {
+    container.innerHTML = '<p class="text-light">No working hours data available</p>';
+    return;
+  }
 
-    // Create data matrix (7 days x 24 hours)
-    const matrix = createDataMatrix(workingHours);
+  // Create data matrix (7 days x 24 hours)
+  const matrix = createDataMatrix(workingHours);
 
-    // Create SVG heatmap
-    const svg = createWorkingHoursSVG(matrix, title);
-    container.innerHTML = svg;
+  // Create SVG heatmap
+  const svg = createWorkingHoursSVG(matrix, title);
+  container.innerHTML = svg;
 }
 
 function createDataMatrix(workingHours) {
-    // Create 7x24 matrix (days x hours)
-    const matrix = Array(7).fill(null).map(() => Array(24).fill(0));
+  // Create 7x24 matrix (days x hours)
+  const matrix = Array(7)
+    .fill(null)
+    .map(() => Array(24).fill(0));
 
-    // Fill matrix with data
-    workingHours.forEach(item => {
-        const dayIndex = item.day_of_week; // 0=Sunday, 6=Saturday
-        const hourIndex = item.hour_of_day; // 0-23
-        const count = item.count || 0;
+  // Fill matrix with data
+  workingHours.forEach((item) => {
+    const dayIndex = item.day_of_week; // 0=Sunday, 6=Saturday
+    const hourIndex = item.hour_of_day; // 0-23
+    const count = item.count || 0;
 
-        if (dayIndex >= 0 && dayIndex < 7 && hourIndex >= 0 && hourIndex < 24) {
-            matrix[dayIndex][hourIndex] = count;
-        }
-    });
+    if (dayIndex >= 0 && dayIndex < 7 && hourIndex >= 0 && hourIndex < 24) {
+      matrix[dayIndex][hourIndex] = count;
+    }
+  });
 
-    return matrix;
+  return matrix;
 }
 
 function createWorkingHoursSVG(matrix, title) {
-    const cellSize = 16;
-    const cellGap = 2;
-    const labelWidth = 60;
-    const labelHeight = 20;
-    const titleHeight = 25;
+  const cellSize = 16;
+  const cellGap = 2;
+  const labelWidth = 60;
+  const labelHeight = 20;
+  const titleHeight = 25;
 
-    const hours = 24;
-    const days = 7;
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const hours = 24;
+  const days = 7;
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-    const width = labelWidth + (hours * (cellSize + cellGap));
-    const height = titleHeight + labelHeight + (days * (cellSize + cellGap));
+  const width = labelWidth + hours * (cellSize + cellGap);
+  const height = titleHeight + labelHeight + days * (cellSize + cellGap);
 
-    // Find max value for color scaling
-    const maxValue = Math.max(...matrix.flat());
+  // Find max value for color scaling
+  const maxValue = Math.max(...matrix.flat());
 
-    let content = '';
+  let content = '';
 
-    // Title
-    content += `<text x="${width / 2}" y="18" class="heatmap-title" text-anchor="middle">${title}</text>`;
+  // Title
+  content += `<text x="${width / 2}" y="18" class="heatmap-title" text-anchor="middle">${title}</text>`;
 
-    // Day labels
-    for (let day = 0; day < days; day++) {
-        const y = titleHeight + labelHeight + (day * (cellSize + cellGap)) + (cellSize / 2);
-        content += `<text x="5" y="${y + 4}" class="day-label">${dayNames[day]}</text>`;
-    }
+  // Day labels
+  for (let day = 0; day < days; day++) {
+    const y = titleHeight + labelHeight + day * (cellSize + cellGap) + cellSize / 2;
+    content += `<text x="5" y="${y + 4}" class="day-label">${dayNames[day]}</text>`;
+  }
 
-    // Hour labels (show every 4 hours)
-    for (let hour = 0; hour < hours; hour += 4) {
-        const x = labelWidth + (hour * (cellSize + cellGap)) + (cellSize / 2);
-        content += `<text x="${x}" y="${titleHeight + 15}" class="hour-label" text-anchor="middle">${hour}h</text>`;
-    }
+  // Hour labels (show every 4 hours)
+  for (let hour = 0; hour < hours; hour += 4) {
+    const x = labelWidth + hour * (cellSize + cellGap) + cellSize / 2;
+    content += `<text x="${x}" y="${titleHeight + 15}" class="hour-label" text-anchor="middle">${hour}h</text>`;
+  }
 
-    // Cells
-    for (let day = 0; day < days; day++) {
-        for (let hour = 0; hour < hours; hour++) {
-            const value = matrix[day][hour];
-            const x = labelWidth + (hour * (cellSize + cellGap));
-            const y = titleHeight + labelHeight + (day * (cellSize + cellGap));
-            const color = getHeatColor(value, maxValue);
+  // Cells
+  for (let day = 0; day < days; day++) {
+    for (let hour = 0; hour < hours; hour++) {
+      const value = matrix[day][hour];
+      const x = labelWidth + hour * (cellSize + cellGap);
+      const y = titleHeight + labelHeight + day * (cellSize + cellGap);
+      const color = getHeatColor(value, maxValue);
 
-            content += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}"
+      content += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}"
                         fill="${color}" rx="2" class="hour-cell"
                         data-day="${dayNames[day]}" data-hour="${hour}" data-value="${value}">
                         <title>${dayNames[day]} ${hour}:00 - ${value} activities</title>
                       </rect>`;
-        }
     }
+  }
 
-    // Legend
-    const legendY = height + 20;
+  // Legend
+  const legendY = height + 20;
 
-    // Get translations with fallback
-    let lessLabel = 'Less';
-    let moreLabel = 'More';
-    try {
-        if (i18n && typeof i18n.t === 'function') {
-            const less = i18n.t('user.workingHours.legend.less');
-            const more = i18n.t('user.workingHours.legend.more');
-            if (less && less !== 'user.workingHours.legend.less') lessLabel = less;
-            if (more && more !== 'user.workingHours.legend.more') moreLabel = more;
-        }
-    } catch (e) {
-        // Use defaults
+  // Get translations with fallback
+  let lessLabel = 'Less';
+  let moreLabel = 'More';
+  try {
+    if (i18n && typeof i18n.t === 'function') {
+      const less = i18n.t('user.workingHours.legend.less');
+      const more = i18n.t('user.workingHours.legend.more');
+      if (less && less !== 'user.workingHours.legend.less') lessLabel = less;
+      if (more && more !== 'user.workingHours.legend.more') moreLabel = more;
     }
+  } catch (e) {
+    // Use defaults
+  }
 
-    const legendItems = [
-        { label: lessLabel, color: '#ebedf0' },
-        { label: moreLabel, color: '#216e39' }
-    ];
+  const legendItems = [
+    { label: lessLabel, color: '#ebedf0' },
+    { label: moreLabel, color: '#216e39' },
+  ];
 
-    let legendContent = '';
-    legendItems.forEach((item, index) => {
-        const x = 10 + (index * 80);
-        legendContent += `
+  let legendContent = '';
+  legendItems.forEach((item, index) => {
+    const x = 10 + index * 80;
+    legendContent += `
             <rect x="${x}" y="${legendY}" width="12" height="12" fill="${item.color}" rx="2"></rect>
             <text x="${x + 18}" y="${legendY + 9}" class="legend-text">${item.label}</text>
         `;
-    });
+  });
 
-    return `
+  return `
         <div class="working-hours-container">
             <svg width="${width}" height="${height + 40}" class="working-hours-svg">
                 ${content}
@@ -131,16 +133,16 @@ function createWorkingHoursSVG(matrix, title) {
 }
 
 function getHeatColor(value, maxValue) {
-    if (value === 0) return '#ebedf0';
+  if (value === 0) return '#ebedf0';
 
-    const intensity = value / maxValue;
+  const intensity = value / maxValue;
 
-    // GitHub-style color scheme
-    if (intensity < 0.1) return '#c6e48b';
-    if (intensity < 0.2) return '#7bc96f';
-    if (intensity < 0.3) return '#239a3b';
-    if (intensity < 0.4) return '#196127';
-    return '#0e4429';
+  // GitHub-style color scheme
+  if (intensity < 0.1) return '#c6e48b';
+  if (intensity < 0.2) return '#7bc96f';
+  if (intensity < 0.3) return '#239a3b';
+  if (intensity < 0.4) return '#196127';
+  return '#0e4429';
 }
 
 /**
@@ -151,78 +153,96 @@ function getHeatColor(value, maxValue) {
  * @param {HTMLElement} container - Container element
  * @param {string} context - Context: 'user' or 'country'
  */
-export function renderWorkingHoursSection(openingHours, commentingHours, closingHours, container, context = 'user') {
-    // Helper function to safely get translations
-    const safeT = (key) => {
-        try {
-            if (i18n && typeof i18n.t === 'function') {
-                const result = i18n.t(key);
-                // If result is the same as key, translation not found
-                return result && result !== key ? result : getDefaultTranslation(key, context);
-            }
-            return getDefaultTranslation(key, context);
-        } catch (e) {
-            return getDefaultTranslation(key, context);
-        }
+export function renderWorkingHoursSection(
+  openingHours,
+  commentingHours,
+  closingHours,
+  container,
+  context = 'user'
+) {
+  // Helper function to safely get translations
+  const safeT = (key) => {
+    try {
+      if (i18n && typeof i18n.t === 'function') {
+        const result = i18n.t(key);
+        // If result is the same as key, translation not found
+        return result && result !== key ? result : getDefaultTranslation(key, context);
+      }
+      return getDefaultTranslation(key, context);
+    } catch (e) {
+      return getDefaultTranslation(key, context);
+    }
+  };
+
+  // Default translations
+  function getDefaultTranslation(key, ctx) {
+    const defaults = {
+      'user.workingHours.opening': 'Opening Notes',
+      'user.workingHours.commenting': 'Commenting',
+      'user.workingHours.closing': 'Closing Notes',
+      'country.workingHours.opening': 'Opening Notes',
+      'country.workingHours.commenting': 'Commenting',
+      'country.workingHours.closing': 'Closing Notes',
     };
+    return defaults[key] || 'Working Hours';
+  }
 
-    // Default translations
-    function getDefaultTranslation(key, ctx) {
-        const defaults = {
-            'user.workingHours.opening': 'Opening Notes',
-            'user.workingHours.commenting': 'Commenting',
-            'user.workingHours.closing': 'Closing Notes',
-            'country.workingHours.opening': 'Opening Notes',
-            'country.workingHours.commenting': 'Commenting',
-            'country.workingHours.closing': 'Closing Notes'
-        };
-        return defaults[key] || 'Working Hours';
-    }
+  let html = '<div class="working-hours-section">';
 
-    let html = '<div class="working-hours-section">';
-
-    // Opening hours
-    if (openingHours && openingHours.length > 0) {
-        html += '<div class="heatmap-subsection">';
-        html += `<h4>${safeT(`${context}.workingHours.opening`)}</h4>`;
-        html += '<div id="openingHeatmap"></div>';
-        html += '</div>';
-    }
-
-    // Commenting hours
-    if (commentingHours && commentingHours.length > 0) {
-        html += '<div class="heatmap-subsection">';
-        html += `<h4>${safeT(`${context}.workingHours.commenting`)}</h4>`;
-        html += '<div id="commentingHeatmap"></div>';
-        html += '</div>';
-    }
-
-    // Closing hours
-    if (closingHours && closingHours.length > 0) {
-        html += '<div class="heatmap-subsection">';
-        html += `<h4>${safeT(`${context}.workingHours.closing`)}</h4>`;
-        html += '<div id="closingHeatmap"></div>';
-        html += '</div>';
-    }
-
+  // Opening hours
+  if (openingHours && openingHours.length > 0) {
+    html += '<div class="heatmap-subsection">';
+    html += `<h4>${safeT(`${context}.workingHours.opening`)}</h4>`;
+    html += '<div id="openingHeatmap"></div>';
     html += '</div>';
-    container.innerHTML = html;
+  }
 
-    // Render individual heatmaps
-    if (openingHours && openingHours.length > 0) {
-        const openingContainer = container.querySelector('#openingHeatmap');
-        renderWorkingHoursHeatmap(openingHours, openingContainer, safeT(`${context}.workingHours.opening`));
-    }
+  // Commenting hours
+  if (commentingHours && commentingHours.length > 0) {
+    html += '<div class="heatmap-subsection">';
+    html += `<h4>${safeT(`${context}.workingHours.commenting`)}</h4>`;
+    html += '<div id="commentingHeatmap"></div>';
+    html += '</div>';
+  }
 
-    if (commentingHours && commentingHours.length > 0) {
-        const commentingContainer = container.querySelector('#commentingHeatmap');
-        renderWorkingHoursHeatmap(commentingHours, commentingContainer, safeT(`${context}.workingHours.commenting`));
-    }
+  // Closing hours
+  if (closingHours && closingHours.length > 0) {
+    html += '<div class="heatmap-subsection">';
+    html += `<h4>${safeT(`${context}.workingHours.closing`)}</h4>`;
+    html += '<div id="closingHeatmap"></div>';
+    html += '</div>';
+  }
 
-    if (closingHours && closingHours.length > 0) {
-        const closingContainer = container.querySelector('#closingHeatmap');
-        renderWorkingHoursHeatmap(closingHours, closingContainer, safeT(`${context}.workingHours.closing`));
-    }
+  html += '</div>';
+  container.innerHTML = html;
+
+  // Render individual heatmaps
+  if (openingHours && openingHours.length > 0) {
+    const openingContainer = container.querySelector('#openingHeatmap');
+    renderWorkingHoursHeatmap(
+      openingHours,
+      openingContainer,
+      safeT(`${context}.workingHours.opening`)
+    );
+  }
+
+  if (commentingHours && commentingHours.length > 0) {
+    const commentingContainer = container.querySelector('#commentingHeatmap');
+    renderWorkingHoursHeatmap(
+      commentingHours,
+      commentingContainer,
+      safeT(`${context}.workingHours.commenting`)
+    );
+  }
+
+  if (closingHours && closingHours.length > 0) {
+    const closingContainer = container.querySelector('#closingHeatmap');
+    renderWorkingHoursHeatmap(
+      closingHours,
+      closingContainer,
+      safeT(`${context}.workingHours.closing`)
+    );
+  }
 }
 
 // Add CSS styles
@@ -293,5 +313,3 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
-
-
