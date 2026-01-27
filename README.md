@@ -584,6 +584,17 @@ Contributions are welcome! Please read [CONTRIBUTING.md](docs/CONTRIBUTING.md) f
 For complete information about the OSM-Notes ecosystem and all 8 projects, see the
 [OSM-Notes Ecosystem](#osm-notes-ecosystem) section above.
 
+## GDPR Compliance
+
+**Important:** This web application displays data that may contain personal information from OpenStreetMap, including usernames and geographic locations. We are committed to GDPR compliance.
+
+GDPR compliance mechanisms are implemented in the base project **OSM-Notes-Ingestion**. For detailed information about GDPR compliance, data processing, retention, and data subject rights, please refer to:
+
+- **GDPR Privacy Policy:** [OSM-Notes-Ingestion/docs/GDPR_Privacy_Policy.md](https://github.com/OSM-Notes/OSM-Notes-Ingestion/blob/main/docs/GDPR_Privacy_Policy.md)
+- **GDPR Procedures:** [OSM-Notes-Ingestion/docs/GDPR_Procedures.md](https://github.com/OSM-Notes/OSM-Notes-Ingestion/blob/main/docs/GDPR_Procedures.md) - Procedures for handling data subject requests
+
+This Viewer application consumes data from OSM-Notes-Data (which originates from OSM-Notes-Ingestion) and is subject to the same GDPR compliance measures.
+
 ## License
 
 This project is licensed under the GNU General Public License v3.0 - see [LICENSE](LICENSE) file for details.
