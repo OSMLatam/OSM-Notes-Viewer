@@ -12,7 +12,7 @@ on:
     branches: [main, develop]
   schedule:
     # Run weekly on Monday at 2am UTC
-    - cron: "0 2 * * 1"
+    - cron: '0 2 * * 1'
   workflow_dispatch:
 
 permissions:
