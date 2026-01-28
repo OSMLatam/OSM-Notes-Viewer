@@ -222,101 +222,78 @@ async function loadNote(noteId) {
 }
 
 /**
+ * Parse a single GeoJSON Feature into note data
+ * @param {Object} feature - GeoJSON Feature object
+ * @param {number|string} noteId - Note ID
+ * @returns {Object} Parsed note data
+ */
+function parseFeature(feature, noteId) {
+  if (!feature.geometry || !feature.geometry.coordinates) {
+    throw new Error('Invalid Feature: missing geometry');
+  }
+
+  const [lon, lat] = feature.geometry.coordinates;
+  const properties = feature.properties || {};
+  const comments = properties.comments || [];
+
+  // Get note text from first comment (creation comment)
+  const firstComment = comments.length > 0 ? comments[0] : null;
+  const noteText = firstComment?.text || '';
+
+  return {
+    id: parseInt(properties.id || noteId, 10),
+    lat: lat,
+    lon: lon,
+    status: properties.status || 'open',
+    dateCreated: properties.date_created || properties.created_at || firstComment?.date,
+    dateClosed: properties.date_closed || properties.closed_at,
+    comments: comments.map((comment) => {
+      // Handle both formats: user as object or user/uid directly in comment
+      let userData = null;
+      if (comment.user && typeof comment.user === 'object') {
+        // User is an object
+        userData = {
+          uid: comment.user.uid || comment.user.id,
+          user: comment.user.user || comment.user.username || 'Anonymous',
+        };
+      } else if (comment.uid || comment.user) {
+        // User data is directly in comment (OSM API format)
+        userData = {
+          uid: comment.uid || null,
+          user: comment.user || 'Anonymous',
+        };
+      }
+
+      return {
+        date: comment.date,
+        user: userData,
+        text: comment.text || '',
+        action: comment.action || 'commented',
+      };
+    }),
+    text: noteText,
+    properties: properties,
+  };
+}
+
+/**
  * Parse note data from OSM API response
- * @param {Object} data - API response data
+ * @param {Object} data - API response data (FeatureCollection or Feature)
  * @param {number|string} noteId - Note ID
  * @returns {Object} Parsed note data
  */
 function parseNoteData(data, noteId) {
-  // Handle GeoJSON format (current OSM Notes API)
+  // Handle GeoJSON FeatureCollection format (current OSM Notes API standard)
+  if (data.type === 'FeatureCollection' && data.features && data.features.length > 0) {
+    return parseFeature(data.features[0], noteId);
+  }
+
+  // Handle GeoJSON Feature format (single feature, less common)
   if (data.type === 'Feature' && data.geometry && data.geometry.coordinates) {
-    const [lon, lat] = data.geometry.coordinates;
-    const properties = data.properties || {};
-    const comments = properties.comments || [];
-
-    // Get note text from first comment (creation comment)
-    const firstComment = comments.length > 0 ? comments[0] : null;
-    const noteText = firstComment?.text || '';
-
-    return {
-      id: parseInt(properties.id || noteId, 10),
-      lat: lat,
-      lon: lon,
-      status: properties.status || 'open',
-      dateCreated: properties.date_created || properties.created_at || firstComment?.date,
-      dateClosed: properties.date_closed || properties.closed_at,
-      comments: comments.map((comment) => {
-        // Handle both formats: user as object or user/uid directly in comment
-        let userData = null;
-        if (comment.user && typeof comment.user === 'object') {
-          // User is an object
-          userData = {
-            uid: comment.user.uid || comment.user.id,
-            user: comment.user.user || comment.user.username || 'Anonymous',
-          };
-        } else if (comment.uid || comment.user) {
-          // User data is directly in comment (OSM API format)
-          userData = {
-            uid: comment.uid || null,
-            user: comment.user || 'Anonymous',
-          };
-        }
-
-        return {
-          date: comment.date,
-          user: userData,
-          text: comment.text || '',
-          action: comment.action || 'commented',
-        };
-      }),
-      text: noteText,
-      properties: properties,
-    };
+    return parseFeature(data, noteId);
   }
 
-  // Handle old API format (backup)
-  if (data.elements && data.elements.length > 0) {
-    const note = data.elements[0];
-    const comments = note.comments || [];
-    const firstComment = comments.length > 0 ? comments[0] : null;
-
-    return {
-      id: parseInt(note.id || noteId, 10),
-      lat: parseFloat(note.lat),
-      lon: parseFloat(note.lon),
-      status: note.status || 'open',
-      dateCreated: note.date_created || note.created_at || firstComment?.date,
-      dateClosed: note.date_closed || note.closed_at,
-      comments: comments.map((comment) => {
-        // Handle both formats: user as object or user/uid directly in comment
-        let userData = null;
-        if (comment.user && typeof comment.user === 'object') {
-          // User is an object
-          userData = {
-            uid: comment.user.uid || comment.user.id,
-            user: comment.user.user || comment.user.username || 'Anonymous',
-          };
-        } else if (comment.uid || comment.user) {
-          // User data is directly in comment (OSM API format)
-          userData = {
-            uid: comment.uid || null,
-            user: comment.user || 'Anonymous',
-          };
-        }
-
-        return {
-          date: comment.date,
-          user: userData,
-          text: comment.text || '',
-          action: comment.action || 'commented',
-        };
-      }),
-      text: firstComment?.text || '',
-      properties: note,
-    };
-  }
-
-  throw new Error('Invalid note data format');
+  throw new Error('Invalid note data format: expected FeatureCollection or Feature');
 }
 
 /**
@@ -1070,8 +1047,8 @@ function renderInteractions() {
                                   .map(
                                     (url, imgIndex) => `
                                     <a href="${url}" target="_blank" rel="noopener noreferrer" class="interaction-image-link">
-                                        <img src="${url}" 
-                                             alt="Image ${imgIndex + 1}" 
+                                        <img src="${url}"
+                                             alt="Image ${imgIndex + 1}"
                                              class="interaction-image"
                                              loading="lazy"
                                              onerror="this.style.display='none';">
@@ -2284,8 +2261,8 @@ async function renderTagLinks(tagPairs, container) {
     if (hasWiki) {
       const wikiUrl = `https://wiki.openstreetmap.org/wiki/Tag:${key}=${value}`;
       html += `
-                    <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" 
-                       class="tag-link-btn tag-link-wiki" 
+                    <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer"
+                       class="tag-link-btn tag-link-wiki"
                        aria-label="View ${tag.key}=${tag.value} on OSM Wiki">
                         📖 Wiki
                     </a>
@@ -2295,8 +2272,8 @@ async function renderTagLinks(tagPairs, container) {
     if (hasTaginfo) {
       const taginfoUrl = `https://taginfo.openstreetmap.org/tags/${key}=${value}`;
       html += `
-                    <a href="${taginfoUrl}" target="_blank" rel="noopener noreferrer" 
-                       class="tag-link-btn tag-link-taginfo" 
+                    <a href="${taginfoUrl}" target="_blank" rel="noopener noreferrer"
+                       class="tag-link-btn tag-link-taginfo"
                        aria-label="View ${tag.key}=${tag.value} on Taginfo">
                         📊 Taginfo
                     </a>

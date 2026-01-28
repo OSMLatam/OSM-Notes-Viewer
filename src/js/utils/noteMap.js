@@ -135,12 +135,24 @@ async function fetchNoteDetails(noteId) {
     const data = await response.json();
     console.log('Received data:', data);
     console.log('data.type:', data.type);
-    console.log('data.geometry:', data.geometry);
-    console.log('data.geometry.coordinates:', data.geometry?.coordinates);
 
-    // Handle GeoJSON format from OSM Notes API
+    // Handle GeoJSON FeatureCollection format (current OSM Notes API standard)
+    if (data.type === 'FeatureCollection' && data.features && data.features.length > 0) {
+      const feature = data.features[0];
+      const [lon, lat] = feature.geometry.coordinates;
+      const result = {
+        id: feature.properties.id || noteId,
+        lat: lat,
+        lon: lon,
+        status: feature.properties.status || 'open',
+        comments: feature.properties.comments?.length || 0,
+      };
+      console.log('Parsed note details:', result);
+      return result;
+    }
+
+    // Handle GeoJSON Feature format (single feature, less common)
     if (data.type === 'Feature' && data.geometry && data.geometry.coordinates) {
-      console.log('Processing as GeoJSON Feature...');
       const [lon, lat] = data.geometry.coordinates;
       const result = {
         id: data.properties.id || noteId,
@@ -151,23 +163,9 @@ async function fetchNoteDetails(noteId) {
       };
       console.log('Parsed note details:', result);
       return result;
-    } else {
-      console.log('NOT GeoJSON Feature, trying other formats...');
     }
 
-    // Handle old API format (backup)
-    if (data.elements && data.elements.length > 0) {
-      const note = data.elements[0];
-      const result = {
-        id: note.id,
-        lat: note.lat,
-        lon: note.lon,
-        status: note.status,
-        comments: note.comments?.length || 0,
-      };
-      console.log('Parsed note details:', result);
-      return result;
-    }
+    console.error('Invalid note data format: expected FeatureCollection or Feature');
   } catch (error) {
     console.error('Could not fetch note details:', error);
   }

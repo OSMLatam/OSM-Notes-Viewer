@@ -506,7 +506,7 @@ export class WrappedPage {
       },
     });
 
-    // Slide 2: Resumen
+    // Slide 2: Summary
     slides.push({
       type: 'summary',
       data: {
