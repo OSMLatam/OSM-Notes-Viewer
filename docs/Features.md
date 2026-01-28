@@ -46,7 +46,7 @@ status: 'active'
 **Features:**
 
 - User statistics (opened, closed, commented, reopened)
-- Activity visualization (placeholder for heatmap)
+- Activity visualization (GitHub-style heatmap)
 - Top hashtags used
 - Active countries ranking
 - Working hours pattern
@@ -60,8 +60,8 @@ status: 'active'
 - Stats cards (4 metrics)
 - Hashtag tags (top 50)
 - Country ranking list
-- Activity heatmap (to be implemented)
-- Working hours heatmap (to be implemented)
+- Activity heatmap (✅ implemented and integrated)
+- Working hours heatmap (✅ implemented and integrated)
 
 ---
 
@@ -85,7 +85,7 @@ status: 'active'
 - Stats cards
 - User ranking
 - Hashtag analysis
-- Activity and working hours heatmaps (to be implemented)
+- Activity and working hours heatmaps (✅ implemented and integrated)
 
 ---
 
@@ -280,14 +280,14 @@ status: 'active'
 - **Description:** Visual representation of last year's activity
 - **Technology:** SVG-based heatmap
 - **Data:** `last_year_activity` string (371 chars)
-- **Status:** Component created, needs integration
+- **Status:** ✅ Implemented and integrated in user and country profile pages
 
 #### Working Hours Heatmap
 
 - **Description:** 24h x 7 days visualization
 - **Technology:** SVG heatmap
 - **Data:** `working_hours_of_week_*` arrays
-- **Status:** Component created, needs integration
+- **Status:** ✅ Implemented and integrated in user and country profile pages
 
 ### Medium Priority
 
